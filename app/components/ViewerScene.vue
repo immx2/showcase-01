@@ -24,8 +24,23 @@ function countBuiltinVertices(geo: typeof geometry.value): number {
   return count
 }
 
+function countLamboVertices(): number {
+  const scene = lamboGltf.value?.scene
+  if (!scene) return 0
+  let count = 0
+  scene.traverse((child: THREE.Object3D) => {
+    const mesh = child as THREE.Mesh
+    if (mesh.isMesh && mesh.geometry?.attributes?.position) {
+      count += mesh.geometry.attributes.position.count
+    }
+  })
+  return count
+}
+
 watch(geometry, (geo) => {
-  if (geo !== 'lamborghini') vertexCount.value = countBuiltinVertices(geo)
+  vertexCount.value = geo === 'lamborghini'
+    ? countLamboVertices()
+    : countBuiltinVertices(geo)
 }, { immediate: true })
 
 function applyLamboMaterial() {
@@ -52,14 +67,7 @@ watch(lamboGltf, (gltf) => {
   gltf.scene.scale.setScalar(0.5)
   gltf.scene.position.set(0, -0.6, 0)
   applyLamboMaterial()
-  let count = 0
-  gltf.scene.traverse((child: THREE.Object3D) => {
-    const mesh = child as THREE.Mesh
-    if (mesh.isMesh && mesh.geometry?.attributes?.position) {
-      count += mesh.geometry.attributes.position.count
-    }
-  })
-  vertexCount.value = count
+  vertexCount.value = countLamboVertices()
 })
 
 watch([color, metalness, roughness, wireframe], applyLamboMaterial)
