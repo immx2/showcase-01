@@ -12,6 +12,7 @@ const { vertexCount, isLoading } = useViewer()
 
   <Transition name="loader">
     <div v-if="isLoading" class="loader-wrap">
+      <div class="loader-bg" />
       <div class="spinner" />
     </div>
   </Transition>
@@ -59,6 +60,12 @@ const { vertexCount, isLoading } = useViewer()
   pointer-events: none;
 }
 
+.loader-bg {
+  position: absolute;
+  inset: 0;
+  background: #f5f4f0;
+}
+
 .spinner {
   width: 32px;
   height: 32px;
@@ -73,18 +80,15 @@ const { vertexCount, isLoading } = useViewer()
 }
 
 .loader-enter-active {
-  transition: opacity var(--duration-base) var(--ease-out),
-              transform var(--duration-base) var(--ease-out);
+  transition: opacity var(--duration-base) var(--ease-out);
 }
 
 .loader-leave-active {
-  transition: opacity var(--duration-slow) var(--ease-out),
-              transform var(--duration-slow) var(--ease-out);
+  transition: opacity var(--duration-slow) var(--ease-out);
 }
 
 .loader-enter-from,
 .loader-leave-to {
   opacity: 0;
-  transform: scale(0.8);
 }
 </style>
