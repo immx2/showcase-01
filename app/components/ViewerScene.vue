@@ -5,9 +5,28 @@ import { OrbitControls, useGLTF } from '@tresjs/cientos'
 import * as THREE from 'three'
 import { useViewer } from '~/composables/useViewer'
 
-const { geometry, color, metalness, roughness, wireframe, autoRotate, lightConfig } = useViewer()
+const { geometry, color, metalness, roughness, wireframe, autoRotate, lightConfig, vertexCount } = useViewer()
 
 const { state: lamboGltf } = useGLTF('/models/lamborghini.glb')
+
+function countBuiltinVertices(geo: typeof geometry.value): number {
+  let g: THREE.BufferGeometry
+  switch (geo) {
+    case 'icosahedron': g = new THREE.IcosahedronGeometry(1.4, 6); break
+    case 'sphere':      g = new THREE.SphereGeometry(1.4, 64, 64); break
+    case 'torusKnot':   g = new THREE.TorusKnotGeometry(0.9, 0.34, 200, 32); break
+    case 'box':         g = new THREE.BoxGeometry(2, 2, 2); break
+    case 'octahedron':  g = new THREE.OctahedronGeometry(1.5, 4); break
+    default: return 0
+  }
+  const count = g.attributes.position.count
+  g.dispose()
+  return count
+}
+
+watch(geometry, (geo) => {
+  if (geo !== 'lamborghini') vertexCount.value = countBuiltinVertices(geo)
+}, { immediate: true })
 
 function applyLamboMaterial() {
   const scene = lamboGltf.value?.scene
@@ -33,6 +52,14 @@ watch(lamboGltf, (gltf) => {
   gltf.scene.scale.setScalar(0.5)
   gltf.scene.position.set(0, -0.6, 0)
   applyLamboMaterial()
+  let count = 0
+  gltf.scene.traverse((child: THREE.Object3D) => {
+    const mesh = child as THREE.Mesh
+    if (mesh.isMesh && mesh.geometry?.attributes?.position) {
+      count += mesh.geometry.attributes.position.count
+    }
+  })
+  vertexCount.value = count
 })
 
 watch([color, metalness, roughness, wireframe], applyLamboMaterial)

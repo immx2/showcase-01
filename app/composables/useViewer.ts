@@ -61,6 +61,7 @@ const roughness   = ref(0.35)
 const wireframe   = ref(false)
 const autoRotate  = ref(true)
 const lightPreset = ref<LightPreset>('studio')
+const vertexCount = ref(0)
 
 const lightConfig = computed(() => lightPresets[lightPreset.value])
 
@@ -73,4 +74,5 @@ export const useViewer = () => ({
   autoRotate,
   lightPreset,
   lightConfig,
+  vertexCount,
 })
