@@ -45,12 +45,12 @@ export interface GeometryOption {
 }
 
 export const geometryOptions: GeometryOption[] = [
-  { id: 'icosahedron',  label: 'Ico' },
+  { id: 'icosahedron',  label: 'Icosahedron' },
   { id: 'sphere',       label: 'Sphere' },
-  { id: 'torusKnot',    label: 'Knot' },
+  { id: 'torusKnot',    label: 'Torus Knot' },
   { id: 'box',          label: 'Box' },
-  { id: 'octahedron',   label: 'Octa' },
-  { id: 'lamborghini',  label: 'Lambo' },
+  { id: 'octahedron',   label: 'Octahedron' },
+  { id: 'lamborghini',  label: 'Lamborghini' },
 ]
 
 // --- Shared reactive state (module-level = singleton) ---

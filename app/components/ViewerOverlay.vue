@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { useViewer } from '~/composables/useViewer'
-const { vertexCount, isLoading } = useViewer()
+import { computed } from 'vue'
+import { useViewer, geometryOptions } from '~/composables/useViewer'
+const { geometry, vertexCount, isLoading } = useViewer()
+const modelName = computed(() => geometryOptions.find(o => o.id === geometry.value)?.label ?? '')
 </script>
 
 <template>
   <div class="overlay">
-    <p class="product-name">Object 001</p>
+    <p class="product-name">{{ modelName }}</p>
     <p class="hint">Drag to orbit&nbsp;&nbsp;·&nbsp;&nbsp;Scroll to zoom</p>
     <p class="stat">{{ vertexCount.toLocaleString() }} vertices</p>
   </div>

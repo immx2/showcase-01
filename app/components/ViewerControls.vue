@@ -1,24 +1,15 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useViewer, geometryOptions, type GeometryType, type LightPreset } from '~/composables/useViewer'
+import { useViewer, geometryOptions, type LightPreset } from '~/composables/useViewer'
 
 const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset } = useViewer()
 
 const lightPresets: { id: LightPreset; label: string }[] = [
-  { id: 'studio',   label: 'Stu' },
-  { id: 'dramatic', label: 'Dra' },
+  { id: 'studio',   label: 'Studio' },
+  { id: 'dramatic', label: 'Dramatic' },
   { id: 'soft',     label: 'Soft' },
   { id: 'cold',     label: 'Cold' },
 ]
-
-const geoShort: Record<GeometryType, string> = {
-  icosahedron: 'Ico',
-  sphere:      'Sph',
-  torusKnot:   'Knot',
-  box:         'Box',
-  octahedron:  'Oct',
-  lamborghini: 'Lam',
-}
 
 const activePopout = ref<'geometry' | 'lighting' | null>(null)
 const wrapRef = ref<HTMLElement | null>(null)
@@ -41,29 +32,33 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   <div class="toolbar-wrap" ref="wrapRef">
 
     <!-- Geometry popout -->
-    <div v-if="activePopout === 'geometry'" class="popout">
-      <button
-        v-for="opt in geometryOptions"
-        :key="opt.id"
-        class="chip"
-        :class="{ active: geometry === opt.id }"
-        :aria-label="opt.label"
-        :aria-pressed="geometry === opt.id"
-        @click="geometry = opt.id; activePopout = null"
-      >{{ geoShort[opt.id] }}</button>
-    </div>
+    <Transition name="popout">
+      <div v-if="activePopout === 'geometry'" class="popout">
+        <button
+          v-for="opt in geometryOptions"
+          :key="opt.id"
+          class="chip"
+          :class="{ active: geometry === opt.id }"
+          :aria-label="opt.label"
+          :aria-pressed="geometry === opt.id"
+          @click="geometry = opt.id; activePopout = null"
+        >{{ opt.label }}</button>
+      </div>
+    </Transition>
 
     <!-- Lighting popout -->
-    <div v-if="activePopout === 'lighting'" class="popout">
-      <button
-        v-for="preset in lightPresets"
-        :key="preset.id"
-        class="chip"
-        :class="{ active: lightPreset === preset.id }"
-        :aria-pressed="lightPreset === preset.id"
-        @click="lightPreset = preset.id"
-      >{{ preset.label }}</button>
-    </div>
+    <Transition name="popout">
+      <div v-if="activePopout === 'lighting'" class="popout">
+        <button
+          v-for="preset in lightPresets"
+          :key="preset.id"
+          class="chip"
+          :class="{ active: lightPreset === preset.id }"
+          :aria-pressed="lightPreset === preset.id"
+          @click="lightPreset = preset.id"
+        >{{ preset.label }}</button>
+      </div>
+    </Transition>
 
     <!-- Toolbar -->
     <div class="toolbar">
@@ -76,7 +71,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         aria-label="Pick geometry"
         @click="togglePopout('geometry')"
       >
-        <!-- Polygon/shape icon -->
         <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="7,1 13,4.5 13,9.5 7,13 1,9.5 1,4.5"/>
           <line x1="7" y1="1" x2="7" y2="13"/>
@@ -131,7 +125,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           title="Wireframe"
           @click="wireframe = !wireframe"
         >
-          <!-- Wireframe mesh icon -->
           <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="7,1 13,12 1,12"/>
             <line x1="7" y1="1" x2="7" y2="12"/>
@@ -151,7 +144,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         aria-label="Lighting preset"
         @click="togglePopout('lighting')"
       >
-        <!-- Sun / light icon -->
         <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
           <circle cx="7" cy="7" r="2.5"/>
           <line x1="7" y1="1" x2="7" y2="2.5"/>
@@ -186,13 +178,28 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 /* Popouts sit above the toolbar */
 .popout {
   display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
+  flex-direction: column;
+  padding: var(--space-2);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+  min-width: 140px;
+}
+
+/* Popout enter/leave animation */
+.popout-enter-active {
+  transition: opacity var(--duration-base) var(--ease-out),
+              transform var(--duration-base) var(--ease-out);
+}
+.popout-leave-active {
+  transition: opacity var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
+}
+.popout-enter-from,
+.popout-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
 }
 
 .slider-label {
@@ -305,7 +312,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   border: none;
 }
 
-
 /* Toolbar pill */
 .toolbar {
   display: flex;
@@ -334,19 +340,20 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   margin: 0 var(--space-2);
 }
 
-/* Chip buttons */
+/* Chip buttons — vertical list style */
 .chip {
-  height: 26px;
-  padding: 0 var(--space-2);
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
+  width: 100%;
+  height: 34px;
+  padding: 0 var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
   background: transparent;
   color: var(--color-text-muted);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
-  letter-spacing: 0.03em;
+  text-align: left;
   cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+  transition: background var(--duration-fast), color var(--duration-fast);
 }
 
 .chip:hover {
@@ -357,7 +364,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .chip.active {
   background: var(--color-text);
   color: var(--color-surface);
-  border-color: var(--color-text);
 }
 
 /* Icon buttons */
