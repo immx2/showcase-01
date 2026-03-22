@@ -72,13 +72,19 @@ const { vertexCount, isLoading } = useViewer()
   to { transform: rotate(360deg); }
 }
 
-.loader-enter-active,
+.loader-enter-active {
+  transition: opacity var(--duration-base) var(--ease-out),
+              transform var(--duration-base) var(--ease-out);
+}
+
 .loader-leave-active {
-  transition: opacity var(--duration-fast);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              transform var(--duration-slow) var(--ease-out);
 }
 
 .loader-enter-from,
 .loader-leave-to {
   opacity: 0;
+  transform: scale(0.8);
 }
 </style>

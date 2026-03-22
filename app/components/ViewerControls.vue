@@ -230,6 +230,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   height: 38px;
   border-radius: var(--radius-sm);
   cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
   transition: background var(--duration-fast);
 }
 
