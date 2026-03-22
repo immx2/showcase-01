@@ -34,6 +34,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
     <!-- Geometry popout -->
     <Transition name="popout">
       <div v-if="activePopout === 'geometry'" class="popout">
+        <span class="popout-title">Geometry</span>
         <button
           v-for="opt in geometryOptions"
           :key="opt.id"
@@ -49,6 +50,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
     <!-- Lighting popout -->
     <Transition name="popout">
       <div v-if="activePopout === 'lighting'" class="popout">
+        <span class="popout-title">Lighting</span>
         <button
           v-for="preset in lightPresets"
           :key="preset.id"
@@ -108,14 +110,23 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <span class="slider-val">{{ metalness.toFixed(2) }}</span>
             <input type="range" class="slider-vert" orient="vertical" min="0" max="1" step="0.05" v-model.number="metalness" />
           </div>
-          <span class="slider-label">M</span>
+          <!-- Metalness icon: shiny sphere with specular highlight -->
+          <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="7" cy="7" r="5.5"/>
+            <path d="M4.5 4.5 Q5.5 3 7 3.5" stroke-width="1.1"/>
+          </svg>
         </div>
         <div class="slider-group">
           <div class="slider-popup">
             <span class="slider-val">{{ roughness.toFixed(2) }}</span>
             <input type="range" class="slider-vert" orient="vertical" min="0" max="1" step="0.05" v-model.number="roughness" />
           </div>
-          <span class="slider-label">R</span>
+          <!-- Roughness icon: wavy lines suggesting surface texture -->
+          <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1.5 4.5 Q3 3 4.5 4.5 Q6 6 7.5 4.5 Q9 3 10.5 4.5 Q12 6 12.5 5.5"/>
+            <path d="M1.5 7 Q3 5.5 4.5 7 Q6 8.5 7.5 7 Q9 5.5 10.5 7 Q12 8.5 12.5 8"/>
+            <path d="M1.5 9.5 Q3 8 4.5 9.5 Q6 11 7.5 9.5 Q9 8 10.5 9.5 Q12 11 12.5 10.5"/>
+          </svg>
         </div>
         <button
           class="icon-btn"
@@ -187,6 +198,17 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   min-width: 140px;
 }
 
+.popout-title {
+  padding: var(--space-1) var(--space-3) var(--space-2);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-1);
+}
+
 /* Popout enter/leave animation */
 .popout-enter-active {
   transition: opacity var(--duration-base) var(--ease-out),
@@ -202,11 +224,13 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   transform: translateY(6px);
 }
 
-.slider-label {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+.slider-group svg {
   color: var(--color-text-muted);
+  transition: color var(--duration-fast);
+}
+
+.slider-group:hover svg {
+  color: var(--color-text);
 }
 
 .color-swatch {
@@ -244,10 +268,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
 .slider-group:hover {
   background: var(--color-surface-2);
-}
-
-.slider-group:hover .slider-label {
-  color: var(--color-text);
 }
 
 .slider-popup {
