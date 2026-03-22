@@ -62,6 +62,7 @@ const wireframe   = ref(false)
 const autoRotate  = ref(true)
 const lightPreset = ref<LightPreset>('studio')
 const vertexCount = ref(0)
+const isLoading   = ref(false)
 
 const lightConfig = computed(() => lightPresets[lightPreset.value])
 
@@ -75,4 +76,5 @@ export const useViewer = () => ({
   lightPreset,
   lightConfig,
   vertexCount,
+  isLoading,
 })

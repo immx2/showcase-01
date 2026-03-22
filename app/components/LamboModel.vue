@@ -4,9 +4,13 @@ import { useGLTF } from '@tresjs/cientos'
 import * as THREE from 'three'
 import { useViewer } from '~/composables/useViewer'
 
-const { color, metalness, roughness, wireframe, vertexCount } = useViewer()
+const { color, metalness, roughness, wireframe, vertexCount, isLoading } = useViewer()
 
 const { state: lamboGltf } = useGLTF('/models/lamborghini.glb')
+
+onMounted(() => {
+  if (!lamboGltf.value?.scene) isLoading.value = true
+})
 
 function applyMaterial() {
   const scene = lamboGltf.value?.scene
@@ -32,6 +36,7 @@ watch(lamboGltf, (gltf) => {
   gltf.scene.scale.setScalar(0.5)
   gltf.scene.position.set(0, -0.6, 0)
   applyMaterial()
+  isLoading.value = false
   let count = 0
   gltf.scene.traverse((child: THREE.Object3D) => {
     const mesh = child as THREE.Mesh

@@ -196,16 +196,15 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 
 .slider-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
   color: var(--color-text-muted);
 }
 
 .color-swatch {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   display: block;
@@ -227,7 +226,15 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 var(--space-1);
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.slider-group:hover {
+  background: var(--color-surface-2);
 }
 
 .slider-group:hover .slider-label {
