@@ -102,7 +102,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
       <!-- Material: inline group -->
       <div class="group">
-        <label class="color-swatch" :style="{ background: color }" title="Color">
+        <label class="color-swatch" title="Color">
+          <span class="color-dot" :style="{ background: color }"></span>
           <input type="color" v-model="color" class="color-input" />
         </label>
         <div class="slider-group">
@@ -234,16 +235,35 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 
 .color-swatch {
-  width: 22px;
-  height: 22px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  display: block;
-  overflow: hidden;
+  cursor: pointer;
+  transition: background var(--duration-fast);
   flex-shrink: 0;
+  position: relative;
+}
+
+.color-swatch:hover {
+  background: var(--color-surface-2);
+}
+
+.color-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
 }
 
 .color-input {
+  position: absolute;
+  inset: 0;
   opacity: 0;
   width: 100%;
   height: 100%;
