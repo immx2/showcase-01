@@ -12,7 +12,7 @@
 <style scoped>
 .overlay {
   position: fixed;
-  bottom: var(--space-8);
+  top: calc(var(--nav-height) + var(--space-6));
   left: var(--space-8);
   z-index: 10;
   display: flex;

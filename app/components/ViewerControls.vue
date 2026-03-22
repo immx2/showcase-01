@@ -1,225 +1,213 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useViewer, geometryOptions, type GeometryType, type LightPreset } from '~/composables/useViewer'
 
 const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset } = useViewer()
 
 const lightPresets: { id: LightPreset; label: string }[] = [
-  { id: 'studio',   label: 'Studio' },
-  { id: 'dramatic', label: 'Dramatic' },
+  { id: 'studio',   label: 'Stu' },
+  { id: 'dramatic', label: 'Dra' },
   { id: 'soft',     label: 'Soft' },
   { id: 'cold',     label: 'Cold' },
 ]
+
+const geoShort: Record<GeometryType, string> = {
+  icosahedron: 'Ico',
+  sphere:      'Sph',
+  torusKnot:   'Knot',
+  box:         'Box',
+  octahedron:  'Oct',
+  lamborghini: 'Lam',
+}
+
+const activePopout = ref<'geometry' | 'lighting' | null>(null)
+const wrapRef = ref<HTMLElement | null>(null)
+
+function togglePopout(name: 'geometry' | 'lighting') {
+  activePopout.value = activePopout.value === name ? null : name
+}
+
+function onDocClick(e: MouseEvent) {
+  if (wrapRef.value && !wrapRef.value.contains(e.target as Node)) {
+    activePopout.value = null
+  }
+}
+
+onMounted(() => document.addEventListener('click', onDocClick))
+onUnmounted(() => document.removeEventListener('click', onDocClick))
 </script>
 
 <template>
-  <aside class="controls">
-    <div class="controls-inner">
+  <div class="toolbar-wrap" ref="wrapRef">
 
-      <!-- MOTION -->
-      <section class="section">
-        <span class="section-label">Motion</span>
-        <div class="row">
-          <span class="label">Rotate</span>
-          <button
-            class="toggle"
-            :class="{ active: autoRotate }"
-            @click="autoRotate = !autoRotate"
-            :aria-pressed="autoRotate"
-          >
-            {{ autoRotate ? 'On' : 'Off' }}
-          </button>
-        </div>
-      </section>
+    <!-- Geometry popout -->
+    <div v-if="activePopout === 'geometry'" class="popout">
+      <button
+        v-for="opt in geometryOptions"
+        :key="opt.id"
+        class="chip"
+        :class="{ active: geometry === opt.id }"
+        :aria-label="opt.label"
+        :aria-pressed="geometry === opt.id"
+        @click="geometry = opt.id; activePopout = null"
+      >{{ geoShort[opt.id] }}</button>
+    </div>
 
-      <div class="divider" />
+    <!-- Lighting popout -->
+    <div v-if="activePopout === 'lighting'" class="popout">
+      <button
+        v-for="preset in lightPresets"
+        :key="preset.id"
+        class="chip"
+        :class="{ active: lightPreset === preset.id }"
+        :aria-pressed="lightPreset === preset.id"
+        @click="lightPreset = preset.id"
+      >{{ preset.label }}</button>
+    </div>
 
-      <!-- GEOMETRY -->
-      <section class="section">
-        <span class="section-label">Geometry</span>
-        <div class="chip-grid">
-          <button
-            v-for="opt in geometryOptions"
-            :key="opt.id"
-            class="chip"
-            :class="{ active: geometry === opt.id }"
-            @click="geometry = opt.id"
-          >
-            {{ opt.label }}
-          </button>
-        </div>
-      </section>
+    <!-- Toolbar -->
+    <div class="toolbar">
 
-      <div class="divider" />
+      <!-- Geometry picker button -->
+      <button
+        class="icon-btn"
+        :class="{ active: activePopout === 'geometry' }"
+        title="Geometry"
+        aria-label="Pick geometry"
+        @click="togglePopout('geometry')"
+      >
+        <!-- Polygon/shape icon -->
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="7,1 13,4.5 13,9.5 7,13 1,9.5 1,4.5"/>
+          <line x1="7" y1="1" x2="7" y2="13"/>
+          <line x1="1" y1="4.5" x2="13" y2="4.5"/>
+          <line x1="1" y1="9.5" x2="13" y2="9.5"/>
+        </svg>
+      </button>
 
-      <!-- MATERIAL -->
-      <section class="section">
-        <span class="section-label">Material</span>
+      <span class="sep" />
 
-        <div class="row">
-          <span class="label">Color</span>
-          <label class="color-swatch" :style="{ background: color }">
-            <input type="color" v-model="color" class="color-input" />
-          </label>
-        </div>
+      <!-- Auto-rotate toggle -->
+      <button
+        class="icon-btn"
+        :class="{ active: autoRotate }"
+        title="Auto-rotate"
+        aria-label="Auto-rotate"
+        :aria-pressed="autoRotate"
+        @click="autoRotate = !autoRotate"
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 7A5 5 0 1 1 9.5 2.5"/>
+          <path d="M9.5 1v2.5H12"/>
+        </svg>
+      </button>
 
-        <div class="slider-row">
-          <div class="slider-header">
-            <span class="label">Metalness</span>
-            <span class="value">{{ metalness.toFixed(2) }}</span>
+      <span class="sep" />
+
+      <!-- Material: inline group -->
+      <div class="group">
+        <label class="color-swatch" :style="{ background: color }" title="Color">
+          <input type="color" v-model="color" class="color-input" />
+        </label>
+        <div class="slider-group">
+          <div class="slider-popup">
+            <span class="slider-val">{{ metalness.toFixed(2) }}</span>
+            <input type="range" class="slider-vert" orient="vertical" min="0" max="1" step="0.05" v-model.number="metalness" />
           </div>
-          <input type="range" min="0" max="1" step="0.05" v-model.number="metalness" class="slider" />
+          <span class="slider-label">M</span>
         </div>
-
-        <div class="slider-row">
-          <div class="slider-header">
-            <span class="label">Roughness</span>
-            <span class="value">{{ roughness.toFixed(2) }}</span>
+        <div class="slider-group">
+          <div class="slider-popup">
+            <span class="slider-val">{{ roughness.toFixed(2) }}</span>
+            <input type="range" class="slider-vert" orient="vertical" min="0" max="1" step="0.05" v-model.number="roughness" />
           </div>
-          <input type="range" min="0" max="1" step="0.05" v-model.number="roughness" class="slider" />
+          <span class="slider-label">R</span>
         </div>
+        <button
+          class="icon-btn"
+          :class="{ active: wireframe }"
+          :aria-pressed="wireframe"
+          aria-label="Wireframe"
+          title="Wireframe"
+          @click="wireframe = !wireframe"
+        >
+          <!-- Wireframe mesh icon -->
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="7,1 13,12 1,12"/>
+            <line x1="7" y1="1" x2="7" y2="12"/>
+            <line x1="1" y1="12" x2="10" y2="6.5"/>
+            <line x1="13" y1="12" x2="4" y2="6.5"/>
+          </svg>
+        </button>
+      </div>
 
-        <div class="row">
-          <span class="label">Wireframe</span>
-          <button
-            class="toggle"
-            :class="{ active: wireframe }"
-            @click="wireframe = !wireframe"
-            :aria-pressed="wireframe"
-          >
-            {{ wireframe ? 'On' : 'Off' }}
-          </button>
-        </div>
-      </section>
+      <span class="sep" />
 
-      <div class="divider" />
-
-      <!-- LIGHTING -->
-      <section class="section">
-        <span class="section-label">Lighting</span>
-        <div class="chip-grid">
-          <button
-            v-for="preset in lightPresets"
-            :key="preset.id"
-            class="chip"
-            :class="{ active: lightPreset === preset.id }"
-            @click="lightPreset = preset.id"
-          >
-            {{ preset.label }}
-          </button>
-        </div>
-      </section>
+      <!-- Lighting picker button -->
+      <button
+        class="icon-btn"
+        :class="{ active: activePopout === 'lighting' }"
+        title="Lighting"
+        aria-label="Lighting preset"
+        @click="togglePopout('lighting')"
+      >
+        <!-- Sun / light icon -->
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+          <circle cx="7" cy="7" r="2.5"/>
+          <line x1="7" y1="1" x2="7" y2="2.5"/>
+          <line x1="7" y1="11.5" x2="7" y2="13"/>
+          <line x1="1" y1="7" x2="2.5" y2="7"/>
+          <line x1="11.5" y1="7" x2="13" y2="7"/>
+          <line x1="2.93" y1="2.93" x2="3.99" y2="3.99"/>
+          <line x1="10.01" y1="10.01" x2="11.07" y2="11.07"/>
+          <line x1="11.07" y1="2.93" x2="10.01" y2="3.99"/>
+          <line x1="3.99" y1="10.01" x2="2.93" y2="11.07"/>
+        </svg>
+      </button>
 
     </div>
-  </aside>
+
+  </div>
 </template>
 
 <style scoped>
-.controls {
+.toolbar-wrap {
   position: fixed;
-  bottom: var(--space-8);
-  right: var(--space-8);
+  bottom: var(--space-6);
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 10;
-  width: 256px;
-  max-height: calc(100dvh - var(--nav-height) - var(--space-16));
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
 }
 
-.controls-inner {
+/* Popouts sit above the toolbar */
+.popout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-4);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
 }
 
-/* Section */
-.section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.section-label {
+.slider-label {
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
-.divider {
-  height: 1px;
-  background: var(--color-border-subtle);
-  margin: 0 calc(-1 * var(--space-1));
-}
-
-/* Row */
-.row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.label {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--color-text);
-}
-
-/* Toggle button */
-.toggle {
-  font-size: 11px;
-  font-weight: 500;
-  padding: 2px var(--space-3);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-2);
-  color: var(--color-text-muted);
-  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
-}
-
-.toggle.active {
-  background: var(--color-text);
-  color: var(--color-surface);
-  border-color: var(--color-text);
-}
-
-/* Chip grid */
-.chip-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-}
-
-.chip {
-  font-size: 11px;
-  font-weight: 500;
-  padding: 3px var(--space-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
-}
-
-.chip.active {
-  background: var(--color-text);
-  color: var(--color-surface);
-  border-color: var(--color-text);
-}
-
-/* Color swatch */
 .color-swatch {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
-  cursor: pointer;
   display: block;
   overflow: hidden;
   flex-shrink: 0;
@@ -234,22 +222,54 @@ const lightPresets: { id: LightPreset; label: string }[] = [
   padding: 0;
 }
 
-/* Sliders */
-.slider-row {
+.slider-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--space-1);
+}
+
+.slider-group:hover .slider-label {
+  color: var(--color-text);
+}
+
+.slider-popup {
+  position: absolute;
+  bottom: calc(100% + var(--space-3));
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-2);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-fast);
 }
 
-.slider-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
+.slider-group:hover .slider-popup,
+.slider-group:focus-within .slider-popup {
+  opacity: 1;
+  pointer-events: auto;
 }
 
-.slider {
-  width: 100%;
-  height: 2px;
+.slider-val {
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-muted);
+}
+
+.slider-vert {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 2px;
+  height: 80px;
   appearance: none;
   background: var(--color-border);
   border-radius: 1px;
@@ -257,28 +277,102 @@ const lightPresets: { id: LightPreset; label: string }[] = [
   cursor: pointer;
 }
 
-.slider::-webkit-slider-thumb {
+.slider-vert::-webkit-slider-thumb {
   appearance: none;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--color-text);
   cursor: pointer;
   border: none;
 }
 
-.slider::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
+.slider-vert::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--color-text);
   cursor: pointer;
   border: none;
 }
 
-.value {
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
+
+/* Toolbar pill */
+.toolbar {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 var(--space-2);
+  gap: 2px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.sep {
+  display: block;
+  width: 1px;
+  height: 20px;
+  background: var(--color-border-subtle);
+  flex-shrink: 0;
+  margin: 0 var(--space-1);
+}
+
+/* Chip buttons */
+.chip {
+  height: 26px;
+  padding: 0 var(--space-2);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
   color: var(--color-text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.chip:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.chip.active {
+  background: var(--color-text);
+  color: var(--color-surface);
+  border-color: var(--color-text);
+}
+
+/* Icon buttons */
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.icon-btn:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.icon-btn.active {
+  background: var(--color-text);
+  color: var(--color-surface);
 }
 </style>
