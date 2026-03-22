@@ -77,7 +77,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         @click="togglePopout('geometry')"
       >
         <!-- Polygon/shape icon -->
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="7,1 13,4.5 13,9.5 7,13 1,9.5 1,4.5"/>
           <line x1="7" y1="1" x2="7" y2="13"/>
           <line x1="1" y1="4.5" x2="13" y2="4.5"/>
@@ -96,7 +96,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         :aria-pressed="autoRotate"
         @click="autoRotate = !autoRotate"
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 7A5 5 0 1 1 9.5 2.5"/>
           <path d="M9.5 1v2.5H12"/>
         </svg>
@@ -132,7 +132,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           @click="wireframe = !wireframe"
         >
           <!-- Wireframe mesh icon -->
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="7,1 13,12 1,12"/>
             <line x1="7" y1="1" x2="7" y2="12"/>
             <line x1="1" y1="12" x2="10" y2="6.5"/>
@@ -152,7 +152,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         @click="togglePopout('lighting')"
       >
         <!-- Sun / light icon -->
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
           <circle cx="7" cy="7" r="2.5"/>
           <line x1="7" y1="1" x2="7" y2="2.5"/>
           <line x1="7" y1="11.5" x2="7" y2="13"/>
@@ -204,8 +204,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 
 .color-swatch {
-  width: 20px;
-  height: 20px;
+  width: 26px;
+  height: 26px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   display: block;
@@ -301,9 +301,9 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .toolbar {
   display: flex;
   align-items: center;
-  height: 40px;
-  padding: 0 var(--space-2);
-  gap: 2px;
+  height: 52px;
+  padding: 0 var(--space-3);
+  gap: 4px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -319,10 +319,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .sep {
   display: block;
   width: 1px;
-  height: 20px;
+  height: 26px;
   background: var(--color-border-subtle);
   flex-shrink: 0;
-  margin: 0 var(--space-1);
+  margin: 0 var(--space-2);
 }
 
 /* Chip buttons */
@@ -353,8 +353,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
 /* Icon buttons */
 .icon-btn {
-  width: 30px;
-  height: 30px;
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
