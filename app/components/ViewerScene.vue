@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { watch } from 'vue'
 import { TresCanvas } from '@tresjs/core'
-import { OrbitControls, useGLTF } from '@tresjs/cientos'
+import { OrbitControls } from '@tresjs/cientos'
 import * as THREE from 'three'
 import { useViewer } from '~/composables/useViewer'
 
 const { geometry, color, metalness, roughness, wireframe, autoRotate, lightConfig, vertexCount } = useViewer()
-
-const { state: lamboGltf } = useGLTF('/models/lamborghini.glb')
 
 function countBuiltinVertices(geo: typeof geometry.value): number {
   let g: THREE.BufferGeometry
@@ -24,53 +22,9 @@ function countBuiltinVertices(geo: typeof geometry.value): number {
   return count
 }
 
-function countLamboVertices(): number {
-  const scene = lamboGltf.value?.scene
-  if (!scene) return 0
-  let count = 0
-  scene.traverse((child: THREE.Object3D) => {
-    const mesh = child as THREE.Mesh
-    if (mesh.isMesh && mesh.geometry?.attributes?.position) {
-      count += mesh.geometry.attributes.position.count
-    }
-  })
-  return count
-}
-
 watch(geometry, (geo) => {
-  vertexCount.value = geo === 'lamborghini'
-    ? countLamboVertices()
-    : countBuiltinVertices(geo)
+  if (geo !== 'lamborghini') vertexCount.value = countBuiltinVertices(geo)
 }, { immediate: true })
-
-function applyLamboMaterial() {
-  const scene = lamboGltf.value?.scene
-  if (!scene) return
-  scene.traverse((child: THREE.Object3D) => {
-    if (!(child as THREE.Mesh).isMesh) return
-    const mats = Array.isArray((child as THREE.Mesh).material)
-      ? (child as THREE.Mesh).material as THREE.MeshStandardMaterial[]
-      : [(child as THREE.Mesh).material as THREE.MeshStandardMaterial]
-    for (const mat of mats) {
-      if (!mat || !('color' in mat)) continue
-      mat.color.set(color.value)
-      mat.metalness = metalness.value
-      mat.roughness = roughness.value
-      mat.wireframe = wireframe.value
-      mat.needsUpdate = true
-    }
-  })
-}
-
-watch(lamboGltf, (gltf) => {
-  if (!gltf?.scene) return
-  gltf.scene.scale.setScalar(0.5)
-  gltf.scene.position.set(0, -0.6, 0)
-  applyLamboMaterial()
-  vertexCount.value = countLamboVertices()
-})
-
-watch([color, metalness, roughness, wireframe], applyLamboMaterial)
 </script>
 
 <template>
@@ -115,11 +69,8 @@ watch([color, metalness, roughness, wireframe], applyLamboMaterial)
         :color="lightConfig.rim.color"
       />
 
-      <!-- Lamborghini GLB model -->
-      <primitive
-        v-if="geometry === 'lamborghini' && lamboGltf?.scene"
-        :object="lamboGltf.scene"
-      />
+      <!-- Lamborghini — loaded on demand -->
+      <LamboModel v-if="geometry === 'lamborghini'" />
 
       <!-- Main solid mesh — keyed so geometry swap force-remounts -->
       <TresMesh v-else :position="[0, 0, 0]" :key="`solid-${geometry}`">
