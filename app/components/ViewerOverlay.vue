@@ -7,9 +7,11 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
 
 <template>
   <div class="overlay">
-    <p class="product-name">{{ modelName }}</p>
+    <p class="product-name">
+      {{ modelName }}
+      <span v-if="!isLoading" class="stat">&nbsp;·&nbsp;{{ vertexCount.toLocaleString() }} vertices</span>
+    </p>
     <p class="hint">Drag to orbit&nbsp;&nbsp;·&nbsp;&nbsp;Scroll to zoom</p>
-    <p class="stat">{{ vertexCount.toLocaleString() }} vertices</p>
   </div>
 
   <Transition name="loader">
@@ -37,6 +39,9 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text);
+  display: flex;
+  align-items: baseline;
+  gap: 0;
 }
 
 .hint {
@@ -47,7 +52,9 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
 
 .stat {
   font-size: 11px;
+  font-weight: 400;
   letter-spacing: 0.04em;
+  text-transform: none;
   color: var(--color-text-muted);
   font-variant-numeric: tabular-nums;
 }
