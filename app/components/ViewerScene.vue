@@ -1,9 +1,41 @@
 <script setup lang="ts">
+import { watch } from 'vue'
 import { TresCanvas } from '@tresjs/core'
-import { OrbitControls } from '@tresjs/cientos'
+import { OrbitControls, useGLTF } from '@tresjs/cientos'
+import * as THREE from 'three'
 import { useViewer } from '~/composables/useViewer'
 
 const { geometry, color, metalness, roughness, wireframe, autoRotate, lightConfig } = useViewer()
+
+const { state: lamboGltf } = useGLTF('/models/lamborghini.glb')
+
+function applyLamboMaterial() {
+  const scene = lamboGltf.value?.scene
+  if (!scene) return
+  scene.traverse((child: THREE.Object3D) => {
+    if (!(child as THREE.Mesh).isMesh) return
+    const mats = Array.isArray((child as THREE.Mesh).material)
+      ? (child as THREE.Mesh).material as THREE.MeshStandardMaterial[]
+      : [(child as THREE.Mesh).material as THREE.MeshStandardMaterial]
+    for (const mat of mats) {
+      if (!mat || !('color' in mat)) continue
+      mat.color.set(color.value)
+      mat.metalness = metalness.value
+      mat.roughness = roughness.value
+      mat.wireframe = wireframe.value
+      mat.needsUpdate = true
+    }
+  })
+}
+
+watch(lamboGltf, (gltf) => {
+  if (!gltf?.scene) return
+  gltf.scene.scale.setScalar(0.5)
+  gltf.scene.position.set(0, -0.6, 0)
+  applyLamboMaterial()
+})
+
+watch([color, metalness, roughness, wireframe], applyLamboMaterial)
 </script>
 
 <template>
@@ -48,8 +80,14 @@ const { geometry, color, metalness, roughness, wireframe, autoRotate, lightConfi
         :color="lightConfig.rim.color"
       />
 
+      <!-- Lamborghini GLB model -->
+      <primitive
+        v-if="geometry === 'lamborghini' && lamboGltf?.scene"
+        :object="lamboGltf.scene"
+      />
+
       <!-- Main solid mesh — keyed so geometry swap force-remounts -->
-      <TresMesh :position="[0, 0, 0]" :key="`solid-${geometry}`">
+      <TresMesh v-else :position="[0, 0, 0]" :key="`solid-${geometry}`">
         <TresIcosahedronGeometry v-if="geometry === 'icosahedron'" :args="[1.4, 6]" />
         <TresSphereGeometry     v-else-if="geometry === 'sphere'"      :args="[1.4, 64, 64]" />
         <TresTorusKnotGeometry  v-else-if="geometry === 'torusKnot'"   :args="[0.9, 0.34, 200, 32]" />
@@ -67,7 +105,7 @@ const { geometry, color, metalness, roughness, wireframe, autoRotate, lightConfi
       </TresMesh>
 
       <!-- Wireframe overlay mesh -->
-      <TresMesh v-if="wireframe" :position="[0, 0, 0]" :key="`wire-${geometry}`">
+      <TresMesh v-if="wireframe && geometry !== 'lamborghini'" :position="[0, 0, 0]" :key="`wire-${geometry}`">
         <TresIcosahedronGeometry v-if="geometry === 'icosahedron'" :args="[1.4, 6]" />
         <TresSphereGeometry     v-else-if="geometry === 'sphere'"      :args="[1.4, 64, 64]" />
         <TresTorusKnotGeometry  v-else-if="geometry === 'torusKnot'"   :args="[0.9, 0.34, 200, 32]" />

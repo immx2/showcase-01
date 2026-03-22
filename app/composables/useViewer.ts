@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 
-export type GeometryType = 'icosahedron' | 'sphere' | 'torusKnot' | 'box' | 'octahedron'
+export type GeometryType = 'icosahedron' | 'sphere' | 'torusKnot' | 'box' | 'octahedron' | 'lamborghini'
 export type LightPreset = 'studio' | 'dramatic' | 'soft' | 'cold'
 
 // --- Light presets ---
@@ -45,11 +45,12 @@ export interface GeometryOption {
 }
 
 export const geometryOptions: GeometryOption[] = [
-  { id: 'icosahedron', label: 'Ico' },
-  { id: 'sphere',      label: 'Sphere' },
-  { id: 'torusKnot',   label: 'Knot' },
-  { id: 'box',         label: 'Box' },
-  { id: 'octahedron',  label: 'Octa' },
+  { id: 'icosahedron',  label: 'Ico' },
+  { id: 'sphere',       label: 'Sphere' },
+  { id: 'torusKnot',    label: 'Knot' },
+  { id: 'box',          label: 'Box' },
+  { id: 'octahedron',   label: 'Octa' },
+  { id: 'lamborghini',  label: 'Lambo' },
 ]
 
 // --- Shared reactive state (module-level = singleton) ---
