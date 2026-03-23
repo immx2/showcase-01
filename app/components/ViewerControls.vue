@@ -19,6 +19,7 @@ function applyMaterialPreset(preset: MaterialPreset) {
 }
 
 const activePopout = ref<'geometry' | 'lighting' | 'materials' | 'environment' | null>(null)
+const labelsExpanded = ref(false)
 const wrapRef = ref<HTMLElement | null>(null)
 
 function togglePopout(name: 'geometry' | 'lighting' | 'materials' | 'environment') {
@@ -39,9 +40,9 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   <div class="toolbar-wrap" ref="wrapRef">
 
     <!-- Toolbar — comes first so popouts expand to the right -->
-    <div class="toolbar">
+    <div class="toolbar" :class="{ expanded: labelsExpanded }">
 
-        <!-- Geometry picker button -->
+      <!-- Geometry picker button -->
       <button
         class="icon-btn"
         :class="{ active: activePopout === 'geometry' }"
@@ -55,6 +56,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           <line x1="1" y1="4.5" x2="13" y2="4.5"/>
           <line x1="1" y1="9.5" x2="13" y2="9.5"/>
         </svg>
+        <span class="btn-label">Geometry</span>
       </button>
 
       <span class="sep" />
@@ -75,9 +77,11 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <circle cx="4.5" cy="9.5" r="2.5"/>
             <circle cx="9.5" cy="9.5" r="2.5"/>
           </svg>
+          <span class="btn-label">Material</span>
         </button>
         <label class="color-swatch" title="Color">
           <span class="color-dot" :style="{ background: color }"></span>
+          <span class="btn-label">Color</span>
           <input type="color" v-model="color" class="color-input" />
         </label>
         <div class="slider-group">
@@ -89,6 +93,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <circle cx="7" cy="7" r="5.5"/>
             <path d="M4.5 4.5 Q5.5 3 7 3.5" stroke-width="1.1"/>
           </svg>
+          <span class="btn-label">Metalness</span>
         </div>
         <div class="slider-group">
           <div class="slider-popup">
@@ -100,6 +105,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <path d="M1.5 7 Q3 5.5 4.5 7 Q6 8.5 7.5 7 Q9 5.5 10.5 7 Q12 8.5 12.5 8"/>
             <path d="M1.5 9.5 Q3 8 4.5 9.5 Q6 11 7.5 9.5 Q9 8 10.5 9.5 Q12 11 12.5 10.5"/>
           </svg>
+          <span class="btn-label">Roughness</span>
         </div>
         <button
           class="icon-btn"
@@ -115,6 +121,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <line x1="1" y1="12" x2="10" y2="6.5"/>
             <line x1="13" y1="12" x2="4" y2="6.5"/>
           </svg>
+          <span class="btn-label">Wireframe</span>
         </button>
       </div>
 
@@ -134,6 +141,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           <path d="M1.5 7 Q3.5 10 7 7 Q10.5 4 12.5 7"/>
           <line x1="7" y1="1.5" x2="7" y2="12.5"/>
         </svg>
+        <span class="btn-label">Environment</span>
       </button>
 
       <!-- Lighting picker button -->
@@ -155,6 +163,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           <line x1="11.07" y1="2.93" x2="10.01" y2="3.99"/>
           <line x1="3.99" y1="10.01" x2="2.93" y2="11.07"/>
         </svg>
+        <span class="btn-label">Lighting</span>
       </button>
 
       <span class="sep" />
@@ -172,6 +181,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           <path d="M12 7A5 5 0 1 1 9.5 2.5"/>
           <path d="M9.5 1v2.5H12"/>
         </svg>
+        <span class="btn-label">Auto-rotate</span>
       </button>
 
       <!-- Screenshot button -->
@@ -186,6 +196,24 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           <circle cx="7" cy="8" r="2.2"/>
           <path d="M4.5 3.5 L5.5 1.5 H8.5 L9.5 3.5"/>
         </svg>
+        <span class="btn-label">Screenshot</span>
+      </button>
+
+      <span class="sep" />
+
+      <!-- Labels toggle -->
+      <button
+        class="icon-btn expand-toggle"
+        :class="{ active: labelsExpanded }"
+        :aria-pressed="labelsExpanded"
+        :title="labelsExpanded ? 'Hide labels' : 'Show labels'"
+        :aria-label="labelsExpanded ? 'Hide labels' : 'Show labels'"
+        @click="labelsExpanded = !labelsExpanded"
+      >
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="expand-icon">
+          <polyline points="5 3 9 7 5 11"/>
+        </svg>
+        <span class="btn-label">Collapse</span>
       </button>
 
     </div>
@@ -285,6 +313,13 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  transition: width var(--duration-base) var(--ease-out);
+}
+
+/* Expanded toolbar */
+.toolbar.expanded {
+  width: 168px;
+  align-items: stretch;
 }
 
 /* Group: stack icons vertically */
@@ -295,6 +330,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   gap: 2px;
 }
 
+.expanded .group {
+  align-items: stretch;
+}
+
 /* Separator: horizontal rule */
 .sep {
   display: block;
@@ -303,6 +342,41 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   background: var(--color-border-subtle);
   flex-shrink: 0;
   margin: var(--space-2) 0;
+  transition: width var(--duration-base) var(--ease-out);
+}
+
+.expanded .sep {
+  width: calc(100% - var(--space-6));
+  align-self: center;
+}
+
+/* Button label text */
+.btn-label {
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  transition:
+    max-width var(--duration-base) var(--ease-out),
+    opacity var(--duration-base) var(--ease-out);
+  pointer-events: none;
+}
+
+.expanded .btn-label {
+  max-width: 120px;
+  opacity: 1;
+}
+
+/* Expand icon rotates when active */
+.expand-icon {
+  transition: transform var(--duration-base) var(--ease-out);
+  flex-shrink: 0;
+}
+
+.expand-toggle.active .expand-icon {
+  transform: rotate(180deg);
 }
 
 /* Popouts — expand to the right of the toolbar */
@@ -369,6 +443,14 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
 .slider-group:hover {
   background: var(--color-surface-2);
+}
+
+.expanded .slider-group {
+  width: auto;
+  justify-content: flex-start;
+  padding: 0 var(--space-3);
+  gap: var(--space-2);
+  border-radius: 0;
 }
 
 /* Slider popup — expands to the right */
@@ -446,10 +528,19 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   transition: background var(--duration-fast);
   flex-shrink: 0;
   position: relative;
+  gap: 0;
 }
 
 .color-swatch:hover {
   background: var(--color-surface-2);
+}
+
+.expanded .color-swatch {
+  width: auto;
+  justify-content: flex-start;
+  padding: 0 var(--space-3);
+  gap: var(--space-2);
+  border-radius: 0;
 }
 
 .color-dot {
@@ -531,12 +622,15 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   border: none;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
+  transition: background var(--duration-fast), color var(--duration-fast),
+              width var(--duration-base) var(--ease-out),
+              padding var(--duration-base) var(--ease-out);
 }
 
 .icon-btn:hover {
@@ -547,5 +641,17 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .icon-btn.active {
   background: var(--color-text);
   color: var(--color-surface);
+}
+
+.expanded .icon-btn {
+  width: auto;
+  justify-content: flex-start;
+  padding: 0 var(--space-3);
+  gap: var(--space-2);
+  border-radius: 0;
+}
+
+.expanded .icon-btn svg {
+  flex-shrink: 0;
 }
 </style>
