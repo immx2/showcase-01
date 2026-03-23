@@ -1,24 +1,14 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-
-const STORAGE_KEY = 'showcase-01:onboarding-seen'
-const visible = ref(false)
-
-onMounted(() => {
-  // TODO: re-enable localStorage check once testing is done:
-  // if (!localStorage.getItem(STORAGE_KEY)) { visible.value = true }
-  visible.value = true
-})
+const { showOnboarding } = useViewer()
 
 function dismiss() {
-  // TODO: re-enable once testing is done: localStorage.setItem(STORAGE_KEY, '1')
-  visible.value = false
+  showOnboarding.value = false
 }
 </script>
 
 <template>
   <Transition name="fade">
-    <div v-if="visible" class="backdrop" @click.self="dismiss" role="dialog" aria-modal="true" aria-label="Welcome tutorial">
+    <div v-if="showOnboarding" class="backdrop" @click.self="dismiss" role="dialog" aria-modal="true" aria-label="Welcome tutorial">
       <div class="card">
         <p class="eyebrow">Interactive 3D Viewer</p>
         <h1 class="title">Explore every angle</h1>
@@ -86,6 +76,8 @@ function dismiss() {
             </span>
           </li>
         </ul>
+
+        <p class="reopen-hint">Reopen this guide anytime via the <strong>?</strong> button in the top nav.</p>
 
         <button class="cta" @click="dismiss">
           Start Exploring
@@ -180,6 +172,18 @@ function dismiss() {
   justify-content: center;
   color: var(--color-text-muted);
   margin-top: -2px;
+}
+
+.reopen-hint {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-4);
+  text-align: center;
+}
+
+.reopen-hint strong {
+  font-weight: 600;
+  color: var(--color-text);
 }
 
 .cta {
