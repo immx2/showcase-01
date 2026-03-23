@@ -60,7 +60,7 @@ function dismiss() {
               </svg>
             </span>
             <span>
-              <strong>Toolbar</strong> on the left — swap geometry, materials, lighting &amp; environment. Hit the <strong>›</strong> button at the bottom to expand labels.
+              <strong>Toolbar</strong> on the left — swap geometry, materials, lighting &amp; environment
             </span>
           </li>
           <li class="tip">
@@ -73,6 +73,16 @@ function dismiss() {
             </span>
             <span>
               <strong>Camera</strong> button saves a screenshot of your scene
+            </span>
+          </li>
+          <li class="tip">
+            <span class="tip-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="7 5 11 10 7 15"/>
+              </svg>
+            </span>
+            <span>
+              <strong>›</strong> at the bottom of the toolbar expands labels for each button
             </span>
           </li>
         </ul>
