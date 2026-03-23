@@ -19,10 +19,7 @@ const { showOnboarding } = useViewer()
 
 <style scoped>
 .nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  flex-shrink: 0;
   height: var(--nav-height);
   z-index: 20;
   display: flex;

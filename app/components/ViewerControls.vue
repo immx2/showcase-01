@@ -2,7 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useViewer, geometryGroups, materialPresets, envPresets, type LightPreset, type MaterialPreset, type EnvPresetId } from '~/composables/useViewer'
 
-const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset, envPreset, screenshotFn, hotspotsVisible } = useViewer()
+const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset, envPreset, screenshotFn, hotspotsVisible, labelsExpanded } = useViewer()
 
 const lightPresets: { id: LightPreset; label: string }[] = [
   { id: 'studio',   label: 'Studio' },
@@ -19,7 +19,6 @@ function applyMaterialPreset(preset: MaterialPreset) {
 }
 
 const activePopout = ref<'geometry' | 'lighting' | 'materials' | 'environment' | null>(null)
-const labelsExpanded = ref(false)
 const wrapRef = ref<HTMLElement | null>(null)
 
 function togglePopout(name: 'geometry' | 'lighting' | 'materials' | 'environment') {
@@ -37,10 +36,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 </script>
 
 <template>
-  <div class="toolbar-wrap" ref="wrapRef">
+  <div class="toolbar-wrap" :class="{ expanded: labelsExpanded }" ref="wrapRef">
 
     <!-- Toolbar — comes first so popouts expand to the right -->
-    <div class="toolbar" :class="{ expanded: labelsExpanded }">
+    <div class="toolbar">
 
       <!-- Geometry picker button -->
       <button
@@ -218,9 +217,11 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         <span class="btn-label">Hotspots</span>
       </button>
 
-      <span class="sep" />
+    </div>
 
-      <!-- Labels toggle -->
+    <!-- Always-visible footer: labels toggle -->
+    <div class="toolbar-foot">
+      <span class="sep" />
       <button
         class="icon-btn expand-toggle"
         :class="{ active: labelsExpanded }"
@@ -234,7 +235,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         </svg>
         <span class="btn-label">Collapse</span>
       </button>
-
     </div>
 
     <!-- Geometry popout — expands to the right of the toolbar -->
@@ -310,37 +310,53 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 </template>
 
 <style scoped>
-/* Wrap: fixed to the left edge, vertically centred */
+/* Sidebar: fixed width left panel, full height */
 .toolbar-wrap {
-  position: fixed;
-  left: var(--space-4);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 20;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: var(--space-2);
-}
-
-/* Toolbar: vertical pill */
-.toolbar {
+  position: relative;
+  overflow: visible;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 52px;
-  padding: var(--space-3) 0;
-  gap: 4px;
   background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  border-right: 1px solid var(--color-border);
+  z-index: 30;
   transition: width var(--duration-base) var(--ease-out);
 }
 
-/* Expanded toolbar */
-.toolbar.expanded {
+.toolbar-wrap.expanded {
   width: 168px;
+}
+
+/* Toolbar: scrollable inner button stack */
+.toolbar {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-3) 0;
+  gap: 4px;
+  scrollbar-width: none;
+}
+
+.toolbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Footer: always-visible expand toggle */
+.toolbar-foot {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-bottom: var(--space-3);
+  gap: 4px;
+  background: var(--color-surface);
 }
 
 /* Group: stack icons vertically */
@@ -396,8 +412,12 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   transform: rotate(180deg);
 }
 
-/* Popouts — expand to the right of the toolbar */
+/* Popouts — float to the right of the sidebar */
 .popout {
+  position: absolute;
+  left: calc(100% + var(--space-2));
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   padding: var(--space-2);
@@ -406,6 +426,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   border-radius: var(--radius-lg);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
   min-width: 140px;
+  z-index: 30;
 }
 
 .popout-title {
@@ -447,7 +468,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .popout-enter-from,
 .popout-leave-to {
   opacity: 0;
-  transform: translateX(-6px);
+  transform: translateY(-50%) translateX(-6px);
 }
 
 /* Slider groups */

@@ -34,8 +34,17 @@ function applyMaterial() {
 
 watch(lamboGltf, (gltf) => {
   if (!gltf?.scene) return
-  gltf.scene.scale.setScalar(0.5)
-  gltf.scene.position.set(0, -0.6, 0)
+  const box = new THREE.Box3().setFromObject(gltf.scene)
+  const size = new THREE.Vector3()
+  box.getSize(size)
+  // Normalize by the camera-facing cross-section (x/y), not the car's depth (z),
+  // so the visible size matches the built-in primitives at the same camera distance.
+  const maxDim = Math.max(size.x, size.y)
+  gltf.scene.scale.setScalar(2.8 / maxDim)
+  box.setFromObject(gltf.scene)
+  const center = new THREE.Vector3()
+  box.getCenter(center)
+  gltf.scene.position.set(0, -center.y, 0)
   gltf.scene.rotation.y = Math.PI
   applyMaterial()
   isLoading.value = false

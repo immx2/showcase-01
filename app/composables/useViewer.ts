@@ -86,31 +86,31 @@ export const geometryGroups: GeometryGroup[] = [
 // Flat list kept for anything that needs it (e.g. vertex counting switch)
 export const geometryOptions: GeometryOption[] = geometryGroups.flatMap(g => g.options)
 
-// --- Hotspot data (world-space; model is scale 0.5, y-offset -0.6) ---
+// --- Hotspot data (world-space; model normalised to max(x,y)=2.8, scale≈0.976, y-offset≈-0.435) ---
 export const lamboHotspots: Hotspot[] = [
   {
     id: 'engine',
     label: 'V10 Engine',
     description: '5.2L naturally aspirated — 610 hp, 560 Nm',
-    position: [0, -0.05, -1.1],
+    position: [0, 0.59, -2.15],
   },
   {
     id: 'wing',
     label: 'Active Rear Wing',
     description: 'Adaptive aero adjusts drag for grip and top speed',
-    position: [0, 0.2, -1.25],
+    position: [0, 0.93, -2.44],
   },
   {
     id: 'intakes',
     label: 'Hex Air Intakes',
     description: 'Hexagonal side scoops channel air to the mid-engine',
-    position: [0.8, -0.1, -0.2],
+    position: [1.56, 0.34, -0.39],
   },
   {
     id: 'roof',
     label: 'Carbon Fibre Shell',
     description: 'Forged composite monocoque — 1,422 kg dry weight',
-    position: [0.1, 0.2, 0.35],
+    position: [0.20, 0.93, 0.68],
   },
 ]
 
@@ -187,6 +187,7 @@ const isLoading   = ref(false)
 const envPreset             = ref<EnvPresetId>('sunset')
 const showOnboarding        = ref(false)
 const hotspotsVisible       = ref(true)
+const labelsExpanded        = ref(false)
 const hotspotScreenPositions = ref<HotspotScreenPos[]>([])
 
 // Derived: true whenever an HDR is selected (used by materials for envMapIntensity)
@@ -214,4 +215,5 @@ export const useViewer = () => ({
   showOnboarding,
   hotspotsVisible,
   hotspotScreenPositions,
+  labelsExpanded,
 })

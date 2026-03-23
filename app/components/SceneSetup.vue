@@ -5,7 +5,7 @@
  * to set up the environment map and the screenshot function.
  */
 import { watch, onUnmounted } from 'vue'
-import { useTresContext } from '@tresjs/core'
+import { useTresContext, useLoop } from '@tresjs/core'
 import * as THREE from 'three'
 import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js'
 import { useViewer, envPresets } from '~/composables/useViewer'
@@ -64,6 +64,38 @@ screenshotFn.value = () => {
   a.download = 'product-viewer.png'
   a.click()
 }
+
+// Force-sync renderer resolution to canvas CSS size every frame so the
+// WebGL viewport tracks CSS transitions (TresJS ResizeObserver fires too late).
+const { onBeforeRender } = useLoop()
+// Keep camera aspect and renderer size in sync with the canvas CSS size every
+// frame. TresJS's ResizeObserver fires after layout (post-paint), so the camera
+// aspect lags one frame behind during CSS animations. Running this in
+// onBeforeRender ensures the projection is always correct before each draw.
+onBeforeRender(() => {
+  const r = renderer.instance as THREE.WebGLRenderer
+  if (!r) return
+  const canvas = r.domElement
+  const w = canvas.clientWidth
+  const h = canvas.clientHeight
+  if (!w || !h) return
+
+  // Sync renderer buffer size (Three.js uses Math.floor internally)
+  const dpr = r.getPixelRatio()
+  if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+    r.setSize(w, h, false)
+  }
+
+  // Always sync camera aspect — this is what actually causes the visible snap
+  const cam = camera.activeCamera.value as THREE.PerspectiveCamera
+  if (cam?.isPerspectiveCamera) {
+    const aspect = w / h
+    if (Math.abs(cam.aspect - aspect) > 0.0001) {
+      cam.aspect = aspect
+      cam.updateProjectionMatrix()
+    }
+  }
+})
 
 watch(
   [envPreset, renderer.isInitialized],

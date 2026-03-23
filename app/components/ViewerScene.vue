@@ -125,14 +125,18 @@ watch(geometry, (geo) => {
 
 <style scoped>
 .scene-wrapper {
-  position: fixed;
-  inset: 0;
-  top: var(--nav-height);
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
 }
 
 .canvas {
   display: block;
-  width: 100%;
-  height: 100%;
+  /* !important overrides the inline width/height TresJS sets via setSize(),
+     so the flex layout controls the canvas display size instead. */
+  width: 100% !important;
+  height: 100% !important;
 }
 </style>

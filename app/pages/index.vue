@@ -3,15 +3,19 @@ useSeoMeta({
   title: 'showcase-01 — 3D Product Viewer',
   description: 'An interactive 3D product viewer built with TresJS and Nuxt 4.',
 })
+
+
 </script>
 
 <template>
   <div class="root">
     <AppNav />
-    <ClientOnly>
-      <ViewerScene />
-    </ClientOnly>
-    <ViewerControls />
+    <div class="body">
+      <ViewerControls />
+      <ClientOnly>
+        <ViewerScene />
+      </ClientOnly>
+    </div>
     <ViewerOverlay />
     <OnboardingOverlay />
   </div>
@@ -19,9 +23,16 @@ useSeoMeta({
 
 <style scoped>
 .root {
-  position: relative;
+  display: flex;
+  flex-direction: column;
   height: 100dvh;
-  overflow: hidden;
   background: var(--color-bg);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  min-height: 0;
 }
 </style>
