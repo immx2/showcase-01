@@ -13,6 +13,7 @@ useSeoMeta({
     </ClientOnly>
     <ViewerControls />
     <ViewerOverlay />
+    <OnboardingOverlay />
   </div>
 </template>
 
