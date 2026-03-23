@@ -82,7 +82,7 @@ function dismiss() {
               </svg>
             </span>
             <span>
-              <strong>›</strong> at the bottom of the toolbar expands labels for each button
+              <strong>Expand</strong> at the bottom of the toolbar reveals labels for each button
             </span>
           </li>
         </ul>
