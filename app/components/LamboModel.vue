@@ -4,7 +4,7 @@ import { useGLTF } from '@tresjs/cientos'
 import * as THREE from 'three'
 import { useViewer } from '~/composables/useViewer'
 
-const { color, metalness, roughness, wireframe, vertexCount, isLoading } = useViewer()
+const { color, metalness, roughness, wireframe, vertexCount, isLoading, envEnabled } = useViewer()
 
 const { state: lamboGltf } = useGLTF('/models/lamborghini.glb')
 
@@ -26,6 +26,7 @@ function applyMaterial() {
       mat.metalness = metalness.value
       mat.roughness = roughness.value
       mat.wireframe = wireframe.value
+      mat.envMapIntensity = envEnabled.value ? 1.0 : 0.0
       mat.needsUpdate = true
     }
   })
@@ -47,7 +48,7 @@ watch(lamboGltf, (gltf) => {
   vertexCount.value = count
 })
 
-watch([color, metalness, roughness, wireframe], applyMaterial)
+watch([color, metalness, roughness, wireframe, envEnabled], applyMaterial)
 </script>
 
 <template>

@@ -5,7 +5,10 @@ import { OrbitControls } from '@tresjs/cientos'
 import * as THREE from 'three'
 import { useViewer } from '~/composables/useViewer'
 
-const { geometry, color, metalness, roughness, wireframe, autoRotate, lightConfig, vertexCount } = useViewer()
+const {
+  geometry, color, metalness, roughness, wireframe,
+  autoRotate, lightConfig, vertexCount, envEnabled,
+} = useViewer()
 
 function countBuiltinVertices(geo: typeof geometry.value): number {
   let g: THREE.BufferGeometry
@@ -32,6 +35,7 @@ watch(geometry, (geo) => {
     <TresCanvas
       clear-color="#f5f4f0"
       alpha
+      preserve-drawing-buffer
       class="canvas"
     >
       <TresPerspectiveCamera
@@ -69,6 +73,9 @@ watch(geometry, (geo) => {
         :color="lightConfig.rim.color"
       />
 
+      <!-- Environment + screenshot setup (uses useTresContext internally) -->
+      <SceneSetup />
+
       <!-- Lamborghini — loaded on demand -->
       <LamboModel v-if="geometry === 'lamborghini'" />
 
@@ -84,7 +91,7 @@ watch(geometry, (geo) => {
           :color="color"
           :metalness="metalness"
           :roughness="roughness"
-          :env-map-intensity="1.0"
+          :env-map-intensity="envEnabled ? 1.0 : 0.0"
           :clearcoat="0.2"
           :clearcoat-roughness="0.1"
         />

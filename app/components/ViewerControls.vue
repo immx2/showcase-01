@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useViewer, geometryOptions, type LightPreset } from '~/composables/useViewer'
+import { useViewer, geometryOptions, materialPresets, envPresets, type LightPreset, type MaterialPreset, type EnvPresetId } from '~/composables/useViewer'
 
-const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset } = useViewer()
+const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset, envPreset, screenshotFn } = useViewer()
 
 const lightPresets: { id: LightPreset; label: string }[] = [
   { id: 'studio',   label: 'Studio' },
@@ -11,10 +11,17 @@ const lightPresets: { id: LightPreset; label: string }[] = [
   { id: 'cold',     label: 'Cold' },
 ]
 
-const activePopout = ref<'geometry' | 'lighting' | null>(null)
+function applyMaterialPreset(preset: MaterialPreset) {
+  color.value = preset.color
+  metalness.value = preset.metalness
+  roughness.value = preset.roughness
+  activePopout.value = null
+}
+
+const activePopout = ref<'geometry' | 'lighting' | 'materials' | 'environment' | null>(null)
 const wrapRef = ref<HTMLElement | null>(null)
 
-function togglePopout(name: 'geometry' | 'lighting') {
+function togglePopout(name: 'geometry' | 'lighting' | 'materials' | 'environment') {
   activePopout.value = activePopout.value === name ? null : name
 }
 
@@ -31,39 +38,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 <template>
   <div class="toolbar-wrap" ref="wrapRef">
 
-    <!-- Geometry popout -->
-    <Transition name="popout">
-      <div v-if="activePopout === 'geometry'" class="popout">
-        <button
-          v-for="opt in geometryOptions"
-          :key="opt.id"
-          class="chip"
-          :class="{ active: geometry === opt.id }"
-          :aria-label="opt.label"
-          :aria-pressed="geometry === opt.id"
-          @click="geometry = opt.id; activePopout = null"
-        >{{ opt.label }}</button>
-      </div>
-    </Transition>
-
-    <!-- Lighting popout -->
-    <Transition name="popout">
-      <div v-if="activePopout === 'lighting'" class="popout">
-        <button
-          v-for="preset in lightPresets"
-          :key="preset.id"
-          class="chip"
-          :class="{ active: lightPreset === preset.id }"
-          :aria-pressed="lightPreset === preset.id"
-          @click="lightPreset = preset.id"
-        >{{ preset.label }}</button>
-      </div>
-    </Transition>
-
-    <!-- Toolbar -->
+    <!-- Toolbar — comes first so popouts expand to the right -->
     <div class="toolbar">
 
-      <!-- Geometry picker button -->
+        <!-- Geometry picker button -->
       <button
         class="icon-btn"
         :class="{ active: activePopout === 'geometry' }"
@@ -81,26 +59,25 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
       <span class="sep" />
 
-      <!-- Auto-rotate toggle -->
-      <button
-        class="icon-btn"
-        :class="{ active: autoRotate }"
-        title="Auto-rotate"
-        aria-label="Auto-rotate"
-        :aria-pressed="autoRotate"
-        @click="autoRotate = !autoRotate"
-      >
-        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 7A5 5 0 1 1 9.5 2.5"/>
-          <path d="M9.5 1v2.5H12"/>
-        </svg>
-      </button>
-
-      <span class="sep" />
-
-      <!-- Material: inline group -->
+      <!-- Material group -->
       <div class="group">
-        <label class="color-swatch" :style="{ background: color }" title="Color">
+        <!-- Material presets picker -->
+        <button
+          class="icon-btn"
+          :class="{ active: activePopout === 'materials' }"
+          title="Material presets"
+          aria-label="Material presets"
+          @click="togglePopout('materials')"
+        >
+          <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="4.5" cy="4.5" r="2.5"/>
+            <circle cx="9.5" cy="4.5" r="2.5"/>
+            <circle cx="4.5" cy="9.5" r="2.5"/>
+            <circle cx="9.5" cy="9.5" r="2.5"/>
+          </svg>
+        </button>
+        <label class="color-swatch" title="Color">
+          <span class="color-dot" :style="{ background: color }"></span>
           <input type="color" v-model="color" class="color-input" />
         </label>
         <div class="slider-group">
@@ -108,14 +85,21 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <span class="slider-val">{{ metalness.toFixed(2) }}</span>
             <input type="range" class="slider-vert" orient="vertical" min="0" max="1" step="0.05" v-model.number="metalness" />
           </div>
-          <span class="slider-label">M</span>
+          <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="7" cy="7" r="5.5"/>
+            <path d="M4.5 4.5 Q5.5 3 7 3.5" stroke-width="1.1"/>
+          </svg>
         </div>
         <div class="slider-group">
           <div class="slider-popup">
             <span class="slider-val">{{ roughness.toFixed(2) }}</span>
             <input type="range" class="slider-vert" orient="vertical" min="0" max="1" step="0.05" v-model.number="roughness" />
           </div>
-          <span class="slider-label">R</span>
+          <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M1.5 4.5 Q3 3 4.5 4.5 Q6 6 7.5 4.5 Q9 3 10.5 4.5 Q12 6 12.5 5.5"/>
+            <path d="M1.5 7 Q3 5.5 4.5 7 Q6 8.5 7.5 7 Q9 5.5 10.5 7 Q12 8.5 12.5 8"/>
+            <path d="M1.5 9.5 Q3 8 4.5 9.5 Q6 11 7.5 9.5 Q9 8 10.5 9.5 Q12 11 12.5 10.5"/>
+          </svg>
         </div>
         <button
           class="icon-btn"
@@ -135,6 +119,22 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
       </div>
 
       <span class="sep" />
+
+      <!-- Environment picker button -->
+      <button
+        class="icon-btn"
+        :class="{ active: activePopout === 'environment' }"
+        title="Environment"
+        aria-label="Environment"
+        @click="togglePopout('environment')"
+      >
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="7" cy="7" r="5.5"/>
+          <path d="M1.5 7 Q3.5 4 7 7 Q10.5 10 12.5 7"/>
+          <path d="M1.5 7 Q3.5 10 7 7 Q10.5 4 12.5 7"/>
+          <line x1="7" y1="1.5" x2="7" y2="12.5"/>
+        </svg>
+      </button>
 
       <!-- Lighting picker button -->
       <button
@@ -157,25 +157,155 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         </svg>
       </button>
 
+      <span class="sep" />
+
+      <!-- Auto-rotate toggle -->
+      <button
+        class="icon-btn"
+        :class="{ active: autoRotate }"
+        title="Auto-rotate"
+        aria-label="Auto-rotate"
+        :aria-pressed="autoRotate"
+        @click="autoRotate = !autoRotate"
+      >
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 7A5 5 0 1 1 9.5 2.5"/>
+          <path d="M9.5 1v2.5H12"/>
+        </svg>
+      </button>
+
+      <!-- Screenshot button -->
+      <button
+        class="icon-btn"
+        title="Save screenshot"
+        aria-label="Save screenshot"
+        @click="screenshotFn?.()"
+      >
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3.5" width="12" height="9" rx="1.5"/>
+          <circle cx="7" cy="8" r="2.2"/>
+          <path d="M4.5 3.5 L5.5 1.5 H8.5 L9.5 3.5"/>
+        </svg>
+      </button>
+
     </div>
+
+    <!-- Geometry popout — expands to the right of the toolbar -->
+    <Transition name="popout">
+      <div v-if="activePopout === 'geometry'" class="popout">
+        <span class="popout-title">Geometry</span>
+        <button
+          v-for="opt in geometryOptions"
+          :key="opt.id"
+          class="chip"
+          :class="{ active: geometry === opt.id }"
+          :aria-label="opt.label"
+          :aria-pressed="geometry === opt.id"
+          @click="geometry = opt.id; activePopout = null"
+        >{{ opt.label }}</button>
+      </div>
+    </Transition>
+
+    <!-- Material presets popout -->
+    <Transition name="popout">
+      <div v-if="activePopout === 'materials'" class="popout">
+        <span class="popout-title">Material</span>
+        <button
+          v-for="preset in materialPresets"
+          :key="preset.id"
+          class="chip chip--material"
+          :aria-label="preset.label"
+          @click="applyMaterialPreset(preset)"
+        >
+          <span class="preset-dot" :style="{ background: preset.color }" />
+          {{ preset.label }}
+        </button>
+      </div>
+    </Transition>
+
+    <!-- Lighting popout -->
+    <Transition name="popout">
+      <div v-if="activePopout === 'lighting'" class="popout">
+        <span class="popout-title">Lighting</span>
+        <button
+          v-for="preset in lightPresets"
+          :key="preset.id"
+          class="chip"
+          :class="{ active: lightPreset === preset.id }"
+          :aria-pressed="lightPreset === preset.id"
+          @click="lightPreset = preset.id"
+        >{{ preset.label }}</button>
+      </div>
+    </Transition>
+
+    <!-- Environment popout -->
+    <Transition name="popout">
+      <div v-if="activePopout === 'environment'" class="popout">
+        <span class="popout-title">Environment</span>
+        <button
+          v-for="preset in envPresets"
+          :key="preset.id"
+          class="chip chip--env"
+          :class="{ active: envPreset === preset.id }"
+          :aria-pressed="envPreset === preset.id"
+          @click="envPreset = preset.id as EnvPresetId; activePopout = null"
+        >
+          <span class="env-swatch" :style="{ background: preset.swatch }" />
+          {{ preset.label }}
+        </button>
+      </div>
+    </Transition>
 
   </div>
 </template>
 
 <style scoped>
+/* Wrap: fixed to the left edge, vertically centred */
 .toolbar-wrap {
   position: fixed;
-  bottom: var(--space-6);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
   gap: var(--space-2);
 }
 
-/* Popouts sit above the toolbar */
+/* Toolbar: vertical pill */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 52px;
+  padding: var(--space-3) 0;
+  gap: 4px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+/* Group: stack icons vertically */
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Separator: horizontal rule */
+.sep {
+  display: block;
+  width: 26px;
+  height: 1px;
+  background: var(--color-border-subtle);
+  flex-shrink: 0;
+  margin: var(--space-2) 0;
+}
+
+/* Popouts — expand to the right of the toolbar */
 .popout {
   display: flex;
   flex-direction: column;
@@ -187,7 +317,18 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   min-width: 140px;
 }
 
-/* Popout enter/leave animation */
+.popout-title {
+  padding: var(--space-1) var(--space-3) var(--space-2);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: var(--space-1);
+}
+
+/* Popout: slide in from the toolbar side */
 .popout-enter-active {
   transition: opacity var(--duration-base) var(--ease-out),
               transform var(--duration-base) var(--ease-out);
@@ -199,33 +340,17 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .popout-enter-from,
 .popout-leave-to {
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateX(-6px);
 }
 
-.slider-label {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+/* Slider groups */
+.slider-group svg {
   color: var(--color-text-muted);
+  transition: color var(--duration-fast);
 }
 
-.color-swatch {
-  width: 22px;
-  height: 22px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  display: block;
-  overflow: hidden;
-  flex-shrink: 0;
-}
-
-.color-input {
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  border: none;
-  padding: 0;
+.slider-group:hover svg {
+  color: var(--color-text);
 }
 
 .slider-group {
@@ -246,15 +371,12 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   background: var(--color-surface-2);
 }
 
-.slider-group:hover .slider-label {
-  color: var(--color-text);
-}
-
+/* Slider popup — expands to the right */
 .slider-popup {
   position: absolute;
-  bottom: calc(100% + var(--space-3));
-  left: 50%;
-  transform: translateX(-50%);
+  left: calc(100% + var(--space-3));
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -312,35 +434,46 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   border: none;
 }
 
-/* Toolbar pill */
-.toolbar {
+/* Color swatch */
+.color-swatch {
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
-  height: 52px;
-  padding: 0 var(--space-3);
-  gap: 4px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-}
-
-.group {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.sep {
-  display: block;
-  width: 1px;
-  height: 26px;
-  background: var(--color-border-subtle);
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast);
   flex-shrink: 0;
-  margin: 0 var(--space-2);
+  position: relative;
 }
 
-/* Chip buttons — vertical list style */
+.color-swatch:hover {
+  background: var(--color-surface-2);
+}
+
+.color-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.color-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+/* Chip buttons */
 .chip {
   width: 100%;
   height: 34px;
@@ -364,6 +497,31 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .chip.active {
   background: var(--color-text);
   color: var(--color-surface);
+}
+
+.chip--material,
+.chip--env {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.preset-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.env-swatch {
+  display: inline-block;
+  width: 24px;
+  height: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  flex-shrink: 0;
 }
 
 /* Icon buttons */

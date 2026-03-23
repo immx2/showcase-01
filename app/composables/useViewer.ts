@@ -2,9 +2,10 @@ import { ref, computed } from 'vue'
 
 export type GeometryType = 'icosahedron' | 'sphere' | 'torusKnot' | 'box' | 'octahedron' | 'lamborghini'
 export type LightPreset = 'studio' | 'dramatic' | 'soft' | 'cold'
+export type EnvPresetId = 'none' | 'sunset' | 'studio' | 'forest' | 'night'
 
 // --- Light presets ---
-interface LightConfig {
+type LightConfig = {
   ambient: number
   key: { pos: [number, number, number]; intensity: number; color: string }
   fill: { pos: [number, number, number]; intensity: number; color: string }
@@ -39,7 +40,7 @@ export const lightPresets: Record<LightPreset, LightConfig> = {
 }
 
 // --- Geometry options ---
-export interface GeometryOption {
+export type GeometryOption = {
   id: GeometryType
   label: string
 }
@@ -53,16 +54,83 @@ export const geometryOptions: GeometryOption[] = [
   { id: 'lamborghini',  label: 'Lamborghini' },
 ]
 
+// --- Material presets ---
+export type MaterialPreset = {
+  id: string
+  label: string
+  color: string
+  metalness: number
+  roughness: number
+}
+
+export const materialPresets: MaterialPreset[] = [
+  { id: 'chrome',   label: 'Chrome',        color: '#c8c8cc', metalness: 1.0, roughness: 0.05 },
+  { id: 'matte',    label: 'Matte Black',   color: '#1a1a1a', metalness: 0.3, roughness: 0.90 },
+  { id: 'brushed',  label: 'Brushed Steel', color: '#b0b4bc', metalness: 0.9, roughness: 0.35 },
+  { id: 'gloss',    label: 'Gloss Red',     color: '#c41e2a', metalness: 0.1, roughness: 0.05 },
+  { id: 'ceramic',  label: 'Ceramic',       color: '#f0ede8', metalness: 0.0, roughness: 0.30 },
+]
+
+// --- Environment presets ---
+export type EnvPreset = {
+  id: EnvPresetId
+  label: string
+  // Gradient hint shown in the chip swatch (CSS linear-gradient or solid color)
+  swatch: string
+  // Poly Haven 2k HDR. Empty string = no environment.
+  url: string
+}
+
+export const envPresets: EnvPreset[] = [
+  {
+    id: 'none',
+    label: 'None',
+    swatch: 'linear-gradient(135deg, #e8e7e3 50%, #d8d7d2 50%)',
+    url: '',
+  },
+  {
+    id: 'sunset',
+    label: 'Sunset',
+    swatch: 'linear-gradient(135deg, #f5a623, #e8441a)',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/venice_sunset_2k.hdr',
+  },
+  {
+    id: 'studio',
+    label: 'Studio',
+    swatch: 'linear-gradient(135deg, #d0d0d0, #888888)',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/studio_small_09_2k.hdr',
+  },
+  {
+    id: 'forest',
+    label: 'Forest',
+    swatch: 'linear-gradient(135deg, #4a7c59, #2d5016)',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/forest_slope_2k.hdr',
+  },
+  {
+    id: 'night',
+    label: 'Night',
+    swatch: 'linear-gradient(135deg, #1a2a4a, #0a0e1a)',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/moonlit_golf_2k.hdr',
+  },
+]
+
 // --- Shared reactive state (module-level = singleton) ---
 const geometry    = ref<GeometryType>('icosahedron')
-const color       = ref('#c8c6be')
-const metalness   = ref(0.4)
-const roughness   = ref(0.35)
+const color       = ref('#c8c8cc')
+const metalness   = ref(1.0)
+const roughness   = ref(0.05)
 const wireframe   = ref(false)
 const autoRotate  = ref(true)
 const lightPreset = ref<LightPreset>('studio')
 const vertexCount = ref(0)
 const isLoading   = ref(false)
+const envPreset   = ref<EnvPresetId>('sunset')
+
+// Derived: true whenever an HDR is selected (used by materials for envMapIntensity)
+const envEnabled = computed(() => envPreset.value !== 'none')
+
+// Set by ViewerScene once the canvas is ready; called by ViewerControls screenshot button
+const screenshotFn = ref<(() => void) | null>(null)
 
 const lightConfig = computed(() => lightPresets[lightPreset.value])
 
@@ -77,4 +145,7 @@ export const useViewer = () => ({
   lightConfig,
   vertexCount,
   isLoading,
+  envPreset,
+  envEnabled,
+  screenshotFn,
 })
