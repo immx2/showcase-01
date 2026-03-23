@@ -38,6 +38,12 @@ Dev server runs on port 3001 (`npm run dev`) to avoid conflicting with the portf
 ### Geometry with built-in primitives
 Solid and wireframe meshes are both `:key`ed on `geometry` to force a clean remount on swap.
 
+## TODOs
+
+- **Loading states** — models and backdrops should surface loading state appropriately. `isLoading` is already set in `useViewer.ts`; wire up a visible indicator (spinner, skeleton, or canvas overlay) in `ViewerScene.vue` or `ViewerControls.vue` so the user gets feedback while a `.glb` or environment map is still resolving. *(more context to be added when revisiting)*
+- **Overlay text/bg contrast** — overlay text and background currently have no contrast guarantee; legibility depends entirely on whatever env map is behind them. Needs a solution that works across all backdrops (e.g. semi-transparent scrim, adaptive text color, or fixed token). *(more context to be added when revisiting)*
+- **Hotspot popup dark mode** — hotspot popups are not responding to the 3-tier color mode (`auto/light/dark`). Should use the same `data-color-mode` + color token pattern as the rest of the app. *(more context to be added when revisiting)*
+
 ## Boundaries
 - This app is standalone — don't reach into `../my-portfolio` for anything
 - No Tailwind
