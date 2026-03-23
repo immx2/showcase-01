@@ -76,6 +76,9 @@ watch(geometry, (geo) => {
       <!-- Environment + screenshot setup (uses useTresContext internally) -->
       <SceneSetup />
 
+      <!-- Projects hotspot world positions to screen % each frame -->
+      <HotspotProjector v-if="geometry === 'lamborghini'" />
+
       <!-- Lamborghini — loaded on demand -->
       <LamboModel v-if="geometry === 'lamborghini'" />
 
@@ -114,6 +117,9 @@ watch(geometry, (geo) => {
         />
       </TresMesh>
     </TresCanvas>
+
+    <!-- HTML hotspot overlay — absolutely positioned over the canvas -->
+    <ModelHotspots />
   </div>
 </template>
 
