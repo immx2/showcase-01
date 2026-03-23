@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 
 export type GeometryType = 'icosahedron' | 'sphere' | 'torusKnot' | 'box' | 'octahedron' | 'lamborghini'
 export type LightPreset = 'studio' | 'dramatic' | 'soft' | 'cold'
+export type EnvPresetId = 'none' | 'sunset' | 'studio' | 'forest' | 'night'
 
 // --- Light presets ---
 interface LightConfig {
@@ -70,6 +71,49 @@ export const materialPresets: MaterialPreset[] = [
   { id: 'ceramic',  label: 'Ceramic',       color: '#f0ede8', metalness: 0.0, roughness: 0.30 },
 ]
 
+// --- Environment presets ---
+export interface EnvPreset {
+  id: EnvPresetId
+  label: string
+  // Gradient hint shown in the chip swatch (CSS linear-gradient or solid color)
+  swatch: string
+  // Poly Haven 1k HDR. Empty string = no environment.
+  url: string
+}
+
+export const envPresets: EnvPreset[] = [
+  {
+    id: 'none',
+    label: 'None',
+    swatch: 'linear-gradient(135deg, #e8e7e3 50%, #d8d7d2 50%)',
+    url: '',
+  },
+  {
+    id: 'sunset',
+    label: 'Sunset',
+    swatch: 'linear-gradient(135deg, #f5a623, #e8441a)',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/venice_sunset_1k.hdr',
+  },
+  {
+    id: 'studio',
+    label: 'Studio',
+    swatch: 'linear-gradient(135deg, #d0d0d0, #888888)',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr',
+  },
+  {
+    id: 'forest',
+    label: 'Forest',
+    swatch: 'linear-gradient(135deg, #4a7c59, #2d5016)',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/forest_slope_1k.hdr',
+  },
+  {
+    id: 'night',
+    label: 'Night',
+    swatch: 'linear-gradient(135deg, #1a2a4a, #0a0e1a)',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/moonlit_golf_1k.hdr',
+  },
+]
+
 // --- Shared reactive state (module-level = singleton) ---
 const geometry    = ref<GeometryType>('icosahedron')
 const color       = ref('#c8c6be')
@@ -80,7 +124,10 @@ const autoRotate  = ref(true)
 const lightPreset = ref<LightPreset>('studio')
 const vertexCount = ref(0)
 const isLoading   = ref(false)
-const envEnabled  = ref(true)
+const envPreset   = ref<EnvPresetId>('sunset')
+
+// Derived: true whenever an HDR is selected (used by materials for envMapIntensity)
+const envEnabled = computed(() => envPreset.value !== 'none')
 
 // Set by ViewerScene once the canvas is ready; called by ViewerControls screenshot button
 const screenshotFn = ref<(() => void) | null>(null)
@@ -98,6 +145,7 @@ export const useViewer = () => ({
   lightConfig,
   vertexCount,
   isLoading,
+  envPreset,
   envEnabled,
   screenshotFn,
 })

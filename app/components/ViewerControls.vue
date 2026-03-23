@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useViewer, geometryOptions, materialPresets, type LightPreset, type MaterialPreset } from '~/composables/useViewer'
+import { useViewer, geometryOptions, materialPresets, envPresets, type LightPreset, type MaterialPreset, type EnvPresetId } from '~/composables/useViewer'
 
-const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset, envEnabled, screenshotFn } = useViewer()
+const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset, envPreset, screenshotFn } = useViewer()
 
 const lightPresets: { id: LightPreset; label: string }[] = [
   { id: 'studio',   label: 'Studio' },
@@ -18,10 +18,10 @@ function applyMaterialPreset(preset: MaterialPreset) {
   activePopout.value = null
 }
 
-const activePopout = ref<'geometry' | 'lighting' | 'materials' | null>(null)
+const activePopout = ref<'geometry' | 'lighting' | 'materials' | 'environment' | null>(null)
 const wrapRef = ref<HTMLElement | null>(null)
 
-function togglePopout(name: 'geometry' | 'lighting' | 'materials') {
+function togglePopout(name: 'geometry' | 'lighting' | 'materials' | 'environment') {
   activePopout.value = activePopout.value === name ? null : name
 }
 
@@ -137,14 +137,13 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
       <span class="sep" />
 
-      <!-- Environment toggle -->
+      <!-- Environment picker button -->
       <button
         class="icon-btn"
-        :class="{ active: envEnabled }"
-        title="Environment reflections"
-        aria-label="Toggle environment reflections"
-        :aria-pressed="envEnabled"
-        @click="envEnabled = !envEnabled"
+        :class="{ active: activePopout === 'environment' }"
+        title="Environment"
+        aria-label="Environment"
+        @click="togglePopout('environment')"
       >
         <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="7" cy="7" r="5.5"/>
@@ -240,6 +239,24 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           :aria-pressed="lightPreset === preset.id"
           @click="lightPreset = preset.id"
         >{{ preset.label }}</button>
+      </div>
+    </Transition>
+
+    <!-- Environment popout -->
+    <Transition name="popout">
+      <div v-if="activePopout === 'environment'" class="popout">
+        <span class="popout-title">Environment</span>
+        <button
+          v-for="preset in envPresets"
+          :key="preset.id"
+          class="chip chip--env"
+          :class="{ active: envPreset === preset.id }"
+          :aria-pressed="envPreset === preset.id"
+          @click="envPreset = preset.id as EnvPresetId; activePopout = null"
+        >
+          <span class="env-swatch" :style="{ background: preset.swatch }" />
+          {{ preset.label }}
+        </button>
       </div>
     </Transition>
 
@@ -486,7 +503,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   color: var(--color-surface);
 }
 
-.chip--material {
+.chip--material,
+.chip--env {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -498,6 +516,15 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   height: 10px;
   border-radius: 50%;
   border: 1px solid rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
+}
+
+.env-swatch {
+  display: inline-block;
+  width: 24px;
+  height: 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.10);
   flex-shrink: 0;
 }
 
