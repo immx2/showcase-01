@@ -1,5 +1,8 @@
 # showcase-01 — Claude Instructions
 
+## Maintaining this file
+Update CLAUDE.md in the same commit as the code change it describes — new components, new state, changed conventions. A stale CLAUDE.md is worse than none.
+
 ## What this is
 An interactive 3D product viewer — the first showcase project for the portfolio at `../my-portfolio`. Built as a standalone Nuxt 4 app.
 
