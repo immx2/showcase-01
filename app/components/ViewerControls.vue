@@ -41,7 +41,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
     <!-- Toolbar — comes first so popouts expand to the right -->
     <div class="toolbar">
 
-      <!-- Geometry picker button -->
+        <!-- Geometry picker button -->
       <button
         class="icon-btn"
         :class="{ active: activePopout === 'geometry' }"
@@ -54,23 +54,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           <line x1="7" y1="1" x2="7" y2="13"/>
           <line x1="1" y1="4.5" x2="13" y2="4.5"/>
           <line x1="1" y1="9.5" x2="13" y2="9.5"/>
-        </svg>
-      </button>
-
-      <span class="sep" />
-
-      <!-- Auto-rotate toggle -->
-      <button
-        class="icon-btn"
-        :class="{ active: autoRotate }"
-        title="Auto-rotate"
-        aria-label="Auto-rotate"
-        :aria-pressed="autoRotate"
-        @click="autoRotate = !autoRotate"
-      >
-        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 7A5 5 0 1 1 9.5 2.5"/>
-          <path d="M9.5 1v2.5H12"/>
         </svg>
       </button>
 
@@ -153,8 +136,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         </svg>
       </button>
 
-      <span class="sep" />
-
       <!-- Lighting picker button -->
       <button
         class="icon-btn"
@@ -177,6 +158,21 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
       </button>
 
       <span class="sep" />
+
+      <!-- Auto-rotate toggle -->
+      <button
+        class="icon-btn"
+        :class="{ active: autoRotate }"
+        title="Auto-rotate"
+        aria-label="Auto-rotate"
+        :aria-pressed="autoRotate"
+        @click="autoRotate = !autoRotate"
+      >
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 7A5 5 0 1 1 9.5 2.5"/>
+          <path d="M9.5 1v2.5H12"/>
+        </svg>
+      </button>
 
       <!-- Screenshot button -->
       <button
@@ -270,7 +266,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   left: var(--space-4);
   top: 50%;
   transform: translateY(-50%);
-  z-index: 10;
+  z-index: 20;
   display: flex;
   flex-direction: row;
   align-items: flex-start;

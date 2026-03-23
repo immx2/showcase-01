@@ -26,11 +26,13 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
 .overlay {
   position: fixed;
   top: calc(var(--nav-height) + var(--space-6));
-  left: var(--space-8);
+  right: var(--space-8);
   z-index: 10;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: var(--space-1);
+  pointer-events: none;
 }
 
 .product-name {
