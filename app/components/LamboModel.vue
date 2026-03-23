@@ -36,6 +36,7 @@ watch(lamboGltf, (gltf) => {
   if (!gltf?.scene) return
   gltf.scene.scale.setScalar(0.5)
   gltf.scene.position.set(0, -0.6, 0)
+  gltf.scene.rotation.y = Math.PI
   applyMaterial()
   isLoading.value = false
   let count = 0
