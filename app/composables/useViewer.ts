@@ -92,25 +92,25 @@ export const envPresets: EnvPreset[] = [
     id: 'sunset',
     label: 'Sunset',
     swatch: 'linear-gradient(135deg, #f5a623, #e8441a)',
-    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/venice_sunset_1k.hdr',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/venice_sunset_2k.hdr',
   },
   {
     id: 'studio',
     label: 'Studio',
     swatch: 'linear-gradient(135deg, #d0d0d0, #888888)',
-    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/studio_small_09_2k.hdr',
   },
   {
     id: 'forest',
     label: 'Forest',
     swatch: 'linear-gradient(135deg, #4a7c59, #2d5016)',
-    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/forest_slope_1k.hdr',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/forest_slope_2k.hdr',
   },
   {
     id: 'night',
     label: 'Night',
     swatch: 'linear-gradient(135deg, #1a2a4a, #0a0e1a)',
-    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/moonlit_golf_1k.hdr',
+    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/moonlit_golf_2k.hdr',
   },
 ]
 
