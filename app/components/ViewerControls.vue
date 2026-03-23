@@ -319,7 +319,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 /* Expanded toolbar */
 .toolbar.expanded {
   width: 168px;
-  align-items: stretch;
 }
 
 /* Group: stack icons vertically */
@@ -328,10 +327,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   flex-direction: column;
   align-items: center;
   gap: 2px;
-}
-
-.expanded .group {
-  align-items: stretch;
 }
 
 /* Separator: horizontal rule */
@@ -431,14 +426,16 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-left: 10px;
   width: 38px;
   height: 38px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
-  transition: background var(--duration-fast);
+  transition: background var(--duration-fast),
+              width var(--duration-base) var(--ease-out);
 }
 
 .slider-group:hover {
@@ -446,11 +443,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 
 .expanded .slider-group {
-  width: auto;
-  justify-content: flex-start;
-  padding: 0 var(--space-3);
+  width: 148px;
   gap: var(--space-2);
-  border-radius: 0;
 }
 
 /* Slider popup — expands to the right */
@@ -522,13 +516,14 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   height: 38px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-left: 10px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background var(--duration-fast);
-  flex-shrink: 0;
   position: relative;
-  gap: 0;
+  overflow: hidden;
+  transition: background var(--duration-fast),
+              width var(--duration-base) var(--ease-out);
 }
 
 .color-swatch:hover {
@@ -536,11 +531,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 
 .expanded .color-swatch {
-  width: auto;
-  justify-content: flex-start;
-  padding: 0 var(--space-3);
+  width: 148px;
   gap: var(--space-2);
-  border-radius: 0;
 }
 
 .color-dot {
@@ -621,16 +613,17 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   height: 38px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-left: 10px;
   flex-shrink: 0;
   border: none;
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text-muted);
   cursor: pointer;
+  overflow: hidden;
   transition: background var(--duration-fast), color var(--duration-fast),
-              width var(--duration-base) var(--ease-out),
-              padding var(--duration-base) var(--ease-out);
+              width var(--duration-base) var(--ease-out);
 }
 
 .icon-btn:hover {
@@ -644,14 +637,11 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 
 .expanded .icon-btn {
-  width: auto;
-  justify-content: flex-start;
-  padding: 0 var(--space-3);
+  width: 148px;
   gap: var(--space-2);
-  border-radius: 0;
 }
 
-.expanded .icon-btn svg {
+.icon-btn svg {
   flex-shrink: 0;
 }
 </style>
