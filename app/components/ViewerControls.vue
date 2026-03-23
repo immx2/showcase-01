@@ -38,55 +38,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 <template>
   <div class="toolbar-wrap" ref="wrapRef">
 
-    <!-- Geometry popout -->
-    <Transition name="popout">
-      <div v-if="activePopout === 'geometry'" class="popout">
-        <span class="popout-title">Geometry</span>
-        <button
-          v-for="opt in geometryOptions"
-          :key="opt.id"
-          class="chip"
-          :class="{ active: geometry === opt.id }"
-          :aria-label="opt.label"
-          :aria-pressed="geometry === opt.id"
-          @click="geometry = opt.id; activePopout = null"
-        >{{ opt.label }}</button>
-      </div>
-    </Transition>
-
-    <!-- Material presets popout -->
-    <Transition name="popout">
-      <div v-if="activePopout === 'materials'" class="popout">
-        <span class="popout-title">Material</span>
-        <button
-          v-for="preset in materialPresets"
-          :key="preset.id"
-          class="chip chip--material"
-          :aria-label="preset.label"
-          @click="applyMaterialPreset(preset)"
-        >
-          <span class="preset-dot" :style="{ background: preset.color }" />
-          {{ preset.label }}
-        </button>
-      </div>
-    </Transition>
-
-    <!-- Lighting popout -->
-    <Transition name="popout">
-      <div v-if="activePopout === 'lighting'" class="popout">
-        <span class="popout-title">Lighting</span>
-        <button
-          v-for="preset in lightPresets"
-          :key="preset.id"
-          class="chip"
-          :class="{ active: lightPreset === preset.id }"
-          :aria-pressed="lightPreset === preset.id"
-          @click="lightPreset = preset.id"
-        >{{ preset.label }}</button>
-      </div>
-    </Transition>
-
-    <!-- Toolbar -->
+    <!-- Toolbar — comes first so popouts expand to the right -->
     <div class="toolbar">
 
       <!-- Geometry picker button -->
@@ -124,7 +76,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
       <span class="sep" />
 
-      <!-- Material: inline group -->
+      <!-- Material group -->
       <div class="group">
         <!-- Material presets picker -->
         <button
@@ -150,7 +102,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <span class="slider-val">{{ metalness.toFixed(2) }}</span>
             <input type="range" class="slider-vert" orient="vertical" min="0" max="1" step="0.05" v-model.number="metalness" />
           </div>
-          <!-- Metalness icon: shiny sphere with specular highlight -->
           <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="7" cy="7" r="5.5"/>
             <path d="M4.5 4.5 Q5.5 3 7 3.5" stroke-width="1.1"/>
@@ -161,7 +112,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
             <span class="slider-val">{{ roughness.toFixed(2) }}</span>
             <input type="range" class="slider-vert" orient="vertical" min="0" max="1" step="0.05" v-model.number="roughness" />
           </div>
-          <!-- Roughness icon: wavy lines suggesting surface texture -->
           <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M1.5 4.5 Q3 3 4.5 4.5 Q6 6 7.5 4.5 Q9 3 10.5 4.5 Q12 6 12.5 5.5"/>
             <path d="M1.5 7 Q3 5.5 4.5 7 Q6 8.5 7.5 7 Q9 5.5 10.5 7 Q12 8.5 12.5 8"/>
@@ -245,23 +195,104 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
     </div>
 
+    <!-- Geometry popout — expands to the right of the toolbar -->
+    <Transition name="popout">
+      <div v-if="activePopout === 'geometry'" class="popout">
+        <span class="popout-title">Geometry</span>
+        <button
+          v-for="opt in geometryOptions"
+          :key="opt.id"
+          class="chip"
+          :class="{ active: geometry === opt.id }"
+          :aria-label="opt.label"
+          :aria-pressed="geometry === opt.id"
+          @click="geometry = opt.id; activePopout = null"
+        >{{ opt.label }}</button>
+      </div>
+    </Transition>
+
+    <!-- Material presets popout -->
+    <Transition name="popout">
+      <div v-if="activePopout === 'materials'" class="popout">
+        <span class="popout-title">Material</span>
+        <button
+          v-for="preset in materialPresets"
+          :key="preset.id"
+          class="chip chip--material"
+          :aria-label="preset.label"
+          @click="applyMaterialPreset(preset)"
+        >
+          <span class="preset-dot" :style="{ background: preset.color }" />
+          {{ preset.label }}
+        </button>
+      </div>
+    </Transition>
+
+    <!-- Lighting popout -->
+    <Transition name="popout">
+      <div v-if="activePopout === 'lighting'" class="popout">
+        <span class="popout-title">Lighting</span>
+        <button
+          v-for="preset in lightPresets"
+          :key="preset.id"
+          class="chip"
+          :class="{ active: lightPreset === preset.id }"
+          :aria-pressed="lightPreset === preset.id"
+          @click="lightPreset = preset.id"
+        >{{ preset.label }}</button>
+      </div>
+    </Transition>
+
   </div>
 </template>
 
 <style scoped>
+/* Wrap: fixed to the left edge, vertically centred */
 .toolbar-wrap {
   position: fixed;
-  bottom: var(--space-6);
-  left: 50%;
-  transform: translateX(-50%);
+  left: var(--space-4);
+  top: 50%;
+  transform: translateY(-50%);
   z-index: 10;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  align-items: flex-start;
   gap: var(--space-2);
 }
 
-/* Popouts sit above the toolbar */
+/* Toolbar: vertical pill */
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 52px;
+  padding: var(--space-3) 0;
+  gap: 4px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+}
+
+/* Group: stack icons vertically */
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+/* Separator: horizontal rule */
+.sep {
+  display: block;
+  width: 26px;
+  height: 1px;
+  background: var(--color-border-subtle);
+  flex-shrink: 0;
+  margin: var(--space-2) 0;
+}
+
+/* Popouts — expand to the right of the toolbar */
 .popout {
   display: flex;
   flex-direction: column;
@@ -284,7 +315,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   margin-bottom: var(--space-1);
 }
 
-/* Popout enter/leave animation */
+/* Popout: slide in from the toolbar side */
 .popout-enter-active {
   transition: opacity var(--duration-base) var(--ease-out),
               transform var(--duration-base) var(--ease-out);
@@ -296,9 +327,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .popout-enter-from,
 .popout-leave-to {
   opacity: 0;
-  transform: translateY(6px);
+  transform: translateX(-6px);
 }
 
+/* Slider groups */
 .slider-group svg {
   color: var(--color-text-muted);
   transition: color var(--duration-fast);
@@ -306,44 +338,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
 .slider-group:hover svg {
   color: var(--color-text);
-}
-
-.color-swatch {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background var(--duration-fast);
-  flex-shrink: 0;
-  position: relative;
-}
-
-.color-swatch:hover {
-  background: var(--color-surface-2);
-}
-
-.color-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(0, 0, 0, 0.12);
-  display: block;
-  flex-shrink: 0;
-  pointer-events: none;
-}
-
-.color-input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-  border: none;
-  padding: 0;
 }
 
 .slider-group {
@@ -364,11 +358,12 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   background: var(--color-surface-2);
 }
 
+/* Slider popup — expands to the right */
 .slider-popup {
   position: absolute;
-  bottom: calc(100% + var(--space-3));
-  left: 50%;
-  transform: translateX(-50%);
+  left: calc(100% + var(--space-3));
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -426,35 +421,46 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   border: none;
 }
 
-/* Toolbar pill */
-.toolbar {
+/* Color swatch */
+.color-swatch {
+  width: 38px;
+  height: 38px;
   display: flex;
   align-items: center;
-  height: 52px;
-  padding: 0 var(--space-3);
-  gap: 4px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-}
-
-.group {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.sep {
-  display: block;
-  width: 1px;
-  height: 26px;
-  background: var(--color-border-subtle);
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--duration-fast);
   flex-shrink: 0;
-  margin: 0 var(--space-2);
+  position: relative;
 }
 
-/* Chip buttons — vertical list style */
+.color-swatch:hover {
+  background: var(--color-surface-2);
+}
+
+.color-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  display: block;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.color-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+/* Chip buttons */
 .chip {
   width: 100%;
   height: 34px;
@@ -480,7 +486,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   color: var(--color-surface);
 }
 
-/* Material preset chip — includes colour dot */
 .chip--material {
   display: flex;
   align-items: center;
