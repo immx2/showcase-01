@@ -60,7 +60,7 @@ function dismiss() {
               </svg>
             </span>
             <span>
-              <strong>Toolbar</strong> on the left — swap geometry, materials, lighting &amp; environment
+              <strong>Toolbar</strong> on the left — swap geometry, materials, lighting &amp; environment. Hit the <strong>›</strong> button at the bottom to expand labels.
             </span>
           </li>
           <li class="tip">
