@@ -3,13 +3,11 @@ import { watch } from 'vue'
 import { TresCanvas } from '@tresjs/core'
 import { OrbitControls } from '@tresjs/cientos'
 import * as THREE from 'three'
-import { RGBELoader } from 'three/examples/jsm/loaders/RGBELoader.js'
-import { useViewer, envPresets } from '~/composables/useViewer'
+import { useViewer } from '~/composables/useViewer'
 
 const {
   geometry, color, metalness, roughness, wireframe,
-  autoRotate, lightConfig, vertexCount,
-  envPreset, envEnabled, screenshotFn,
+  autoRotate, lightConfig, vertexCount, envEnabled,
 } = useViewer()
 
 function countBuiltinVertices(geo: typeof geometry.value): number {
@@ -30,74 +28,6 @@ function countBuiltinVertices(geo: typeof geometry.value): number {
 watch(geometry, (geo) => {
   if (geo !== 'lamborghini') vertexCount.value = countBuiltinVertices(geo)
 }, { immediate: true })
-
-// Environment — HDRs loaded on demand, cached by preset id
-let pmremRef: THREE.PMREMGenerator | null = null
-let sceneRef: THREE.Scene | null = null
-let rendererRef: THREE.WebGLRenderer | null = null
-let cameraRef: THREE.Camera | null = null
-const envCache = new Map<string, THREE.Texture>()
-
-type TresContext = {
-  scene: THREE.Scene
-  renderer: { value: THREE.WebGLRenderer }
-  camera: { value: THREE.Camera }
-}
-
-async function applyEnvPreset(presetId: string) {
-  if (!sceneRef || !pmremRef) return
-  const preset = envPresets.find(p => p.id === presetId)
-  if (!preset || !preset.url) {
-    sceneRef.environment = null
-    sceneRef.background = null
-    return
-  }
-
-  // Serve from cache if already loaded
-  if (envCache.has(presetId)) {
-    sceneRef.environment = envCache.get(presetId)!
-    sceneRef.background  = envCache.get(presetId)!
-    return
-  }
-
-  try {
-    const loader = new RGBELoader()
-    const hdr = await loader.loadAsync(preset.url)
-    const tex = pmremRef.fromEquirectangular(hdr).texture
-    hdr.dispose()
-    envCache.set(presetId, tex)
-    // Guard: user may have switched presets while this was loading
-    if (envPreset.value === presetId && sceneRef) {
-      sceneRef.environment = tex
-      sceneRef.background  = tex
-    }
-  } catch (err) {
-    console.warn('[env] failed to load', preset.url, err)
-  }
-}
-
-function onCanvasReady({ scene, renderer, camera }: TresContext) {
-  sceneRef    = scene
-  rendererRef = renderer.value
-  cameraRef   = camera.value
-
-  pmremRef = new THREE.PMREMGenerator(renderer.value)
-  pmremRef.compileEquirectangularShader()
-
-  applyEnvPreset(envPreset.value)
-
-  screenshotFn.value = () => {
-    if (!rendererRef || !sceneRef || !cameraRef) return
-    rendererRef.render(sceneRef, cameraRef)
-    const url = rendererRef.domElement.toDataURL('image/png')
-    const a = document.createElement('a')
-    a.href = url
-    a.download = 'product-viewer.png'
-    a.click()
-  }
-}
-
-watch(envPreset, applyEnvPreset)
 </script>
 
 <template>
@@ -107,7 +37,6 @@ watch(envPreset, applyEnvPreset)
       alpha
       preserve-drawing-buffer
       class="canvas"
-      @ready="onCanvasReady"
     >
       <TresPerspectiveCamera
         :position="[0, 0, 6]"
@@ -143,6 +72,9 @@ watch(envPreset, applyEnvPreset)
         :intensity="lightConfig.rim.intensity"
         :color="lightConfig.rim.color"
       />
+
+      <!-- Environment + screenshot setup (uses useTresContext internally) -->
+      <SceneSetup />
 
       <!-- Lamborghini — loaded on demand -->
       <LamboModel v-if="geometry === 'lamborghini'" />

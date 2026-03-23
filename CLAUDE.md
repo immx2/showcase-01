@@ -24,7 +24,7 @@ Dev server runs on port 3001 (`npm run dev`) to avoid conflicting with the portf
 - `OrbitControls` (from `@tresjs/cientos`) must be explicitly imported
 - No SSR — `TresCanvas` is wrapped in `ClientOnly` via `index.vue`
 - Edit light presets in `useViewer.ts`, not in templates — lights are driven reactively from `lightConfig`
-- Environment map: `RoomEnvironment` + `PMREMGenerator` is set up in `ViewerScene`'s `@ready` callback; toggled by `envEnabled` in state. `preserve-drawing-buffer` is set on the canvas for screenshot support.
+- Environment map + screenshot: handled by `SceneSetup.vue`, a renderless component that lives inside `TresCanvas` and calls `useTresContext()` — the only reliable way to access `scene`/`renderer` from inside a canvas. `preserve-drawing-buffer` is set on the canvas for screenshot support.
 
 ## Patterns
 
