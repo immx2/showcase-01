@@ -1,7 +1,17 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
+
+const STORAGE_KEY = 'showcase-01:onboarding-seen'
 const { showOnboarding } = useViewer()
 
+onMounted(() => {
+  if (!localStorage.getItem(STORAGE_KEY)) {
+    showOnboarding.value = true
+  }
+})
+
 function dismiss() {
+  localStorage.setItem(STORAGE_KEY, '1')
   showOnboarding.value = false
 }
 </script>

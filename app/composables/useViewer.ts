@@ -125,7 +125,7 @@ const lightPreset = ref<LightPreset>('studio')
 const vertexCount = ref(0)
 const isLoading   = ref(false)
 const envPreset      = ref<EnvPresetId>('sunset')
-const showOnboarding = ref(true)
+const showOnboarding = ref(false)
 
 // Derived: true whenever an HDR is selected (used by materials for envMapIntensity)
 const envEnabled = computed(() => envPreset.value !== 'none')
