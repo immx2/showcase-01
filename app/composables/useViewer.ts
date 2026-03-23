@@ -5,7 +5,7 @@ export type LightPreset = 'studio' | 'dramatic' | 'soft' | 'cold'
 export type EnvPresetId = 'none' | 'sunset' | 'studio' | 'forest' | 'night'
 
 // --- Light presets ---
-interface LightConfig {
+type LightConfig = {
   ambient: number
   key: { pos: [number, number, number]; intensity: number; color: string }
   fill: { pos: [number, number, number]; intensity: number; color: string }
@@ -40,7 +40,7 @@ export const lightPresets: Record<LightPreset, LightConfig> = {
 }
 
 // --- Geometry options ---
-export interface GeometryOption {
+export type GeometryOption = {
   id: GeometryType
   label: string
 }
@@ -55,7 +55,7 @@ export const geometryOptions: GeometryOption[] = [
 ]
 
 // --- Material presets ---
-export interface MaterialPreset {
+export type MaterialPreset = {
   id: string
   label: string
   color: string
@@ -72,12 +72,12 @@ export const materialPresets: MaterialPreset[] = [
 ]
 
 // --- Environment presets ---
-export interface EnvPreset {
+export type EnvPreset = {
   id: EnvPresetId
   label: string
   // Gradient hint shown in the chip swatch (CSS linear-gradient or solid color)
   swatch: string
-  // Poly Haven 1k HDR. Empty string = no environment.
+  // Poly Haven 2k HDR. Empty string = no environment.
   url: string
 }
 
@@ -116,9 +116,9 @@ export const envPresets: EnvPreset[] = [
 
 // --- Shared reactive state (module-level = singleton) ---
 const geometry    = ref<GeometryType>('icosahedron')
-const color       = ref('#c8c6be')
-const metalness   = ref(0.4)
-const roughness   = ref(0.35)
+const color       = ref('#c8c8cc')
+const metalness   = ref(1.0)
+const roughness   = ref(0.05)
 const wireframe   = ref(false)
 const autoRotate  = ref(true)
 const lightPreset = ref<LightPreset>('studio')
