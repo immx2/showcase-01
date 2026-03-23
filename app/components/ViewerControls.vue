@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useViewer, geometryOptions, materialPresets, envPresets, type LightPreset, type MaterialPreset, type EnvPresetId } from '~/composables/useViewer'
+import { useViewer, geometryGroups, materialPresets, envPresets, type LightPreset, type MaterialPreset, type EnvPresetId } from '~/composables/useViewer'
 
-const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset, envPreset, screenshotFn } = useViewer()
+const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset, envPreset, screenshotFn, hotspotsVisible } = useViewer()
 
 const lightPresets: { id: LightPreset; label: string }[] = [
   { id: 'studio',   label: 'Studio' },
@@ -199,6 +199,25 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         <span class="btn-label">Screenshot</span>
       </button>
 
+      <!-- Hotspot annotations toggle — only for the Lamborghini model -->
+      <button
+        v-if="geometry === 'lamborghini'"
+        class="icon-btn"
+        :class="{ active: hotspotsVisible }"
+        :aria-pressed="hotspotsVisible"
+        title="Hotspot annotations"
+        aria-label="Toggle hotspot annotations"
+        @click="hotspotsVisible = !hotspotsVisible"
+      >
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="7" cy="6" r="2.5"/>
+          <path d="M7 8.5 C7 8.5 3 11 3 11" stroke-width="1.2" opacity="0.5"/>
+          <path d="M7 8.5 C7 8.5 11 11 11 11" stroke-width="1.2" opacity="0.5"/>
+          <circle cx="7" cy="6" r="0.8" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="btn-label">Hotspots</span>
+      </button>
+
       <span class="sep" />
 
       <!-- Labels toggle -->
@@ -222,15 +241,18 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
     <Transition name="popout">
       <div v-if="activePopout === 'geometry'" class="popout">
         <span class="popout-title">Geometry</span>
-        <button
-          v-for="opt in geometryOptions"
-          :key="opt.id"
-          class="chip"
-          :class="{ active: geometry === opt.id }"
-          :aria-label="opt.label"
-          :aria-pressed="geometry === opt.id"
-          @click="geometry = opt.id; activePopout = null"
-        >{{ opt.label }}</button>
+        <template v-for="group in geometryGroups" :key="group.label">
+          <span class="popout-group">{{ group.label }}</span>
+          <button
+            v-for="opt in group.options"
+            :key="opt.id"
+            class="chip"
+            :class="{ active: geometry === opt.id }"
+            :aria-label="opt.label"
+            :aria-pressed="geometry === opt.id"
+            @click="geometry = opt.id; activePopout = null"
+          >{{ opt.label }}</button>
+        </template>
       </div>
     </Transition>
 
@@ -395,6 +417,22 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   color: var(--color-text-muted);
   border-bottom: 1px solid var(--color-border);
   margin-bottom: var(--space-1);
+}
+
+.popout-group {
+  display: block;
+  padding: var(--space-2) var(--space-3) var(--space-1);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+.popout-group:not(:first-of-type) {
+  margin-top: var(--space-1);
+  border-top: 1px solid var(--color-border-subtle);
 }
 
 /* Popout: slide in from the toolbar side */

@@ -1,6 +1,20 @@
 import { ref, computed } from 'vue'
 
 export type GeometryType = 'icosahedron' | 'sphere' | 'torusKnot' | 'box' | 'octahedron' | 'lamborghini'
+
+export type Hotspot = {
+  id: string
+  label: string
+  description: string
+  position: [number, number, number]
+}
+
+export type HotspotScreenPos = {
+  id: string
+  x: number    // 0–100 %
+  y: number    // 0–100 %
+  behind: boolean
+}
 export type LightPreset = 'studio' | 'dramatic' | 'soft' | 'cold'
 export type EnvPresetId = 'none' | 'sunset' | 'studio' | 'forest' | 'night'
 
@@ -45,13 +59,59 @@ export type GeometryOption = {
   label: string
 }
 
-export const geometryOptions: GeometryOption[] = [
-  { id: 'icosahedron',  label: 'Icosahedron' },
-  { id: 'sphere',       label: 'Sphere' },
-  { id: 'torusKnot',    label: 'Torus Knot' },
-  { id: 'box',          label: 'Box' },
-  { id: 'octahedron',   label: 'Octahedron' },
-  { id: 'lamborghini',  label: 'Lamborghini' },
+export type GeometryGroup = {
+  label: string
+  options: GeometryOption[]
+}
+
+export const geometryGroups: GeometryGroup[] = [
+  {
+    label: 'Primitives',
+    options: [
+      { id: 'icosahedron', label: 'Icosahedron' },
+      { id: 'sphere',      label: 'Sphere' },
+      { id: 'torusKnot',  label: 'Torus Knot' },
+      { id: 'box',         label: 'Box' },
+      { id: 'octahedron',  label: 'Octahedron' },
+    ],
+  },
+  {
+    label: 'Models',
+    options: [
+      { id: 'lamborghini', label: 'Lamborghini' },
+    ],
+  },
+]
+
+// Flat list kept for anything that needs it (e.g. vertex counting switch)
+export const geometryOptions: GeometryOption[] = geometryGroups.flatMap(g => g.options)
+
+// --- Hotspot data (world-space; model is scale 0.5, y-offset -0.6) ---
+export const lamboHotspots: Hotspot[] = [
+  {
+    id: 'engine',
+    label: 'V10 Engine',
+    description: '5.2L naturally aspirated — 610 hp, 560 Nm',
+    position: [0, -0.05, -1.1],
+  },
+  {
+    id: 'wing',
+    label: 'Active Rear Wing',
+    description: 'Adaptive aero adjusts drag for grip and top speed',
+    position: [0, 0.2, -1.25],
+  },
+  {
+    id: 'intakes',
+    label: 'Hex Air Intakes',
+    description: 'Hexagonal side scoops channel air to the mid-engine',
+    position: [0.8, -0.1, -0.2],
+  },
+  {
+    id: 'roof',
+    label: 'Carbon Fibre Shell',
+    description: 'Forged composite monocoque — 1,422 kg dry weight',
+    position: [0.1, 0.2, 0.35],
+  },
 ]
 
 // --- Material presets ---
@@ -124,8 +184,10 @@ const autoRotate  = ref(true)
 const lightPreset = ref<LightPreset>('studio')
 const vertexCount = ref(0)
 const isLoading   = ref(false)
-const envPreset      = ref<EnvPresetId>('sunset')
-const showOnboarding = ref(false)
+const envPreset             = ref<EnvPresetId>('sunset')
+const showOnboarding        = ref(false)
+const hotspotsVisible       = ref(true)
+const hotspotScreenPositions = ref<HotspotScreenPos[]>([])
 
 // Derived: true whenever an HDR is selected (used by materials for envMapIntensity)
 const envEnabled = computed(() => envPreset.value !== 'none')
@@ -150,4 +212,6 @@ export const useViewer = () => ({
   envEnabled,
   screenshotFn,
   showOnboarding,
+  hotspotsVisible,
+  hotspotScreenPositions,
 })
