@@ -12,6 +12,8 @@ Dev server runs on port 3001 (`npm run dev`) to avoid conflicting with the portf
 ### State
 `useViewer.ts` is the single source of truth. All components read from it via `useViewer()` — no local state for anything shared. When adding a new control, add its state here first, then wire up in `ViewerScene`/`LamboModel` and `ViewerControls`.
 
+`screenshotFn` is a special ref: `ViewerScene` writes a closure into it on canvas ready, `ViewerControls` calls it. Pattern for any action that needs renderer access from a sibling component.
+
 ### CSS
 - Token-first: always reach for `--space-*`, `--radius-*`, `--duration-*` before hardcoding values
 - Colors live in `_global.css` — light-only, no dark mode planned
@@ -22,6 +24,7 @@ Dev server runs on port 3001 (`npm run dev`) to avoid conflicting with the portf
 - `OrbitControls` (from `@tresjs/cientos`) must be explicitly imported
 - No SSR — `TresCanvas` is wrapped in `ClientOnly` via `index.vue`
 - Edit light presets in `useViewer.ts`, not in templates — lights are driven reactively from `lightConfig`
+- Environment map: `RoomEnvironment` + `PMREMGenerator` is set up in `ViewerScene`'s `@ready` callback; toggled by `envEnabled` in state. `preserve-drawing-buffer` is set on the canvas for screenshot support.
 
 ## Patterns
 

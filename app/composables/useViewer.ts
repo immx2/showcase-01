@@ -53,6 +53,23 @@ export const geometryOptions: GeometryOption[] = [
   { id: 'lamborghini',  label: 'Lamborghini' },
 ]
 
+// --- Material presets ---
+export interface MaterialPreset {
+  id: string
+  label: string
+  color: string
+  metalness: number
+  roughness: number
+}
+
+export const materialPresets: MaterialPreset[] = [
+  { id: 'chrome',   label: 'Chrome',        color: '#c8c8cc', metalness: 1.0, roughness: 0.05 },
+  { id: 'matte',    label: 'Matte Black',   color: '#1a1a1a', metalness: 0.3, roughness: 0.90 },
+  { id: 'brushed',  label: 'Brushed Steel', color: '#b0b4bc', metalness: 0.9, roughness: 0.35 },
+  { id: 'gloss',    label: 'Gloss Red',     color: '#c41e2a', metalness: 0.1, roughness: 0.05 },
+  { id: 'ceramic',  label: 'Ceramic',       color: '#f0ede8', metalness: 0.0, roughness: 0.30 },
+]
+
 // --- Shared reactive state (module-level = singleton) ---
 const geometry    = ref<GeometryType>('icosahedron')
 const color       = ref('#c8c6be')
@@ -63,6 +80,10 @@ const autoRotate  = ref(true)
 const lightPreset = ref<LightPreset>('studio')
 const vertexCount = ref(0)
 const isLoading   = ref(false)
+const envEnabled  = ref(true)
+
+// Set by ViewerScene once the canvas is ready; called by ViewerControls screenshot button
+const screenshotFn = ref<(() => void) | null>(null)
 
 const lightConfig = computed(() => lightPresets[lightPreset.value])
 
@@ -77,4 +98,6 @@ export const useViewer = () => ({
   lightConfig,
   vertexCount,
   isLoading,
+  envEnabled,
+  screenshotFn,
 })

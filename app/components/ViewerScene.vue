@@ -3,9 +3,14 @@ import { watch } from 'vue'
 import { TresCanvas } from '@tresjs/core'
 import { OrbitControls } from '@tresjs/cientos'
 import * as THREE from 'three'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
 import { useViewer } from '~/composables/useViewer'
 
-const { geometry, color, metalness, roughness, wireframe, autoRotate, lightConfig, vertexCount } = useViewer()
+const {
+  geometry, color, metalness, roughness, wireframe,
+  autoRotate, lightConfig, vertexCount,
+  envEnabled, screenshotFn,
+} = useViewer()
 
 function countBuiltinVertices(geo: typeof geometry.value): number {
   let g: THREE.BufferGeometry
@@ -25,6 +30,48 @@ function countBuiltinVertices(geo: typeof geometry.value): number {
 watch(geometry, (geo) => {
   if (geo !== 'lamborghini') vertexCount.value = countBuiltinVertices(geo)
 }, { immediate: true })
+
+// Environment map — built once on canvas ready, toggled via envEnabled
+let envTexture: THREE.Texture | null = null
+let sceneRef: THREE.Scene | null = null
+let rendererRef: THREE.WebGLRenderer | null = null
+let cameraRef: THREE.Camera | null = null
+
+type TresContext = {
+  scene: THREE.Scene
+  renderer: { value: THREE.WebGLRenderer }
+  camera: { value: THREE.Camera }
+}
+
+function onCanvasReady({ scene, renderer, camera }: TresContext) {
+  sceneRef = scene
+  rendererRef = renderer.value
+  cameraRef = camera.value
+
+  const pmrem = new THREE.PMREMGenerator(renderer.value)
+  pmrem.compileEquirectangularShader()
+  const roomEnv = new RoomEnvironment()
+  envTexture = pmrem.fromScene(roomEnv, 0.04).texture
+  roomEnv.dispose()
+  pmrem.dispose()
+
+  scene.environment = envEnabled.value ? envTexture : null
+
+  screenshotFn.value = () => {
+    if (!rendererRef || !sceneRef || !cameraRef) return
+    rendererRef.render(sceneRef, cameraRef)
+    const url = rendererRef.domElement.toDataURL('image/png')
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'product-viewer.png'
+    a.click()
+  }
+}
+
+watch(envEnabled, (enabled) => {
+  if (!sceneRef || !envTexture) return
+  sceneRef.environment = enabled ? envTexture : null
+})
 </script>
 
 <template>
@@ -32,7 +79,9 @@ watch(geometry, (geo) => {
     <TresCanvas
       clear-color="#f5f4f0"
       alpha
+      preserve-drawing-buffer
       class="canvas"
+      @ready="onCanvasReady"
     >
       <TresPerspectiveCamera
         :position="[0, 0, 6]"
@@ -84,7 +133,7 @@ watch(geometry, (geo) => {
           :color="color"
           :metalness="metalness"
           :roughness="roughness"
-          :env-map-intensity="1.0"
+          :env-map-intensity="envEnabled ? 1.0 : 0.0"
           :clearcoat="0.2"
           :clearcoat-roughness="0.1"
         />

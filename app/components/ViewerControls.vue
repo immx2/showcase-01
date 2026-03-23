@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useViewer, geometryOptions, type LightPreset } from '~/composables/useViewer'
+import { useViewer, geometryOptions, materialPresets, type LightPreset, type MaterialPreset } from '~/composables/useViewer'
 
-const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset } = useViewer()
+const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset, envEnabled, screenshotFn } = useViewer()
 
 const lightPresets: { id: LightPreset; label: string }[] = [
   { id: 'studio',   label: 'Studio' },
@@ -11,10 +11,17 @@ const lightPresets: { id: LightPreset; label: string }[] = [
   { id: 'cold',     label: 'Cold' },
 ]
 
-const activePopout = ref<'geometry' | 'lighting' | null>(null)
+function applyMaterialPreset(preset: MaterialPreset) {
+  color.value = preset.color
+  metalness.value = preset.metalness
+  roughness.value = preset.roughness
+  activePopout.value = null
+}
+
+const activePopout = ref<'geometry' | 'lighting' | 'materials' | null>(null)
 const wrapRef = ref<HTMLElement | null>(null)
 
-function togglePopout(name: 'geometry' | 'lighting') {
+function togglePopout(name: 'geometry' | 'lighting' | 'materials') {
   activePopout.value = activePopout.value === name ? null : name
 }
 
@@ -44,6 +51,23 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           :aria-pressed="geometry === opt.id"
           @click="geometry = opt.id; activePopout = null"
         >{{ opt.label }}</button>
+      </div>
+    </Transition>
+
+    <!-- Material presets popout -->
+    <Transition name="popout">
+      <div v-if="activePopout === 'materials'" class="popout">
+        <span class="popout-title">Material</span>
+        <button
+          v-for="preset in materialPresets"
+          :key="preset.id"
+          class="chip chip--material"
+          :aria-label="preset.label"
+          @click="applyMaterialPreset(preset)"
+        >
+          <span class="preset-dot" :style="{ background: preset.color }" />
+          {{ preset.label }}
+        </button>
       </div>
     </Transition>
 
@@ -102,6 +126,21 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
       <!-- Material: inline group -->
       <div class="group">
+        <!-- Material presets picker -->
+        <button
+          class="icon-btn"
+          :class="{ active: activePopout === 'materials' }"
+          title="Material presets"
+          aria-label="Material presets"
+          @click="togglePopout('materials')"
+        >
+          <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="4.5" cy="4.5" r="2.5"/>
+            <circle cx="9.5" cy="4.5" r="2.5"/>
+            <circle cx="4.5" cy="9.5" r="2.5"/>
+            <circle cx="9.5" cy="9.5" r="2.5"/>
+          </svg>
+        </button>
         <label class="color-swatch" title="Color">
           <span class="color-dot" :style="{ background: color }"></span>
           <input type="color" v-model="color" class="color-input" />
@@ -148,6 +187,25 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
       <span class="sep" />
 
+      <!-- Environment toggle -->
+      <button
+        class="icon-btn"
+        :class="{ active: envEnabled }"
+        title="Environment reflections"
+        aria-label="Toggle environment reflections"
+        :aria-pressed="envEnabled"
+        @click="envEnabled = !envEnabled"
+      >
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="7" cy="7" r="5.5"/>
+          <path d="M1.5 7 Q3.5 4 7 7 Q10.5 10 12.5 7"/>
+          <path d="M1.5 7 Q3.5 10 7 7 Q10.5 4 12.5 7"/>
+          <line x1="7" y1="1.5" x2="7" y2="12.5"/>
+        </svg>
+      </button>
+
+      <span class="sep" />
+
       <!-- Lighting picker button -->
       <button
         class="icon-btn"
@@ -166,6 +224,22 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           <line x1="10.01" y1="10.01" x2="11.07" y2="11.07"/>
           <line x1="11.07" y1="2.93" x2="10.01" y2="3.99"/>
           <line x1="3.99" y1="10.01" x2="2.93" y2="11.07"/>
+        </svg>
+      </button>
+
+      <span class="sep" />
+
+      <!-- Screenshot button -->
+      <button
+        class="icon-btn"
+        title="Save screenshot"
+        aria-label="Save screenshot"
+        @click="screenshotFn?.()"
+      >
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3.5" width="12" height="9" rx="1.5"/>
+          <circle cx="7" cy="8" r="2.2"/>
+          <path d="M4.5 3.5 L5.5 1.5 H8.5 L9.5 3.5"/>
         </svg>
       </button>
 
@@ -404,6 +478,22 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .chip.active {
   background: var(--color-text);
   color: var(--color-surface);
+}
+
+/* Material preset chip — includes colour dot */
+.chip--material {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.preset-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  flex-shrink: 0;
 }
 
 /* Icon buttons */
