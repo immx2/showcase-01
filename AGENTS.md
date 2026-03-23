@@ -16,7 +16,8 @@ Dev server runs on port 3001 (`npm run dev`) to avoid conflicting with the portf
 
 ### CSS
 - Token-first: always reach for `--space-*`, `--radius-*`, `--duration-*` before hardcoding values
-- Colors live in `_global.css` — light-only, no dark mode planned
+- Colors live in `_global.css` — 3-tier color mode (auto/light/dark) via `data-color-mode` on `<html>`
+- Color mode state lives in `useColorMode.ts`; `color-mode.client.ts` plugin prevents FOUC
 - All component styles in `<style scoped>`, no Tailwind, no CSS-in-JS
 
 ### TresJS
@@ -39,5 +40,4 @@ Solid and wireframe meshes are both `:key`ed on `geometry` to force a clean remo
 
 ## Boundaries
 - This app is standalone — don't reach into `../my-portfolio` for anything
-- No dark mode
 - No Tailwind

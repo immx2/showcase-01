@@ -18,11 +18,36 @@ function applyMaterialPreset(preset: MaterialPreset) {
   activePopout.value = null
 }
 
-const activePopout = ref<'geometry' | 'lighting' | 'materials' | 'environment' | null>(null)
-const wrapRef = ref<HTMLElement | null>(null)
+const activePopout    = ref<'geometry' | 'lighting' | 'materials' | 'environment' | null>(null)
+const popoutY         = ref(0)
+const popoutBottom    = ref(0)
+const popoutMaxH      = ref(0)
+const popoutFlipUp    = ref(false)
+const wrapRef         = ref<HTMLElement | null>(null)
 
-function togglePopout(name: 'geometry' | 'lighting' | 'materials' | 'environment') {
-  activePopout.value = activePopout.value === name ? null : name
+function togglePopout(name: 'geometry' | 'lighting' | 'materials' | 'environment', e: MouseEvent) {
+  if (activePopout.value === name) {
+    activePopout.value = null
+    return
+  }
+  const btn = e.currentTarget as HTMLElement
+  const wr  = wrapRef.value!.getBoundingClientRect()
+  const br  = btn.getBoundingClientRect()
+  const spaceBelow = window.innerHeight - br.top
+  const spaceAbove = br.bottom
+
+  if (spaceAbove > spaceBelow) {
+    // More room above — anchor bottom to button bottom, grow upward
+    popoutFlipUp.value  = true
+    popoutBottom.value  = wr.bottom - br.bottom
+    popoutMaxH.value    = spaceAbove - 12
+  } else {
+    // More room below (default) — anchor top to button top, grow downward
+    popoutFlipUp.value  = false
+    popoutY.value       = br.top - wr.top
+    popoutMaxH.value    = spaceBelow - 12
+  }
+  activePopout.value = name
 }
 
 function onDocClick(e: MouseEvent) {
@@ -31,8 +56,33 @@ function onDocClick(e: MouseEvent) {
   }
 }
 
+// Slider float popup — lives at toolbar-wrap level to escape overflow-x: hidden on .toolbar
+const activeSlider = ref<'metalness' | 'roughness' | null>(null)
+const sliderY      = ref(0)
+let sliderTimer: ReturnType<typeof setTimeout> | null = null
+
+function openSlider(name: 'metalness' | 'roughness', e: MouseEvent) {
+  if (sliderTimer) { clearTimeout(sliderTimer); sliderTimer = null }
+  const el = e.currentTarget as HTMLElement
+  const wr = wrapRef.value!.getBoundingClientRect()
+  const br = el.getBoundingClientRect()
+  sliderY.value = br.top - wr.top + br.height / 2
+  activeSlider.value = name
+}
+
+function scheduleCloseSlider() {
+  sliderTimer = setTimeout(() => { activeSlider.value = null }, 120)
+}
+
+function cancelCloseSlider() {
+  if (sliderTimer) { clearTimeout(sliderTimer); sliderTimer = null }
+}
+
 onMounted(() => document.addEventListener('click', onDocClick))
-onUnmounted(() => document.removeEventListener('click', onDocClick))
+onUnmounted(() => {
+  document.removeEventListener('click', onDocClick)
+  if (sliderTimer) clearTimeout(sliderTimer)
+})
 </script>
 
 <template>
@@ -47,7 +97,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         :class="{ active: activePopout === 'geometry' }"
         title="Geometry"
         aria-label="Pick geometry"
-        @click="togglePopout('geometry')"
+        @click="togglePopout('geometry', $event)"
       >
         <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="7,1 13,4.5 13,9.5 7,13 1,9.5 1,4.5"/>
@@ -68,7 +118,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           :class="{ active: activePopout === 'materials' }"
           title="Material presets"
           aria-label="Material presets"
-          @click="togglePopout('materials')"
+          @click="togglePopout('materials', $event)"
         >
           <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="4.5" cy="4.5" r="2.5"/>
@@ -83,22 +133,22 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
           <span class="btn-label">Color</span>
           <input type="color" v-model="color" class="color-input" />
         </label>
-        <div class="slider-group">
-          <div class="slider-popup">
-            <span class="slider-val">{{ metalness.toFixed(2) }}</span>
-            <input type="range" class="slider-vert" orient="vertical" min="0" max="1" step="0.05" v-model.number="metalness" />
-          </div>
+        <div
+          class="slider-group"
+          @mouseenter="openSlider('metalness', $event)"
+          @mouseleave="scheduleCloseSlider"
+        >
           <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <circle cx="7" cy="7" r="5.5"/>
             <path d="M4.5 4.5 Q5.5 3 7 3.5" stroke-width="1.1"/>
           </svg>
           <span class="btn-label">Metalness</span>
         </div>
-        <div class="slider-group">
-          <div class="slider-popup">
-            <span class="slider-val">{{ roughness.toFixed(2) }}</span>
-            <input type="range" class="slider-vert" orient="vertical" min="0" max="1" step="0.05" v-model.number="roughness" />
-          </div>
+        <div
+          class="slider-group"
+          @mouseenter="openSlider('roughness', $event)"
+          @mouseleave="scheduleCloseSlider"
+        >
           <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M1.5 4.5 Q3 3 4.5 4.5 Q6 6 7.5 4.5 Q9 3 10.5 4.5 Q12 6 12.5 5.5"/>
             <path d="M1.5 7 Q3 5.5 4.5 7 Q6 8.5 7.5 7 Q9 5.5 10.5 7 Q12 8.5 12.5 8"/>
@@ -132,7 +182,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         :class="{ active: activePopout === 'environment' }"
         title="Environment"
         aria-label="Environment"
-        @click="togglePopout('environment')"
+        @click="togglePopout('environment', $event)"
       >
         <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="7" cy="7" r="5.5"/>
@@ -149,7 +199,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         :class="{ active: activePopout === 'lighting' }"
         title="Lighting"
         aria-label="Lighting preset"
-        @click="togglePopout('lighting')"
+        @click="togglePopout('lighting', $event)"
       >
         <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
           <circle cx="7" cy="7" r="2.5"/>
@@ -237,9 +287,11 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
       </button>
     </div>
 
-    <!-- Geometry popout — expands to the right of the toolbar -->
+    <!-- Geometry popout — positioned adjacent to the trigger button -->
     <Transition name="popout">
-      <div v-if="activePopout === 'geometry'" class="popout">
+      <div v-if="activePopout === 'geometry'" class="popout" :style="popoutFlipUp
+        ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
+        : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
         <span class="popout-title">Geometry</span>
         <template v-for="group in geometryGroups" :key="group.label">
           <span class="popout-group">{{ group.label }}</span>
@@ -258,7 +310,9 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
     <!-- Material presets popout -->
     <Transition name="popout">
-      <div v-if="activePopout === 'materials'" class="popout">
+      <div v-if="activePopout === 'materials'" class="popout" :style="popoutFlipUp
+        ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
+        : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
         <span class="popout-title">Material</span>
         <button
           v-for="preset in materialPresets"
@@ -275,7 +329,9 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
     <!-- Lighting popout -->
     <Transition name="popout">
-      <div v-if="activePopout === 'lighting'" class="popout">
+      <div v-if="activePopout === 'lighting'" class="popout" :style="popoutFlipUp
+        ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
+        : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
         <span class="popout-title">Lighting</span>
         <button
           v-for="preset in lightPresets"
@@ -290,7 +346,9 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 
     <!-- Environment popout -->
     <Transition name="popout">
-      <div v-if="activePopout === 'environment'" class="popout">
+      <div v-if="activePopout === 'environment'" class="popout" :style="popoutFlipUp
+        ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
+        : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
         <span class="popout-title">Environment</span>
         <button
           v-for="preset in envPresets"
@@ -305,6 +363,31 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
         </button>
       </div>
     </Transition>
+
+    <!-- Slider float — at toolbar-wrap level to escape .toolbar's overflow-x: hidden -->
+    <div
+      v-if="activeSlider"
+      class="slider-float"
+      :style="{ top: sliderY + 'px' }"
+      @mouseenter="cancelCloseSlider"
+      @mouseleave="scheduleCloseSlider"
+    >
+      <span class="slider-val">
+        {{ (activeSlider === 'metalness' ? metalness : roughness).toFixed(2) }}
+      </span>
+      <input
+        v-if="activeSlider === 'metalness'"
+        type="range" class="slider-vert" orient="vertical"
+        min="0" max="1" step="0.05"
+        v-model.number="metalness"
+      />
+      <input
+        v-else
+        type="range" class="slider-vert" orient="vertical"
+        min="0" max="1" step="0.05"
+        v-model.number="roughness"
+      />
+    </div>
 
   </div>
 </template>
@@ -412,12 +495,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   transform: rotate(180deg);
 }
 
-/* Popouts — float to the right of the sidebar */
+/* Popouts — float to the right, top-aligned to their trigger button */
 .popout {
   position: absolute;
   left: calc(100% + var(--space-2));
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   padding: var(--space-2);
@@ -426,6 +507,7 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   border-radius: var(--radius-lg);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
   min-width: 140px;
+  overflow-y: auto;
   z-index: 30;
 }
 
@@ -436,8 +518,6 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
-  border-bottom: 1px solid var(--color-border);
-  margin-bottom: var(--space-1);
 }
 
 .popout-group {
@@ -468,10 +548,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 .popout-enter-from,
 .popout-leave-to {
   opacity: 0;
-  transform: translateY(-50%) translateX(-6px);
+  transform: translateX(-6px);
 }
 
-/* Slider groups */
+/* Slider groups — trigger only, no popup inside */
 .slider-group svg {
   color: var(--color-text-muted);
   transition: color var(--duration-fast);
@@ -506,11 +586,10 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   gap: var(--space-2);
 }
 
-/* Slider popup — expands to the right */
-.slider-popup {
+/* Slider float — positioned at toolbar-wrap level to escape overflow-x: hidden */
+.slider-float {
   position: absolute;
   left: calc(100% + var(--space-3));
-  top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
@@ -520,16 +599,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--duration-fast);
-}
-
-.slider-group:hover .slider-popup,
-.slider-group:focus-within .slider-popup {
-  opacity: 1;
-  pointer-events: auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 31;
 }
 
 .slider-val {
@@ -637,8 +708,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 
 .chip.active {
-  background: var(--color-text);
-  color: var(--color-surface);
+  background: var(--color-active-bg);
+  color: var(--color-active-text);
 }
 
 .chip--material,
@@ -691,8 +762,8 @@ onUnmounted(() => document.removeEventListener('click', onDocClick))
 }
 
 .icon-btn.active {
-  background: var(--color-text);
-  color: var(--color-surface);
+  background: var(--color-active-bg);
+  color: var(--color-active-text);
 }
 
 .expanded .icon-btn {

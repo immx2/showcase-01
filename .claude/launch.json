@@ -4,13 +4,13 @@
     {
       "name": "Dev",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["C:/Users/imman/Documents/GitHub/showcase-01/.claude/nuxt-dev.mjs", "dev", "--port", "3001"],
+      "runtimeArgs": ["C:/Users/imman/Desktop/GitHub/showcase-01/.claude/nuxt-dev.mjs", "dev", "--port", "3001"],
       "port": 3001
     },
     {
       "name": "Preview",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["C:/Users/imman/Documents/GitHub/showcase-01/.claude/nuxt-dev.mjs", "preview", "--port", "3001"],
+      "runtimeArgs": ["C:/Users/imman/Desktop/GitHub/showcase-01/.claude/nuxt-dev.mjs", "preview", "--port", "3001"],
       "port": 3001
     }
   ]

@@ -1,12 +1,63 @@
 <script setup lang="ts">
+import { useColorMode } from '~/composables/useColorMode'
+
 const { showOnboarding } = useViewer()
+const { mode, setMode } = useColorMode()
 </script>
 
 <template>
   <nav class="nav">
     <span class="brand">showcase-01</span>
     <div class="nav-end">
-      <button class="help-btn" aria-label="Open guide" @click="showOnboarding = true">?</button>
+
+      <!-- 3-segment color mode pill: auto | light | dark -->
+      <div class="mode-pill" role="group" aria-label="Color mode">
+        <button
+          :class="{ active: mode === 'auto' }"
+          title="Auto (device)"
+          aria-label="Auto (device)"
+          @click="setMode('auto')"
+        >
+          <!-- Half-circle: left half filled = dark, right = light -->
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M7 1.5 A5.5 5.5 0 0 1 7 12.5 Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <button
+          :class="{ active: mode === 'light' }"
+          title="Light"
+          aria-label="Light"
+          @click="setMode('light')"
+        >
+          <!-- Sun -->
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.4"/>
+            <line x1="7" y1="1"    x2="7"    y2="2.5"  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="7" y1="11.5" x2="7"    y2="13"   stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="1" y1="7"    x2="2.5"  y2="7"    stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="11.5" y1="7" x2="13"   y2="7"    stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="2.93" y1="2.93"  x2="4"     y2="4"     stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="10"   y1="10"    x2="11.07" y2="11.07" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="11.07" y1="2.93" x2="10"    y2="4"     stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+            <line x1="4"    y1="10"    x2="2.93"  y2="11.07" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button
+          :class="{ active: mode === 'dark' }"
+          title="Dark"
+          aria-label="Dark"
+          @click="setMode('dark')"
+        >
+          <!-- Crescent moon — outer circle centered at (7,7) r=5 -->
+          <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M7 2 a3.5 3.5 0 0 0 5 5 A5 5 0 1 1 7 2Z" fill="currentColor" stroke="none"/>
+          </svg>
+        </button>
+      </div>
+
+      <button class="icon-btn" aria-label="Open guide" @click="showOnboarding = true">?</button>
+
       <a href="http://localhost:3000" class="back-link" target="_blank" rel="noopener">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
           <path d="M8.5 2.5L4 7l4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -43,7 +94,47 @@ const { showOnboarding } = useViewer()
   gap: var(--space-4);
 }
 
-.help-btn {
+/* Segmented pill */
+.mode-pill {
+  display: flex;
+  align-items: center;
+  height: 26px;
+  border: 1px solid var(--color-border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.mode-pill button {
+  width: 28px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.mode-pill button + button {
+  border-left: 1px solid var(--color-border);
+}
+
+.mode-pill button.active {
+  background: var(--color-active-bg);
+  color: var(--color-active-text);
+}
+
+.mode-pill button:not(.active):hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+/* Help button */
+.icon-btn {
   width: 26px;
   height: 26px;
   border-radius: 50%;
@@ -60,7 +151,7 @@ const { showOnboarding } = useViewer()
   transition: color var(--duration-fast), border-color var(--duration-fast);
 }
 
-.help-btn:hover {
+.icon-btn:hover {
   color: var(--color-text);
   border-color: var(--color-text-muted);
 }
