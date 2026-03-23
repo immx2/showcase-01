@@ -11,5 +11,12 @@ export default defineNuxtConfig({
   fonts: {
     families: [{ name: 'Inter', provider: 'google' }],
   },
-
+  vite: {
+    optimizeDeps: {
+      include: [
+        'three',
+        'three/examples/jsm/loaders/HDRLoader.js',
+      ],
+    },
+  },
 })
