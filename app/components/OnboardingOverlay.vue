@@ -5,13 +5,13 @@ const STORAGE_KEY = 'showcase-01:onboarding-seen'
 const visible = ref(false)
 
 onMounted(() => {
-  if (!localStorage.getItem(STORAGE_KEY)) {
-    visible.value = true
-  }
+  // TODO: re-enable localStorage check once testing is done:
+  // if (!localStorage.getItem(STORAGE_KEY)) { visible.value = true }
+  visible.value = true
 })
 
 function dismiss() {
-  localStorage.setItem(STORAGE_KEY, '1')
+  // TODO: re-enable once testing is done: localStorage.setItem(STORAGE_KEY, '1')
   visible.value = false
 }
 </script>
