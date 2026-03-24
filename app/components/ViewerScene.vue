@@ -4,15 +4,14 @@ import { TresCanvas } from '@tresjs/core'
 import { OrbitControls } from '@tresjs/cientos'
 import * as THREE from 'three'
 import { useViewer } from '~/composables/useViewer'
-import { useColorMode } from '~/composables/useColorMode'
 
 const {
   geometry, color, metalness, roughness, wireframe,
   autoRotate, lightConfig, vertexCount, envEnabled,
 } = useViewer()
 
-const { isDark } = useColorMode()
-const canvasBg = computed(() => isDark.value ? '#111110' : '#f5f4f0')
+const colorMode = useColorMode()
+const canvasBg = computed(() => colorMode.value === 'dark' ? '#111110' : '#f5f4f0')
 
 function countBuiltinVertices(geo: typeof geometry.value): number {
   let g: THREE.BufferGeometry

@@ -17,7 +17,7 @@ Dev server runs on port 3001 (`npm run dev`) to avoid conflicting with the portf
 ### CSS
 - Token-first: always reach for `--space-*`, `--radius-*`, `--duration-*` before hardcoding values
 - Colors live in `_global.css` — 3-tier color mode (auto/light/dark) via `data-color-mode` on `<html>`
-- Color mode state lives in `useColorMode.ts`; `color-mode.client.ts` plugin prevents FOUC
+- Color mode is handled by `@nuxtjs/color-mode` (configured in `nuxt.config.ts` with `dataValue: 'color-mode'`). Use `useColorMode()` (auto-imported) — `colorMode.preference` is 'system'|'light'|'dark', `colorMode.value` is the resolved 'light'|'dark'. The module prevents FOUC natively.
 - All component styles in `<style scoped>`, no Tailwind, no CSS-in-JS
 
 ### TresJS

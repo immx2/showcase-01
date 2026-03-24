@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { useColorMode } from '~/composables/useColorMode'
-
 const { showOnboarding } = useViewer()
-const { mode, setMode } = useColorMode()
+const colorMode = useColorMode()
+
+function setMode(pref: 'system' | 'light' | 'dark') {
+  colorMode.preference = pref
+  document.documentElement.setAttribute('data-color-pref', pref)
+}
 </script>
 
 <template>
@@ -11,12 +14,11 @@ const { mode, setMode } = useColorMode()
     <div class="nav-end">
 
       <!-- 3-segment color mode pill: auto | light | dark -->
-      <div class="mode-pill" role="group" aria-label="Color mode">
+      <div id="color-mode-pill" class="mode-pill" role="group" aria-label="Color mode">
         <button
-          :class="{ active: mode === 'auto' }"
           title="Auto (device)"
           aria-label="Auto (device)"
-          @click="setMode('auto')"
+          @click="setMode('system')"
         >
           <!-- Half-circle: left half filled = dark, right = light -->
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -25,7 +27,6 @@ const { mode, setMode } = useColorMode()
           </svg>
         </button>
         <button
-          :class="{ active: mode === 'light' }"
           title="Light"
           aria-label="Light"
           @click="setMode('light')"
@@ -44,7 +45,6 @@ const { mode, setMode } = useColorMode()
           </svg>
         </button>
         <button
-          :class="{ active: mode === 'dark' }"
           title="Dark"
           aria-label="Dark"
           @click="setMode('dark')"
@@ -121,11 +121,6 @@ const { mode, setMode } = useColorMode()
 
 .mode-pill button + button {
   border-left: 1px solid var(--color-border);
-}
-
-.mode-pill button.active {
-  background: var(--color-active-bg);
-  color: var(--color-active-text);
 }
 
 .mode-pill button:not(.active):hover {

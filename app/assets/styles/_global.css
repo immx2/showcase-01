@@ -36,6 +36,15 @@
   --color-active-text:    #edebe7;
 }
 
+/* Color mode pill — active button driven by data-color-pref on <html>,
+   set by an inline script before Vue hydrates so there is no toggle flash. */
+html[data-color-pref="system"] #color-mode-pill button[aria-label="Auto (device)"],
+html[data-color-pref="light"]  #color-mode-pill button[aria-label="Light"],
+html[data-color-pref="dark"]   #color-mode-pill button[aria-label="Dark"] {
+  background: var(--color-active-bg);
+  color: var(--color-active-text);
+}
+
 /* ─────────────────────────────────────────
    Reset
    ───────────────────────────────────────── */
