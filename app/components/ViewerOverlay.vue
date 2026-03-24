@@ -33,6 +33,12 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
   align-items: flex-end;
   gap: var(--space-1);
   pointer-events: none;
+  padding: var(--space-2) var(--space-3);
+  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
 }
 
 .product-name {
@@ -44,12 +50,14 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
   display: flex;
   align-items: baseline;
   gap: 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .hint {
   font-size: 11px;
   letter-spacing: 0.04em;
   color: var(--color-text-muted);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
 }
 
 .stat {
@@ -74,7 +82,7 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
 .loader-bg {
   position: absolute;
   inset: 0;
-  background: #f5f4f0;
+  background: var(--color-canvas-bg);
 }
 
 .spinner {
