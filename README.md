@@ -65,6 +65,12 @@ public/
 
 ---
 
+## Model attribution
+
+The Lamborghini Aventador model is ["Lamborghini Aventador"](https://sketchfab.com/3d-models/lamborghini-aventador-888e37a3641d4f7b94bc1a39396e2441) by [Arion Digital](https://sketchfab.com/andrewswihart), licensed under [CC Attribution 4.0](http://creativecommons.org/licenses/by/4.0/).
+
+---
+
 ## Running locally
 
 ```bash

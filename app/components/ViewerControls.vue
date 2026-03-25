@@ -271,6 +271,22 @@ onUnmounted(() => {
 
     <!-- Always-visible footer: labels toggle -->
     <div class="toolbar-foot">
+      <a
+        v-if="geometry === 'lamborghini'"
+        class="icon-btn attribution-link"
+        href="https://sketchfab.com/3d-models/lamborghini-aventador-888e37a3641d4f7b94bc1a39396e2441"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Model: Lamborghini Aventador by Arion Digital — CC BY 4.0"
+        aria-label="Model attribution: Lamborghini Aventador by Arion Digital, CC BY 4.0"
+      >
+        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="7" cy="7" r="5.5"/>
+          <circle cx="7" cy="4.5" r="1" fill="currentColor" stroke="none"/>
+          <line x1="7" y1="6.5" x2="7" y2="10"/>
+        </svg>
+        <span class="btn-label">CC BY · Arion Digital</span>
+      </a>
       <span class="sep" />
       <button
         class="icon-btn expand-toggle"
@@ -773,5 +789,17 @@ onUnmounted(() => {
 
 .icon-btn svg {
   flex-shrink: 0;
+}
+
+.attribution-link {
+  text-decoration: none;
+  font-size: 11px;
+  opacity: 0.6;
+  transition: opacity var(--duration-fast), background var(--duration-fast), color var(--duration-fast),
+              width var(--duration-base) var(--ease-out);
+}
+
+.attribution-link:hover {
+  opacity: 1;
 }
 </style>

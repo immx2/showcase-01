@@ -45,7 +45,7 @@ watch(lamboGltf, (gltf) => {
   const center = new THREE.Vector3()
   box.getCenter(center)
   gltf.scene.position.set(0, -center.y, 0)
-  gltf.scene.rotation.y = Math.PI
+  gltf.scene.rotation.y = 0
   applyMaterial()
   isLoading.value = false
   let count = 0

@@ -3,9 +3,9 @@
 > Update this file in the same commit as the code change it describes. A stale AGENTS.md is worse than none.
 
 ## Intent
-An interactive 3D product viewer — the first showcase project for the portfolio at `../my-portfolio`. Built as a standalone Nuxt 4 app. The design system is intentionally distinct from the portfolio's; don't borrow styles or tokens from `../my-portfolio`.
+An interactive 3D product viewer built as a standalone Nuxt 4 app. The design system is purpose-built for this project — not shared with or borrowed from any other repo.
 
-Dev server runs on port 3001 (`npm run dev`) to avoid conflicting with the portfolio on 3000.
+Dev server runs on port 3001 (`npm run dev`).
 
 ## Conventions
 
@@ -38,11 +38,11 @@ Dev server runs on port 3001 (`npm run dev`) to avoid conflicting with the portf
 ### Geometry with built-in primitives
 Solid and wireframe meshes are both `:key`ed on `geometry` to force a clean remount on swap.
 
-## TODOs
+## Known trade-offs
 
-- **Loading states** — models and backdrops should surface loading state appropriately. `isLoading` is already set in `useViewer.ts`; wire up a visible indicator (spinner, skeleton, or canvas overlay) in `ViewerScene.vue` or `ViewerControls.vue` so the user gets feedback while a `.glb` or environment map is still resolving. *(more context to be added when revisiting)*
-- **Anti-aliasing** — explore AA options available via TresJS/Three.js (e.g. MSAA via `antialias` on the renderer, FXAA/SMAA as post-processing passes via `@tresjs/post-processing`) and consider exposing a toggle in the viewer controls if performance trade-off warrants it. *(more context to be added when revisiting)*
+- **Loading states** — `isLoading` is set in `useViewer.ts` when a `.glb` or environment map is resolving, but no visible indicator is wired up yet. A spinner or canvas overlay in `ViewerScene.vue` / `ViewerControls.vue` would close this gap.
+- **Anti-aliasing** — the renderer currently has no AA pass. Options to explore: `antialias` on the renderer (MSAA), or FXAA/SMAA via `@tresjs/post-processing`. Worth exposing as a user toggle given the performance trade-off.
 
 ## Boundaries
-- This app is standalone — don't reach into `../my-portfolio` for anything
+- This app is standalone — no shared code or styles from other repos
 - No Tailwind
