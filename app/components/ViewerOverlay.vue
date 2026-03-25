@@ -25,7 +25,7 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
 <style scoped>
 .overlay {
   position: fixed;
-  top: calc(var(--nav-height) + var(--space-6));
+  top: calc(var(--portfolio-nav-height, 28px) + var(--nav-height) + var(--space-6));
   right: var(--space-8);
   z-index: 10;
   display: flex;

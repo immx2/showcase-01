@@ -32,7 +32,11 @@ export default defineNuxtConfig({
       include: [
         'three',
         'three/examples/jsm/loaders/HDRLoader.js',
-      ],
-    },
-  },
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        '@tresjs/core',
+        '@tresjs/cientos',
+      ]
+    }
+  }
 })
