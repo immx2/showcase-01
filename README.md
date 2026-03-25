@@ -24,7 +24,7 @@ Built with Nuxt 4, TresJS (Three.js for Vue), and TypeScript. Intentional design
 | 3D | TresJS + Three.js |
 | Language | TypeScript |
 | Color mode | `@nuxtjs/color-mode` (light / dark / system) |
-| Utilities | `@vueuse/core` |
+| Utilities | `@vueuse/nuxt` (auto-imports `@vueuse/core` composables) |
 
 ---
 

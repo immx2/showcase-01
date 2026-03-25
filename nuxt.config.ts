@@ -3,7 +3,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   future: { compatibilityVersion: 4 },
   devtools: { enabled: true },
-  modules: ['@tresjs/nuxt', '@nuxt/fonts', '@nuxtjs/color-mode'],
+  modules: ['@tresjs/nuxt', '@nuxt/fonts', '@nuxtjs/color-mode', '@vueuse/nuxt'],
   devServer: {
     port: 3001,
   },

@@ -221,8 +221,8 @@ onUnmounted(() => {
       <button
         class="icon-btn"
         :class="{ active: autoRotate }"
-        title="Auto-rotate"
-        aria-label="Auto-rotate"
+        title="Auto-rotate (Space outside of buttons and fields)"
+        aria-label="Auto-rotate. Press Space when focus is on the canvas to toggle."
         :aria-pressed="autoRotate"
         @click="autoRotate = !autoRotate"
       >

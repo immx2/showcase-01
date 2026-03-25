@@ -20,6 +20,10 @@ Dev server runs on port 3001 (`npm run dev`).
 - Color mode is handled by `@nuxtjs/color-mode` (configured in `nuxt.config.ts` with `dataValue: 'color-mode'`). Use `useColorMode()` (auto-imported) — `colorMode.preference` is 'system'|'light'|'dark', `colorMode.value` is the resolved 'light'|'dark'. The module prevents FOUC natively.
 - All component styles in `<style scoped>`, no Tailwind, no CSS-in-JS
 
+### VueUse
+- `@vueuse/nuxt` is in `nuxt.config.ts` modules; it depends on `@vueuse/core` — keep only `@vueuse/nuxt` in `package.json` unless you need to pin `@vueuse/core` explicitly.
+- VueUse composables (`useEventListener`, etc.) are Nuxt auto-imported; do not import from `@vueuse/core` in app code.
+
 ### TresJS
 - `Tres*` components are auto-imported — no manual imports needed
 - `OrbitControls` (from `@tresjs/cientos`) must be explicitly imported
