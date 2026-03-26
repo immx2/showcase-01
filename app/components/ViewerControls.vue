@@ -273,14 +273,14 @@ onUnmounted(() => {
 
     <!-- Material presets popout -->
     <Transition name="popout">
-      <div v-if="activePopout === 'materials'" class="popout" :style="popoutFlipUp
+      <div v-if="activePopout === 'materials'" class="popout menu-panel" :style="popoutFlipUp
         ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
         : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
-        <span class="popout-title">Material</span>
+        <span class="menu-group">Material</span>
         <button
           v-for="preset in materialPresets"
           :key="preset.id"
-          class="chip chip--material"
+          class="menu-chip chip--material"
           :aria-label="preset.label"
           @click="applyMaterialPreset(preset)"
         >
@@ -292,14 +292,14 @@ onUnmounted(() => {
 
     <!-- Lighting popout -->
     <Transition name="popout">
-      <div v-if="activePopout === 'lighting'" class="popout" :style="popoutFlipUp
+      <div v-if="activePopout === 'lighting'" class="popout menu-panel" :style="popoutFlipUp
         ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
         : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
-        <span class="popout-title">Lighting</span>
+        <span class="menu-group">Lighting</span>
         <button
           v-for="preset in lightPresets"
           :key="preset.id"
-          class="chip"
+          class="menu-chip"
           :class="{ active: lightPreset === preset.id }"
           :aria-pressed="lightPreset === preset.id"
           @click="lightPreset = preset.id"
@@ -309,14 +309,14 @@ onUnmounted(() => {
 
     <!-- Environment popout -->
     <Transition name="popout">
-      <div v-if="activePopout === 'environment'" class="popout" :style="popoutFlipUp
+      <div v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFlipUp
         ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
         : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
-        <span class="popout-title">Environment</span>
+        <span class="menu-group">Environment</span>
         <button
           v-for="preset in envPresets"
           :key="preset.id"
-          class="chip chip--env"
+          class="menu-chip chip--env"
           :class="{ active: envPreset === preset.id }"
           :aria-pressed="envPreset === preset.id"
           @click="envPreset = preset.id as EnvPresetId; activePopout = null"
@@ -459,27 +459,10 @@ onUnmounted(() => {
 
 /* Popouts — float to the right, top-aligned to their trigger button */
 .popout {
-  position: absolute;
   left: calc(100% + var(--space-2));
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-2);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
   min-width: 140px;
   overflow-y: auto;
   z-index: 30;
-}
-
-.popout-title {
-  padding: var(--space-1) var(--space-3) var(--space-2);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
 }
 
 /* Popout: slide in from the toolbar side */
@@ -592,33 +575,6 @@ onUnmounted(() => {
   cursor: pointer;
   border: none;
   padding: 0;
-}
-
-/* Chip buttons */
-.chip {
-  width: 100%;
-  height: 34px;
-  padding: 0 var(--space-3);
-  border: none;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text-muted);
-  font-size: 13px;
-  font-weight: 500;
-  text-align: left;
-  cursor: pointer;
-  transition: background var(--duration-slow), color var(--duration-slow);
-}
-
-.chip:hover {
-  background: var(--color-bg-hover);
-  color: var(--color-text);
-  transition: none;
-}
-
-.chip.active {
-  background: var(--color-bg-active);
-  color: var(--color-text);
 }
 
 .chip--material,

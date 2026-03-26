@@ -36,6 +36,7 @@ export default defineNuxtConfig({
         '@vue/devtools-kit',
         '@tresjs/core',
         '@tresjs/cientos',
+        '@immx2/portfolio-nav',
       ]
     }
   }

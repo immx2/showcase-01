@@ -63,13 +63,13 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 
       <!-- Geometry dropdown -->
       <Transition name="geo-drop">
-        <div v-if="geoOpen" class="geo-dropdown" role="listbox" aria-label="Select geometry">
+        <div v-if="geoOpen" class="geo-dropdown menu-panel" role="listbox" aria-label="Select geometry">
           <template v-for="group in geometryGroups" :key="group.label">
-            <span class="dropdown-group">{{ group.label }}</span>
+            <span class="menu-group">{{ group.label }}</span>
             <button
               v-for="opt in group.options"
               :key="opt.id"
-              class="geo-chip"
+              class="menu-chip"
               :class="{ active: geometry === opt.id }"
               role="option"
               :aria-selected="geometry === opt.id"
@@ -221,57 +221,8 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   position: absolute;
   top: calc(100% + 8px);
   left: -5px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
-  padding: var(--space-2);
   min-width: 160px;
   z-index: 50;
-  display: flex;
-  flex-direction: column;
-}
-
-.dropdown-group {
-  display: block;
-  padding: var(--space-1) var(--space-3) var(--space-2);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-}
-
-.dropdown-group + .dropdown-group,
-.geo-chip + .dropdown-group {
-  margin-top: var(--space-1);
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--color-border-subtle);
-}
-
-.geo-chip {
-  width: 100%;
-  height: 34px;
-  padding: 0 var(--space-3);
-  border: none;
-  border-radius: var(--radius-md);
-  background: transparent;
-  color: var(--color-text-muted);
-  font-size: 13px;
-  font-weight: 400;
-  text-align: left;
-  cursor: pointer;
-  transition: background var(--duration-slow) color var(--duration-slow);
-}
-
-.geo-chip:hover {
-  background: var(--color-bg-hover);
-  color: var(--color-text);
-  transition: none;
-}
-
-.geo-chip.active {
-  background: var(--color-bg-active);
 }
 
 /* Dropdown transition */
