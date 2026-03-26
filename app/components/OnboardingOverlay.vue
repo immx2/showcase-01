@@ -85,6 +85,17 @@ function dismiss() {
               <strong>Expand</strong> at the bottom of the toolbar reveals labels for each button
             </span>
           </li>
+          <li class="tip">
+            <span class="tip-icon">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="7" width="14" height="7" rx="2"/>
+                <line x1="6" y1="10.5" x2="14" y2="10.5"/>
+              </svg>
+            </span>
+            <span>
+              <strong>Spacebar</strong> toggles auto-rotate on and off
+            </span>
+          </li>
         </ul>
 
         <p class="reopen-hint">Reopen this guide anytime via the <strong>?</strong> button in the top nav.</p>

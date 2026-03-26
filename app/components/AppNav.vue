@@ -10,7 +10,6 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 
 <template>
   <nav class="nav">
-    <span class="brand">showcase-01</span>
     <div class="nav-end">
 
       <!-- 3-segment color mode pill: auto | light | dark -->
@@ -69,17 +68,10 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 var(--space-8);
+  justify-content: flex-end;
+  padding: 0 10px;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-bg);
-}
-
-.brand {
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: var(--color-text);
 }
 
 .nav-end {

@@ -78,7 +78,10 @@ function cancelCloseSlider() {
   if (sliderTimer) { clearTimeout(sliderTimer); sliderTimer = null }
 }
 
-onMounted(() => document.addEventListener('click', onDocClick))
+onMounted(() => {
+  document.addEventListener('click', onDocClick)
+  labelsExpanded.value = window.innerWidth >= 768
+})
 onUnmounted(() => {
   document.removeEventListener('click', onDocClick)
   if (sliderTimer) clearTimeout(sliderTimer)
