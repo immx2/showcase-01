@@ -4,6 +4,29 @@ import { onMounted } from 'vue'
 const STORAGE_KEY = 'showcase-01:onboarding-seen'
 const { showOnboarding } = useViewer()
 
+const tips = [
+  {
+    label: `<strong>Drag</strong> to orbit · <strong>Scroll</strong> to zoom`,
+    icon: `<path d="M10 3a7 7 0 1 1-4.95 2.05"/><polyline points="7 1 10 3 8 6"/>`,
+  },
+  {
+    label: `<strong>Model Name</strong> in top nav — choose geometries`,
+    icon: `<polygon points="10,2 17,6 17,14 10,18 3,14 3,6"/><line x1="10" y1="2" x2="10" y2="18"/><line x1="3" y1="6" x2="17" y2="6"/><line x1="3" y1="14" x2="17" y2="14"/>`,
+  },
+  {
+    label: `<strong>Toolbar</strong> on the left — swap materials, lighting & environment`,
+    icon: `<line x1="4" y1="6" x2="10" y2="6"/><line x1="4" y1="10" x2="16" y2="10"/><line x1="4" y1="14" x2="13" y2="14"/><circle cx="13" cy="6" r="2"/><circle cx="16" cy="14" r="2"/>`,
+  },
+  {
+    label: `<strong>Spacebar</strong> toggles auto-orbit on and off`,
+    icon: `<rect x="3" y="7" width="14" height="7" rx="2"/><line x1="6" y1="10.5" x2="14" y2="10.5"/>`,
+  },
+  {
+    label: `<strong>Camera</strong> button saves a screenshot`,
+    icon: `<rect x="2" y="6" width="16" height="11" rx="2"/><circle cx="10" cy="11.5" r="3"/><path d="M7 6l1.5-2.5h3L13 6"/>`,
+  }
+]
+
 onMounted(() => {
   if (!localStorage.getItem(STORAGE_KEY)) {
     showOnboarding.value = true
@@ -25,76 +48,11 @@ function dismiss() {
         <p class="subtitle">Rotate, zoom, and customise any model in real time.</p>
 
         <ul class="tips">
-          <li class="tip">
+          <li v-for="tip in tips" :key="tip.label" class="tip">
             <span class="tip-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 3a7 7 0 1 1-4.95 2.05"/>
-                <polyline points="7 1 10 3 8 6"/>
-              </svg>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" v-html="tip.icon" />
             </span>
-            <span>
-              <strong>Drag</strong> to orbit &nbsp;·&nbsp; <strong>scroll</strong> to zoom
-            </span>
-          </li>
-          <li class="tip">
-            <span class="tip-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <polygon points="10,2 17,6 17,14 10,18 3,14 3,6"/>
-                <line x1="10" y1="2" x2="10" y2="18"/>
-                <line x1="3" y1="6" x2="17" y2="6"/>
-                <line x1="3" y1="14" x2="17" y2="14"/>
-              </svg>
-            </span>
-            <span>
-              <strong>Model name</strong> in the top bar — click to switch between geometries
-            </span>
-          </li>
-          <li class="tip">
-            <span class="tip-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="4" y1="6" x2="10" y2="6"/>
-                <line x1="4" y1="10" x2="16" y2="10"/>
-                <line x1="4" y1="14" x2="13" y2="14"/>
-                <circle cx="13" cy="6" r="2"/>
-                <circle cx="16" cy="14" r="2"/>
-              </svg>
-            </span>
-            <span>
-              <strong>Toolbar</strong> on the left — swap materials, lighting &amp; environment
-            </span>
-          </li>
-          <li class="tip">
-            <span class="tip-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="7" width="14" height="7" rx="2"/>
-                <line x1="6" y1="10.5" x2="14" y2="10.5"/>
-              </svg>
-            </span>
-            <span>
-              <strong>Spacebar</strong> toggles auto-rotate on and off
-            </span>
-          </li>
-          <li class="tip">
-            <span class="tip-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="6" width="16" height="11" rx="2"/>
-                <circle cx="10" cy="11.5" r="3"/>
-                <path d="M7 6l1.5-2.5h3L13 6"/>
-              </svg>
-            </span>
-            <span>
-              <strong>Camera</strong> button saves a screenshot of your scene
-            </span>
-          </li>
-          <li class="tip">
-            <span class="tip-icon">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="7 5 11 10 7 15"/>
-              </svg>
-            </span>
-            <span>
-              <strong>Expand</strong> at the bottom of the toolbar reveals labels for each button
-            </span>
+            <span v-html="tip.label" />
           </li>
         </ul>
 
@@ -126,7 +84,7 @@ function dismiss() {
 }
 
 .card {
-  background: var(--color-surface);
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-8) var(--space-8);
@@ -154,14 +112,14 @@ function dismiss() {
 
 .subtitle {
   font-size: 0.875rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   margin: 0 0 var(--space-6);
   line-height: 1.5;
 }
 
 .tips {
   list-style: none;
-  margin: 0 0 var(--space-8);
+  margin: 0 0 var(--space-6);
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -170,10 +128,10 @@ function dismiss() {
 
 .tip {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-3);
   font-size: 0.875rem;
-  color: var(--color-text);
+  color: var(--color-te);
   line-height: 1.45;
 }
 
@@ -185,19 +143,18 @@ function dismiss() {
   flex-shrink: 0;
   width: 36px;
   height: 36px;
-  background: var(--color-surface-2);
+  background-color: var(--color-bg-active);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-muted);
-  margin-top: -2px;
+  color: var(--color-text-secondary);
 }
 
 .reopen-hint {
   font-size: 0.8rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   margin: 0 0 var(--space-4);
   text-align: center;
 }

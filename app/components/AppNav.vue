@@ -87,6 +87,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
         <button
           title="Auto (device)"
           aria-label="Auto (device)"
+          :class="{ active: colorMode.preference === 'system' }"
           @click="setMode('system')"
         >
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -97,6 +98,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
         <button
           title="Light"
           aria-label="Light"
+          :class="{ active: colorMode.preference === 'light' }"
           @click="setMode('light')"
         >
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -114,6 +116,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
         <button
           title="Dark"
           aria-label="Dark"
+          :class="{ active: colorMode.preference === 'dark' }"
           @click="setMode('dark')"
         >
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
@@ -166,7 +169,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 
 .model-btn:hover,
 .model-btn.open {
-  background: var(--color-surface-2);
+  background: var(--color-bg-hover);
 }
 
 .model-name {
@@ -192,7 +195,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.04em;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   font-variant-numeric: tabular-nums;
 }
 
@@ -202,8 +205,6 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   letter-spacing: 0.04em;
   color: var(--color-text-muted);
   text-decoration: none;
-  opacity: 0.6;
-  transition: opacity var(--duration-fast);
 }
 
 .model-attr::before {
@@ -212,7 +213,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 }
 
 .model-attr:hover {
-  opacity: 1;
+  color: var(--color-text);
 }
 
 /* Geometry dropdown */
@@ -238,7 +239,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
 }
 
 .dropdown-group + .dropdown-group,
@@ -255,22 +256,22 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   border: none;
   border-radius: var(--radius-md);
   background: transparent;
-  color: var(--color-text);
+  color: var(--color-text-muted);
   font-size: 13px;
   font-weight: 400;
   text-align: left;
   cursor: pointer;
-  transition: background var(--duration-fast);
+  transition: background var(--duration-slow) color var(--duration-slow);
 }
 
 .geo-chip:hover {
-  background: var(--color-surface-2);
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+  transition: none;
 }
 
 .geo-chip.active {
-  background: var(--color-active-bg);
-  color: var(--color-active-text);
-  font-weight: 500;
+  background: var(--color-bg-active);
 }
 
 /* Dropdown transition */
@@ -324,8 +325,13 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   border-left: 1px solid var(--color-border);
 }
 
+.mode-pill button.active {
+  background: var(--color-bg-active);
+  color: var(--color-active-text);
+}
+
 .mode-pill button:not(.active):hover {
-  background: var(--color-surface-2);
+  background: var(--color-bg-hover);
   color: var(--color-text);
 }
 

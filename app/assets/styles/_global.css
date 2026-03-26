@@ -6,34 +6,37 @@
 
 /* Light */
 :root {
-  --color-bg:             #f5f4f0;
+  --color-bg:             hsl(48, 35%, 100%);
+  --color-bg-hover:       hsl(48, 35%, 94%);
+  --color-bg-active:      hsl(48, 35%, 88%);
+
+  --color-text:           hsl(60, 3%, 8%);
+  --color-text-secondary: hsl(60, 3%, 23%);
+  --color-text-muted:     hsl(51, 3%, 44%);
+
   --color-surface:        #ffffff;
-  --color-surface-2:      #edece8;
-  --color-text:           #111110;
-  --color-text-muted:     #6b6b68;
-  --color-accent:         #111110;
-  --color-border:         #d8d7d2;
-  --color-border-subtle:  #e8e7e3;
-  --color-canvas-bg:      #f5f4f0;
-  --color-active-bg:      #3c3c3a;
-  --color-active-text:    #f5f4f0;
+
+  --color-border:         hsl(50, 7%, 84%);
+  --color-border-subtle:  hsl(48, 10%, 90%);
 
   --nav-height: 48px;
 }
 
 /* Dark */
 [data-color-mode="dark"] {
-  --color-bg:             #141413;
-  --color-surface:        #1d1d1c;
-  --color-surface-2:      #2b2b29;
-  --color-text:           #edebe7;
-  --color-text-muted:     #919190;
-  --color-accent:         #edebe7;
-  --color-border:         #303030;
-  --color-border-subtle:  #252524;
-  --color-canvas-bg:      #141413;
-  --color-active-bg:      #3d3d3b;
-  --color-active-text:    #edebe7;
+  --color-bg:             hsl(60, 0%, 18%);
+  --color-bg-hover:       hsl(60, 0%, 14%);
+  --color-bg-active:      hsl(60, 0%, 10%);
+
+  --color-text:           hsl(60, 5%, 95%);
+  --color-text-secondary: hsl(60, 5%, 70%);
+  --color-text-muted:     hsl(60, 5%, 50%);
+
+  --color-surface:        hsl(60, 2%, 11%);
+
+  --color-border:         hsl(60, 0%, 25%);
+  --color-border-subtle:  hsl(60, 0%, 25%);
+
 }
 
 /* Color mode pill — active button driven by data-color-pref on <html>,
@@ -41,8 +44,7 @@
 html[data-color-pref="system"] #color-mode-pill button[aria-label="Auto (device)"],
 html[data-color-pref="light"]  #color-mode-pill button[aria-label="Light"],
 html[data-color-pref="dark"]   #color-mode-pill button[aria-label="Dark"] {
-  background: var(--color-active-bg);
-  color: var(--color-active-text);
+  background: var(--color-bg-active);
 }
 
 /* ─────────────────────────────────────────

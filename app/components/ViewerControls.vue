@@ -112,13 +112,13 @@ onUnmounted(() => {
           </svg>
           <span class="btn-label">Material</span>
         </button>
-        <label class="color-swatch" title="Color">
+        <label class="icon-btn color-swatch" title="Color">
           <span class="color-dot" :style="{ background: color }"></span>
           <span class="btn-label">Color</span>
           <input type="color" v-model="color" class="color-input" />
         </label>
         <div
-          class="slider-group"
+          class="icon-btn slider-group"
           @mouseenter="openSlider('metalness', $event)"
           @mouseleave="scheduleCloseSlider"
         >
@@ -129,7 +129,7 @@ onUnmounted(() => {
           <span class="btn-label">Metalness</span>
         </div>
         <div
-          class="slider-group"
+          class="icon-btn slider-group"
           @mouseenter="openSlider('roughness', $event)"
           @mouseleave="scheduleCloseSlider"
         >
@@ -365,7 +365,7 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   width: 52px;
-  background: var(--color-surface);
+  background: var(--color-bg);
   border-right: 1px solid var(--color-border);
   z-index: 30;
   transition: width var(--duration-base) var(--ease-out);
@@ -402,7 +402,6 @@ onUnmounted(() => {
   width: 100%;
   padding-bottom: var(--space-3);
   gap: 4px;
-  background: var(--color-surface);
 }
 
 /* Group: stack icons vertically */
@@ -480,23 +479,7 @@ onUnmounted(() => {
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.popout-group {
-  display: block;
-  padding: var(--space-2) var(--space-3) var(--space-1);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  opacity: 0.6;
-}
-
-.popout-group:not(:first-of-type) {
-  margin-top: var(--space-1);
-  border-top: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
 }
 
 /* Popout: slide in from the toolbar side */
@@ -514,34 +497,10 @@ onUnmounted(() => {
   transform: translateX(-6px);
 }
 
-/* Slider groups — trigger only, no popup inside */
-.slider-group svg {
-  color: var(--color-text-muted);
-  transition: color var(--duration-fast);
-}
-
-.slider-group:hover svg {
-  color: var(--color-text);
-}
 
 .slider-group {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 10px;
-  width: 38px;
-  height: 38px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
-  transition: background var(--duration-fast),
-              width var(--duration-base) var(--ease-out);
-}
-
-.slider-group:hover {
-  background: var(--color-surface-2);
 }
 
 .expanded .slider-group {
@@ -605,22 +564,8 @@ onUnmounted(() => {
 
 /* Color swatch */
 .color-swatch {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
   position: relative;
   overflow: hidden;
-  transition: background var(--duration-fast),
-              width var(--duration-base) var(--ease-out);
-}
-
-.color-swatch:hover {
-  background: var(--color-surface-2);
 }
 
 .expanded .color-swatch {
@@ -662,17 +607,18 @@ onUnmounted(() => {
   font-weight: 500;
   text-align: left;
   cursor: pointer;
-  transition: background var(--duration-fast), color var(--duration-fast);
+  transition: background var(--duration-slow), color var(--duration-slow);
 }
 
 .chip:hover {
-  background: var(--color-surface-2);
+  background: var(--color-bg-hover);
   color: var(--color-text);
+  transition: none;
 }
 
 .chip.active {
-  background: var(--color-active-bg);
-  color: var(--color-active-text);
+  background: var(--color-bg-active);
+  color: var(--color-text);
 }
 
 .chip--material,
@@ -687,7 +633,7 @@ onUnmounted(() => {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 
@@ -696,7 +642,7 @@ onUnmounted(() => {
   width: 24px;
   height: 14px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(0, 0, 0, 0.10);
+  border: 1px solid var(--color-border);
   flex-shrink: 0;
 }
 
@@ -712,21 +658,22 @@ onUnmounted(() => {
   border: none;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   cursor: pointer;
   overflow: hidden;
-  transition: background var(--duration-fast), color var(--duration-fast),
+  transition: background var(--duration-fast),
               width var(--duration-base) var(--ease-out);
 }
 
 .icon-btn:hover {
-  background: var(--color-surface-2);
+  background: var(--color-bg-hover);
   color: var(--color-text);
+  transition: background 0ms, width var(--duration-base) var(--ease-out);
 }
 
 .icon-btn.active {
-  background: var(--color-active-bg);
-  color: var(--color-active-text);
+  background: var(--color-bg-active);
+  color: var(--color-text);
 }
 
 .expanded .icon-btn {
@@ -736,6 +683,7 @@ onUnmounted(() => {
 
 .icon-btn svg {
   flex-shrink: 0;
+  transition: color var(--duration-fast);
 }
 
 </style>
