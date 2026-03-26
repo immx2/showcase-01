@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { useViewer, geometryGroups, materialPresets, envPresets, type LightPreset, type MaterialPreset, type EnvPresetId } from '~/composables/useViewer'
+import { useViewer, materialPresets, envPresets, type LightPreset, type MaterialPreset, type EnvPresetId } from '~/composables/useViewer'
 
 const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset, envPreset, screenshotFn, hotspotsVisible, labelsExpanded } = useViewer()
 
@@ -18,14 +18,14 @@ function applyMaterialPreset(preset: MaterialPreset) {
   activePopout.value = null
 }
 
-const activePopout    = ref<'geometry' | 'lighting' | 'materials' | 'environment' | null>(null)
+const activePopout    = ref<'lighting' | 'materials' | 'environment' | null>(null)
 const popoutY         = ref(0)
 const popoutBottom    = ref(0)
 const popoutMaxH      = ref(0)
 const popoutFlipUp    = ref(false)
 const wrapRef         = ref<HTMLElement | null>(null)
 
-function togglePopout(name: 'geometry' | 'lighting' | 'materials' | 'environment', e: MouseEvent) {
+function togglePopout(name: 'lighting' | 'materials' | 'environment', e: MouseEvent) {
   if (activePopout.value === name) {
     activePopout.value = null
     return
@@ -93,25 +93,6 @@ onUnmounted(() => {
 
     <!-- Toolbar — comes first so popouts expand to the right -->
     <div class="toolbar">
-
-      <!-- Geometry picker button -->
-      <button
-        class="icon-btn"
-        :class="{ active: activePopout === 'geometry' }"
-        title="Geometry"
-        aria-label="Pick geometry"
-        @click="togglePopout('geometry', $event)"
-      >
-        <svg width="18" height="18" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="7,1 13,4.5 13,9.5 7,13 1,9.5 1,4.5"/>
-          <line x1="7" y1="1" x2="7" y2="13"/>
-          <line x1="1" y1="4.5" x2="13" y2="4.5"/>
-          <line x1="1" y1="9.5" x2="13" y2="9.5"/>
-        </svg>
-        <span class="btn-label">Geometry</span>
-      </button>
-
-      <span class="sep" />
 
       <!-- Material group -->
       <div class="group">
@@ -289,27 +270,6 @@ onUnmounted(() => {
         <span class="btn-label">Collapse</span>
       </button>
     </div>
-
-    <!-- Geometry popout — positioned adjacent to the trigger button -->
-    <Transition name="popout">
-      <div v-if="activePopout === 'geometry'" class="popout" :style="popoutFlipUp
-        ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
-        : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
-        <span class="popout-title">Geometry</span>
-        <template v-for="group in geometryGroups" :key="group.label">
-          <span class="popout-group">{{ group.label }}</span>
-          <button
-            v-for="opt in group.options"
-            :key="opt.id"
-            class="chip"
-            :class="{ active: geometry === opt.id }"
-            :aria-label="opt.label"
-            :aria-pressed="geometry === opt.id"
-            @click="geometry = opt.id; activePopout = null"
-          >{{ opt.label }}</button>
-        </template>
-      </div>
-    </Transition>
 
     <!-- Material presets popout -->
     <Transition name="popout">

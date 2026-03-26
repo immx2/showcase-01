@@ -1,12 +1,29 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { geometryOptions } from '~/composables/useViewer'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { geometryGroups, geometryOptions, type GeometryType } from '~/composables/useViewer'
 
 const { showOnboarding, geometry, vertexCount, isLoading } = useViewer()
 const isLambo = computed(() => geometry.value === 'lamborghini')
 const colorMode = useColorMode()
 
 const modelName = computed(() => geometryOptions.find(o => o.id === geometry.value)?.label ?? '')
+
+const geoOpen = ref(false)
+const startRef = ref<HTMLElement | null>(null)
+
+function selectGeo(id: GeometryType) {
+  geometry.value = id
+  geoOpen.value = false
+}
+
+function onDocClick(e: MouseEvent) {
+  if (startRef.value && !startRef.value.contains(e.target as Node)) {
+    geoOpen.value = false
+  }
+}
+
+onMounted(() => document.addEventListener('click', onDocClick))
+onUnmounted(() => document.removeEventListener('click', onDocClick))
 
 function setMode(pref: 'system' | 'light' | 'dark') {
   colorMode.preference = pref
@@ -16,9 +33,25 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 
 <template>
   <nav class="nav">
-    <div class="nav-start">
-      <span class="model-name">{{ modelName }}</span>
-      <span v-if="!isLoading" class="model-stat">{{ vertexCount.toLocaleString() }} verts</span>
+    <div class="nav-start" ref="startRef">
+
+      <!-- Model picker button -->
+      <button
+        class="model-btn"
+        :class="{ open: geoOpen }"
+        :aria-expanded="geoOpen"
+        aria-haspopup="listbox"
+        @click="geoOpen = !geoOpen"
+      >
+        <span class="model-name">{{ modelName }}</span>
+        <!-- Chevrons up/down selector icon -->
+        <svg class="model-chevron" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="2 3.5 5 1 8 3.5"/>
+          <polyline points="2 6.5 5 9 8 6.5"/>
+        </svg>
+      </button>
+
+      <span v-if="!isLoading" class="model-stat">{{ vertexCount.toLocaleString() }} vertices</span>
       <a
         v-if="isLambo && !isLoading"
         class="model-attr"
@@ -27,6 +60,25 @@ function setMode(pref: 'system' | 'light' | 'dark') {
         rel="noopener noreferrer"
         title="Lamborghini Aventador by Arion Digital — CC BY 4.0"
       >CC BY · Arion Digital</a>
+
+      <!-- Geometry dropdown -->
+      <Transition name="geo-drop">
+        <div v-if="geoOpen" class="geo-dropdown" role="listbox" aria-label="Select geometry">
+          <template v-for="group in geometryGroups" :key="group.label">
+            <span class="dropdown-group">{{ group.label }}</span>
+            <button
+              v-for="opt in group.options"
+              :key="opt.id"
+              class="geo-chip"
+              :class="{ active: geometry === opt.id }"
+              role="option"
+              :aria-selected="geometry === opt.id"
+              @click="selectGeo(opt.id)"
+            >{{ opt.label }}</button>
+          </template>
+        </div>
+      </Transition>
+
     </div>
     <div class="nav-end">
 
@@ -37,7 +89,6 @@ function setMode(pref: 'system' | 'light' | 'dark') {
           aria-label="Auto (device)"
           @click="setMode('system')"
         >
-          <!-- Half-circle: left half filled = dark, right = light -->
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/>
             <path d="M7 1.5 A5.5 5.5 0 0 1 7 12.5 Z" fill="currentColor"/>
@@ -48,7 +99,6 @@ function setMode(pref: 'system' | 'light' | 'dark') {
           aria-label="Light"
           @click="setMode('light')"
         >
-          <!-- Sun -->
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.4"/>
             <line x1="7" y1="1"    x2="7"    y2="2.5"  stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
@@ -66,7 +116,6 @@ function setMode(pref: 'system' | 'light' | 'dark') {
           aria-label="Dark"
           @click="setMode('dark')"
         >
-          <!-- Crescent moon — outer circle centered at (7,7) r=5 -->
           <svg width="12" height="12" viewBox="0 0 14 14" fill="none" aria-hidden="true">
             <path d="M7 2 a3.5 3.5 0 0 0 5 5 A5 5 0 1 1 7 2Z" fill="currentColor" stroke="none"/>
           </svg>
@@ -83,7 +132,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 .nav {
   flex-shrink: 0;
   height: var(--nav-height);
-  z-index: 20;
+  z-index: 35;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -92,10 +141,32 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   background: var(--color-bg);
 }
 
+/* Left cluster: picker button + stats */
 .nav-start {
+  position: relative;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: var(--space-2);
+}
+
+/* Model picker button */
+.model-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  margin: -5px 4px -5px -10px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: inherit;
+  transition: background var(--duration-fast);
+}
+
+.model-btn:hover,
+.model-btn.open {
+  background: var(--color-surface-2);
 }
 
 .model-name {
@@ -103,6 +174,17 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.model-chevron {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  transition: color var(--duration-fast);
+}
+
+.model-btn:hover .model-chevron,
+.model-btn.open .model-chevron {
   color: var(--color-text);
 }
 
@@ -133,6 +215,80 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   opacity: 1;
 }
 
+/* Geometry dropdown */
+.geo-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: -5px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.09);
+  padding: var(--space-2);
+  min-width: 160px;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-group {
+  display: block;
+  padding: var(--space-1) var(--space-3) var(--space-2);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.dropdown-group + .dropdown-group,
+.geo-chip + .dropdown-group {
+  margin-top: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.geo-chip {
+  width: 100%;
+  height: 34px;
+  padding: 0 var(--space-3);
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.geo-chip:hover {
+  background: var(--color-surface-2);
+}
+
+.geo-chip.active {
+  background: var(--color-active-bg);
+  color: var(--color-active-text);
+  font-weight: 500;
+}
+
+/* Dropdown transition */
+.geo-drop-enter-active {
+  transition: opacity var(--duration-base) var(--ease-out),
+              transform var(--duration-base) var(--ease-out);
+}
+.geo-drop-leave-active {
+  transition: opacity var(--duration-fast) var(--ease-out),
+              transform var(--duration-fast) var(--ease-out);
+}
+.geo-drop-enter-from,
+.geo-drop-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* Right cluster */
 .nav-end {
   display: flex;
   align-items: center;
