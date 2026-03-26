@@ -1,6 +1,12 @@
 <script setup lang="ts">
-const { showOnboarding } = useViewer()
+import { computed } from 'vue'
+import { geometryOptions } from '~/composables/useViewer'
+
+const { showOnboarding, geometry, vertexCount, isLoading } = useViewer()
+const isLambo = computed(() => geometry.value === 'lamborghini')
 const colorMode = useColorMode()
+
+const modelName = computed(() => geometryOptions.find(o => o.id === geometry.value)?.label ?? '')
 
 function setMode(pref: 'system' | 'light' | 'dark') {
   colorMode.preference = pref
@@ -10,6 +16,18 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 
 <template>
   <nav class="nav">
+    <div class="nav-start">
+      <span class="model-name">{{ modelName }}</span>
+      <span v-if="!isLoading" class="model-stat">{{ vertexCount.toLocaleString() }} verts</span>
+      <a
+        v-if="isLambo && !isLoading"
+        class="model-attr"
+        href="https://sketchfab.com/3d-models/lamborghini-aventador-888e37a3641d4f7b94bc1a39396e2441"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Lamborghini Aventador by Arion Digital — CC BY 4.0"
+      >CC BY · Arion Digital</a>
+    </div>
     <div class="nav-end">
 
       <!-- 3-segment color mode pill: auto | light | dark -->
@@ -68,10 +86,51 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 10px;
+  justify-content: space-between;
+  padding: 0 10px 0 20px;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-bg);
+}
+
+.nav-start {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.model-name {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.model-stat {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.model-attr {
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  opacity: 0.6;
+  transition: opacity var(--duration-fast);
+}
+
+.model-attr::before {
+  content: '·';
+  margin-right: var(--space-2);
+}
+
+.model-attr:hover {
+  opacity: 1;
 }
 
 .nav-end {

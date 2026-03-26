@@ -27,7 +27,6 @@ useEventListener('keydown', (e: KeyboardEvent) => {
         <ViewerScene />
       </ClientOnly>
     </div>
-    <ViewerOverlay />
     <OnboardingOverlay />
   </div>
 </template>
