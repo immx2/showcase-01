@@ -269,7 +269,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
-  transition: background var(--duration-fast), color var(--duration-fast);
+  transition: all var(--duration-slow);
 }
 
 .mode-pill button + button {
@@ -284,6 +284,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 .mode-pill button:not(.active):hover {
   background: var(--color-bg-hover);
   color: var(--color-text);
+  transition: none;
 }
 
 /* Help button */
@@ -301,11 +302,12 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color var(--duration-fast), border-color var(--duration-fast);
+  transition: all var(--duration-slow);
 }
 
 .icon-btn:hover {
   color: var(--color-text);
-  border-color: var(--color-text-muted);
+  background: var(--color-bg-hover);
+  transition: none;
 }
 </style>
