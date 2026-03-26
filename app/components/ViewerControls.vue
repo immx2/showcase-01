@@ -368,7 +368,7 @@ onUnmounted(() => {
   background: var(--color-bg);
   border-right: 1px solid var(--color-border);
   z-index: 30;
-  transition: width var(--duration-base) var(--ease-out);
+  transition: width var(--duration-slow) var(--ease-out);
 }
 
 .toolbar-wrap.expanded {
@@ -382,7 +382,7 @@ onUnmounted(() => {
   overflow-x: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   padding: var(--space-3) 0;
   gap: 4px;
@@ -398,7 +398,7 @@ onUnmounted(() => {
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   width: 100%;
   padding-bottom: var(--space-3);
   gap: 4px;
@@ -410,22 +410,22 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  margin-left: 7px;
+}
+
+.toolbar > .icon-btn,
+.toolbar-foot > .icon-btn {
+  margin-left: 7px;
 }
 
 /* Separator: horizontal rule */
 .sep {
   display: block;
-  width: 26px;
+  width: calc(100% - 14px);
   height: 1px;
   background: var(--color-border-subtle);
   flex-shrink: 0;
-  margin: var(--space-2) 0;
-  transition: width var(--duration-base) var(--ease-out);
-}
-
-.expanded .sep {
-  width: calc(100% - var(--space-6));
-  align-self: center;
+  margin: var(--space-2) 7px;
 }
 
 /* Button label text */
@@ -434,22 +434,18 @@ onUnmounted(() => {
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
-  max-width: 0;
   opacity: 0;
-  transition:
-    max-width var(--duration-base) var(--ease-out),
-    opacity var(--duration-base) var(--ease-out);
+  transition: opacity var(--duration-slow) var(--ease-out);
   pointer-events: none;
 }
 
 .expanded .btn-label {
-  max-width: 120px;
   opacity: 1;
 }
 
 /* Expand icon rotates when active */
 .expand-icon {
-  transition: transform var(--duration-base) var(--ease-out);
+  transition: transform var(--duration-slow) var(--ease-out);
   flex-shrink: 0;
 }
 
@@ -617,14 +613,15 @@ onUnmounted(() => {
   color: var(--color-text-secondary);
   cursor: pointer;
   overflow: hidden;
-  transition: background var(--duration-fast),
+  transition: background var(--duration-base),
               width var(--duration-base) var(--ease-out);
 }
 
 .icon-btn:hover {
   background: var(--color-bg-hover);
   color: var(--color-text);
-  transition: background 0ms, width var(--duration-base) var(--ease-out);
+  transition: background 0ms,
+              width var(--duration-slow) var(--ease-out);
 }
 
 .icon-btn.active {
@@ -639,7 +636,7 @@ onUnmounted(() => {
 
 .icon-btn svg {
   flex-shrink: 0;
-  transition: color var(--duration-fast);
+  transition: color var(--duration-fast), transform var(--duration-slow) var(--ease-out);
 }
 
 </style>
