@@ -23,7 +23,7 @@ function countBuiltinVertices(geo: typeof geometry.value): number {
     case 'octahedron':  g = new THREE.OctahedronGeometry(1.5, 4); break
     default: return 0
   }
-  const count = g.attributes.position.count
+  const count = (g.attributes.position as THREE.BufferAttribute).count
   g.dispose()
   return count
 }
