@@ -16,13 +16,16 @@ Dev server runs on port 3001 (`npm run dev`).
 
 ### CSS
 - Token-first: always reach for `--space-*`, `--radius-*`, `--duration-*` before hardcoding values
-- Colors live in `_global.css` — 3-tier color mode (auto/light/dark) via `data-color-mode` on `<html>`
+- Colors live in `_colors.css` — 3-tier color mode (auto/light/dark) via `data-color-mode` on `<html>`
 - Color mode is handled by `@nuxtjs/color-mode` (configured in `nuxt.config.ts` with `dataValue: 'color-mode'`). Use `useColorMode()` (auto-imported) — `colorMode.preference` is 'system'|'light'|'dark', `colorMode.value` is the resolved 'light'|'dark'. The module prevents FOUC natively.
 - All component styles in `<style scoped>`, no Tailwind, no CSS-in-JS
 
 ### VueUse
 - `@vueuse/nuxt` is in `nuxt.config.ts` modules; it depends on `@vueuse/core` — keep only `@vueuse/nuxt` in `package.json` unless you need to pin `@vueuse/core` explicitly.
 - VueUse composables (`useEventListener`, etc.) are Nuxt auto-imported; do not import from `@vueuse/core` in app code.
+
+### Nuxt MCP
+Always fetch from the Nuxt MCP (`mcp__nuxt-remote__*`) when answering questions about Nuxt behavior, module config, or deployment — do not rely on training knowledge alone. The MCP provides live, accurate docs and is especially important for Nuxt 4 specifics.
 
 ### TresJS
 - `Tres*` components are auto-imported — no manual imports needed

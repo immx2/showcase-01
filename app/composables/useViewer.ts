@@ -68,11 +68,11 @@ export const geometryGroups: GeometryGroup[] = [
   {
     label: 'Primitives',
     options: [
+      { id: 'box',         label: 'Box' },
       { id: 'icosahedron', label: 'Icosahedron' },
+      { id: 'octahedron',  label: 'Octahedron' },
       { id: 'sphere',      label: 'Sphere' },
       { id: 'torusKnot',  label: 'Torus Knot' },
-      { id: 'box',         label: 'Box' },
-      { id: 'octahedron',  label: 'Octahedron' },
     ],
   },
   {

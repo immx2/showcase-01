@@ -1,0 +1,48 @@
+/* ─────────────────────────────────────────
+   Color tokens — 2 tiers: light | dark
+   ───────────────────────────────────────── */
+
+/* Light */
+:root {
+  --color-bg:             hsl(48, 35%, 100%);
+  --color-bg-hover:       hsl(48, 35%, 94%);
+  --color-bg-active:      hsl(48, 35%, 88%);
+
+  --color-bg-menu-hover:  var(--color-bg-hover);
+  --color-surface:        var(--color-bg);
+
+  --color-text:           hsl(60, 3%, 8%);
+  --color-text-secondary: hsl(60, 3%, 25%);
+  --color-text-muted:     hsl(60, 3%, 50%);
+
+  --color-border:         hsl(50, 7%, 84%);
+  --color-border-subtle:  hsl(48, 10%, 90%);
+
+  --nav-height: 48px;
+}
+
+/* Dark */
+[data-color-mode="dark"] {
+  --color-bg:             hsl(60, 0%, 18%);
+  --color-bg-hover:       hsl(60, 0%, 14%);
+  --color-bg-active:      hsl(60, 0%, 10%);
+
+  --color-bg-menu-hover:  var(--color-bg);
+  --color-surface:        var(--color-bg-active);
+
+  --color-text:           hsl(60, 0%, 95%);
+  --color-text-secondary: hsl(60, 0%, 70%);
+  --color-text-muted:     hsl(60, 0%, 50%);
+
+  --color-border:         hsl(60, 0%, 25%);
+  --color-border-subtle:  hsl(60, 0%, 25%);
+
+}
+
+/* Color mode pill — active button driven by data-color-pref on <html>,
+   set by an inline script before Vue hydrates so there is no toggle flash. */
+html[data-color-pref="system"] #color-mode-pill button[aria-label="Auto (device)"],
+html[data-color-pref="light"]  #color-mode-pill button[aria-label="Light"],
+html[data-color-pref="dark"]   #color-mode-pill button[aria-label="Dark"] {
+  background: var(--color-bg-active);
+}
