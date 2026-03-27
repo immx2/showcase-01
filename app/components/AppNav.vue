@@ -230,10 +230,12 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   transition: opacity var(--duration-base) var(--ease-out),
               transform var(--duration-base) var(--ease-out);
 }
+
 .geo-drop-leave-active {
   transition: opacity var(--duration-fast) var(--ease-out),
               transform var(--duration-fast) var(--ease-out);
 }
+
 .geo-drop-enter-from,
 .geo-drop-leave-to {
   opacity: 0;

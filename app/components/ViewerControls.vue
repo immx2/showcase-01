@@ -281,7 +281,7 @@ v-if="activePopout === 'materials'" class="popout menu-panel" :style="popoutFlip
         <button
           v-for="preset in materialPresets"
           :key="preset.id"
-          class="menu-chip chip--material"
+          class="menu-chip chip-material"
           :aria-label="preset.label"
           @click="applyMaterialPreset(preset)"
         >
@@ -319,7 +319,7 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
         <button
           v-for="preset in envPresets"
           :key="preset.id"
-          class="menu-chip chip--env"
+          class="menu-chip chip-env"
           :class="{ active: envPreset === preset.id }"
           :aria-pressed="envPreset === preset.id"
           @click="envPreset = preset.id as EnvPresetId; activePopout = null"
@@ -381,8 +381,7 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
 /* Toolbar: scrollable inner button stack */
 .toolbar {
   flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -414,6 +413,37 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   align-items: center;
   gap: 2px;
   margin-left: 7px;
+}
+
+/* Icon buttons */
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 10px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  overflow: hidden;
+  transition: background var(--duration-base),
+              width var(--duration-base) var(--ease-out);
+}
+
+.icon-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+  transition: background 0ms,
+              width var(--duration-slow) var(--ease-out);
+}
+
+.icon-btn.active {
+  background: var(--color-bg-active);
+  color: var(--color-text);
 }
 
 .toolbar > .icon-btn,
@@ -469,10 +499,12 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   transition: opacity var(--duration-base) var(--ease-out),
               transform var(--duration-base) var(--ease-out);
 }
+
 .popout-leave-active {
   transition: opacity var(--duration-fast) var(--ease-out),
               transform var(--duration-fast) var(--ease-out);
 }
+
 .popout-enter-from,
 .popout-leave-to {
   opacity: 0;
@@ -482,7 +514,6 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
 
 .slider-group {
   user-select: none;
-  -webkit-user-select: none;
 }
 
 .expanded .slider-group {
@@ -503,7 +534,7 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 4px 16px rgb(0 0 0 / 12%);
   z-index: 31;
 }
 
@@ -559,7 +590,7 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   width: 18px;
   height: 18px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid rgb(0 0 0 / 12%);
   display: block;
   flex-shrink: 0;
   pointer-events: none;
@@ -576,8 +607,8 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   padding: 0;
 }
 
-.chip--material,
-.chip--env {
+.chip-material,
+.chip-env {
   display: flex;
   align-items: center;
   gap: var(--space-2);
@@ -599,37 +630,6 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   flex-shrink: 0;
-}
-
-/* Icon buttons */
-.icon-btn {
-  width: 38px;
-  height: 38px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding-left: 10px;
-  flex-shrink: 0;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  overflow: hidden;
-  transition: background var(--duration-base),
-              width var(--duration-base) var(--ease-out);
-}
-
-.icon-btn:hover {
-  background: var(--color-bg-hover);
-  color: var(--color-text);
-  transition: background 0ms,
-              width var(--duration-slow) var(--ease-out);
-}
-
-.icon-btn.active {
-  background: var(--color-bg-active);
-  color: var(--color-text);
 }
 
 .expanded .icon-btn {

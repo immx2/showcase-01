@@ -80,7 +80,7 @@ function dismiss() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(17, 17, 16, 0.45);
+  background: rgb(17 17 16 / 45%);
   backdrop-filter: blur(4px);
   padding: var(--space-4);
 }
@@ -92,7 +92,7 @@ function dismiss() {
   padding: var(--space-8) var(--space-8);
   max-width: 420px;
   width: 100%;
-  box-shadow: 0 8px 40px rgba(17, 17, 16, 0.12);
+  box-shadow: 0 8px 40px rgb(17 17 16 / 12%);
 }
 
 .eyebrow {

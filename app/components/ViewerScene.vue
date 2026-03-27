@@ -137,6 +137,7 @@ watch(geometry, (geo) => {
 
 .canvas {
   display: block;
+
   /* !important overrides the inline width/height TresJS sets via setSize(),
      so the flex layout controls the canvas display size instead. */
   width: 100% !important;

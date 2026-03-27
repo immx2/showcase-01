@@ -67,7 +67,7 @@ function cardSide(x: number): 'right' | 'left' {
   border-radius: 50%;
   background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   border: 1.5px solid var(--color-border);
-  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 1px 6px rgb(0 0 0 / 18%);
   cursor: pointer;
   transition: transform var(--duration-fast) var(--ease-out),
               background var(--duration-fast);
@@ -83,7 +83,7 @@ function cardSide(x: number): 'right' | 'left' {
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  border: 1.5px solid rgb(255 255 255 / 55%);
   animation: hs-pulse 2.4s ease-out infinite;
 }
 
@@ -102,10 +102,9 @@ function cardSide(x: number): 'right' | 'left' {
   max-width: 210px;
   background: color-mix(in srgb, var(--color-surface) 96%, transparent);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 20px rgb(0 0 0 / 10%);
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -137,6 +136,7 @@ function cardSide(x: number): 'right' | 'left' {
 /* Layer fade-in/out when toggled or geometry switches */
 .hs-fade-enter-active { transition: opacity var(--duration-base) var(--ease-out); }
 .hs-fade-leave-active { transition: opacity var(--duration-fast) var(--ease-out); }
+
 .hs-fade-enter-from,
 .hs-fade-leave-to     { opacity: 0; }
 </style>
