@@ -36,4 +36,6 @@ onMounted(() => { rafId = requestAnimationFrame(project) })
 onUnmounted(() => cancelAnimationFrame(rafId))
 </script>
 
-<template />
+<script lang="ts">
+export default { render: () => null }
+</script>

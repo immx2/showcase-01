@@ -86,7 +86,7 @@ watch(geometry, (geo) => {
       <LamboModel v-if="geometry === 'lamborghini'" />
 
       <!-- Main solid mesh — keyed so geometry swap force-remounts -->
-      <TresMesh v-else :position="[0, 0, 0]" :key="`solid-${geometry}`">
+      <TresMesh v-else :key="`solid-${geometry}`" :position="[0, 0, 0]">
         <TresIcosahedronGeometry v-if="geometry === 'icosahedron'" :args="[1.4, 6]" />
         <TresSphereGeometry     v-else-if="geometry === 'sphere'"      :args="[1.4, 64, 64]" />
         <TresTorusKnotGeometry  v-else-if="geometry === 'torusKnot'"   :args="[0.9, 0.34, 200, 32]" />
@@ -104,7 +104,7 @@ watch(geometry, (geo) => {
       </TresMesh>
 
       <!-- Wireframe overlay mesh -->
-      <TresMesh v-if="wireframe && geometry !== 'lamborghini'" :position="[0, 0, 0]" :key="`wire-${geometry}`">
+      <TresMesh v-if="wireframe && geometry !== 'lamborghini'" :key="`wire-${geometry}`" :position="[0, 0, 0]">
         <TresIcosahedronGeometry v-if="geometry === 'icosahedron'" :args="[1.4, 6]" />
         <TresSphereGeometry     v-else-if="geometry === 'sphere'"      :args="[1.4, 64, 64]" />
         <TresTorusKnotGeometry  v-else-if="geometry === 'torusKnot'"   :args="[0.9, 0.34, 200, 32]" />
@@ -116,7 +116,7 @@ watch(geometry, (geo) => {
           :wireframe="true"
           :transparent="true"
           :opacity="0.35"
-          :depthTest="false"
+          :depth-test="false"
         />
       </TresMesh>
     </TresCanvas>

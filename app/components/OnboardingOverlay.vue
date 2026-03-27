@@ -41,7 +41,7 @@ function dismiss() {
 
 <template>
   <Transition name="fade">
-    <div v-if="showOnboarding" class="backdrop" @click.self="dismiss" role="dialog" aria-modal="true" aria-label="Welcome tutorial">
+    <div v-if="showOnboarding" class="backdrop" role="dialog" aria-modal="true" aria-label="Welcome tutorial" @click.self="dismiss">
       <div class="card">
         <p class="eyebrow">Interactive 3D Viewer</p>
         <h1 class="title">Explore every angle</h1>
@@ -50,8 +50,10 @@ function dismiss() {
         <ul class="tips">
           <li v-for="tip in tips" :key="tip.label" class="tip">
             <span class="tip-icon">
+              <!-- eslint-disable-next-line vue/no-v-html -->
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" v-html="tip.icon" />
             </span>
+            <!-- eslint-disable-next-line vue/no-v-html -->
             <span v-html="tip.label" />
           </li>
         </ul>

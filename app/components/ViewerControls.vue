@@ -89,7 +89,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="toolbar-wrap" :class="{ expanded: labelsExpanded }" ref="wrapRef">
+  <div ref="wrapRef" class="toolbar-wrap" :class="{ expanded: labelsExpanded }">
 
     <!-- Toolbar — comes first so popouts expand to the right -->
     <div class="toolbar">
@@ -113,9 +113,9 @@ onUnmounted(() => {
           <span class="btn-label">Material</span>
         </button>
         <label class="icon-btn color-swatch" title="Color">
-          <span class="color-dot" :style="{ background: color }"></span>
+          <span class="color-dot" :style="{ background: color }"/>
           <span class="btn-label">Color</span>
-          <input type="color" v-model="color" class="color-input" />
+          <input v-model="color" type="color" class="color-input" >
         </label>
         <div
           class="icon-btn slider-group"
@@ -273,7 +273,8 @@ onUnmounted(() => {
 
     <!-- Material presets popout -->
     <Transition name="popout">
-      <div v-if="activePopout === 'materials'" class="popout menu-panel" :style="popoutFlipUp
+      <div
+v-if="activePopout === 'materials'" class="popout menu-panel" :style="popoutFlipUp
         ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
         : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
         <span class="menu-group">Material</span>
@@ -292,7 +293,8 @@ onUnmounted(() => {
 
     <!-- Lighting popout -->
     <Transition name="popout">
-      <div v-if="activePopout === 'lighting'" class="popout menu-panel" :style="popoutFlipUp
+      <div
+v-if="activePopout === 'lighting'" class="popout menu-panel" :style="popoutFlipUp
         ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
         : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
         <span class="menu-group">Lighting</span>
@@ -309,7 +311,8 @@ onUnmounted(() => {
 
     <!-- Environment popout -->
     <Transition name="popout">
-      <div v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFlipUp
+      <div
+v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFlipUp
         ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
         : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
         <span class="menu-group">Environment</span>
@@ -340,16 +343,16 @@ onUnmounted(() => {
       </span>
       <input
         v-if="activeSlider === 'metalness'"
-        type="range" class="slider-vert" orient="vertical"
-        min="0" max="1" step="0.05"
-        v-model.number="metalness"
-      />
+        v-model.number="metalness" type="range" class="slider-vert"
+        orient="vertical" min="0" max="1"
+        step="0.05"
+      >
       <input
         v-else
-        type="range" class="slider-vert" orient="vertical"
-        min="0" max="1" step="0.05"
-        v-model.number="roughness"
-      />
+        v-model.number="roughness" type="range" class="slider-vert"
+        orient="vertical" min="0" max="1"
+        step="0.05"
+      >
     </div>
 
   </div>

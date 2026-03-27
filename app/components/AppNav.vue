@@ -33,7 +33,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 
 <template>
   <nav class="nav">
-    <div class="nav-start" ref="startRef">
+    <div ref="startRef" class="nav-start">
 
       <!-- Model picker button -->
       <button
