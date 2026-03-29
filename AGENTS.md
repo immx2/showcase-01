@@ -50,6 +50,32 @@ Always fetch from the Nuxt MCP (`mcp__nuxt-remote__*`) when answering questions 
 ### Geometry with built-in primitives
 Solid and wireframe meshes are both `:key`ed on `geometry` to force a clean remount on swap.
 
+## Environment Maps
+
+### How env maps work
+Environment presets are defined in `useViewer.ts` (`envPresets`). Each preset has a `url` pointing to a pre-baked `.exr` file in `public/env/`. At runtime, `SceneSetup.vue` loads these via a Web Worker (`exr-loader.worker.ts`) that decodes the EXR off the main thread, then reconstructs a `THREE.DataTexture` with `CubeUVReflectionMapping` on the main thread. No `PMREMGenerator` runs at runtime — only a GPU texture upload (~2ms).
+
+Switching envs fades `scene.backgroundIntensity` and `scene.environmentIntensity` together over 220ms (matching `--duration-base`) so the model's reflections and the background panorama transition as a unit. Decoded textures are cached in-memory for instant subsequent switches.
+
+### Adding a new env preset
+1. Find a 2k HDR on [Poly Haven](https://polyhaven.com/hdris) (or any source — keep the HDR file locally for baking)
+2. Add an entry to `envPresets` in `useViewer.ts` with a temporary `url` pointing to the Poly Haven CDN or a local `/public/env/source/` path
+3. Run the baking tool (see below) to produce a `.exr` — this pre-bakes the PMREM mip chain so no `PMREMGenerator` runs on the client
+4. Move the baked `.exr` to `public/env/` and update the preset's `url` to `/env/<name>.exr`
+5. Commit the `.exr` file alongside the code change
+
+### Baking tool (dev only)
+`/dev/bake-envmaps` (`app/pages/dev/bake-envmaps.vue` + `app/components/EnvBaker.vue`) — runs `PMREMGenerator` + `EXRExporter` in-browser for every preset that has a `url`. Navigate to it with `npm run dev`, wait for the downloads, move the files to `public/env/`.
+
+The baked files are larger than the source HDRs (~7–9 MB each) because they store the full PMREM mip chain. Decoding is fast because the Worker does the CPU work and only the GPU upload hits the main thread.
+
+### Reverting to Poly Haven CDN (not recommended)
+If you want to load HDRs directly from Poly Haven at runtime instead of serving baked EXRs:
+- Replace `EXRLoader` in `exr-loader.worker.ts` with `RGBELoader` (for `.hdr`) or keep `EXRLoader` (for `.exr`)
+- Change preset `url` values back to absolute CDN URLs (e.g. `https://dl.polyhaven.org/file/ph-assets/HDRIs/exr/2k/sunset_jhbcentre_2k.exr`)
+- Add `PMREMGenerator` back to `SceneSetup.vue` — run it on the `DataTexture` received from the worker, then set `scene.environment` / `scene.background` to the PMREM render target's texture
+- Note: `PMREMGenerator.fromEquirectangular()` is synchronous and **blocks the JS event loop** for ~200–800ms depending on device — this is why we pre-bake
+
 ## Known trade-offs
 
 - **Loading states** — `isLoading` is set in `useViewer.ts` when a `.glb` or environment map is resolving, but no visible indicator is wired up yet. A spinner or canvas overlay in `ViewerScene.vue` / `ViewerControls.vue` would close this gap.

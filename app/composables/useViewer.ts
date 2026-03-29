@@ -152,25 +152,25 @@ export const envPresets: EnvPreset[] = [
     id: 'sunset',
     label: 'Sunset',
     swatch: 'linear-gradient(135deg, #f5a623, #e8441a)',
-    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/venice_sunset_2k.hdr',
+    url: '/env/sunset.exr',
   },
   {
     id: 'studio',
     label: 'Studio',
     swatch: 'linear-gradient(135deg, #d0d0d0, #888888)',
-    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/studio_small_09_2k.hdr',
+    url: '/env/studio.exr',
   },
   {
     id: 'forest',
     label: 'Forest',
     swatch: 'linear-gradient(135deg, #4a7c59, #2d5016)',
-    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/forest_slope_2k.hdr',
+    url: '/env/forest.exr',
   },
   {
     id: 'night',
     label: 'Night',
     swatch: 'linear-gradient(135deg, #1a2a4a, #0a0e1a)',
-    url: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/moonlit_golf_2k.hdr',
+    url: '/env/night.exr',
   },
 ]
 
@@ -183,7 +183,7 @@ const wireframe   = ref(false)
 const autoRotate  = ref(true)
 const lightPreset = ref<LightPreset>('studio')
 const vertexCount = ref(0)
-const isLoading   = ref(false)
+const isLoading = ref(false)
 const splashModelReady = ref<boolean>(geometry.value !== 'lamborghini')
 const splashEnvReady   = ref(false)
 const splashDone       = computed(() => splashModelReady.value && splashEnvReady.value)

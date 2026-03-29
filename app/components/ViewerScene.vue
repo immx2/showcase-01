@@ -133,6 +133,7 @@ watch(geometry, (geo) => {
   position: relative;
   overflow: hidden;
   isolation: isolate;
+  background: var(--color-bg);
 }
 
 .canvas {
@@ -143,4 +144,5 @@ watch(geometry, (geo) => {
   width: 100% !important;
   height: 100% !important;
 }
+
 </style>
