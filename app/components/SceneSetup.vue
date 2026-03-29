@@ -10,7 +10,7 @@ import * as THREE from 'three'
 import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js'
 import { useViewer, envPresets } from '~/composables/useViewer'
 
-const { envPreset, screenshotFn } = useViewer()
+const { envPreset, screenshotFn, splashEnvReady } = useViewer()
 const { scene, renderer, camera } = useTresContext()
 
 let pmrem: THREE.PMREMGenerator | null = null
@@ -24,18 +24,24 @@ function getPmrem(): THREE.PMREMGenerator {
   return pmrem
 }
 
+function markEnvReady() {
+  if (!splashEnvReady.value) splashEnvReady.value = true
+}
+
 async function applyPreset(id: string) {
   const preset = envPresets.find(p => p.id === id)
 
   if (!preset?.url) {
     scene.value.environment = null
     scene.value.background  = null
+    markEnvReady()
     return
   }
 
   if (cache.has(id)) {
     scene.value.environment = cache.get(id)!
     scene.value.background  = cache.get(id)!
+    markEnvReady()
     return
   }
 
@@ -49,8 +55,10 @@ async function applyPreset(id: string) {
       scene.value.environment = tex
       scene.value.background  = tex
     }
+    markEnvReady()
   } catch (err) {
     console.warn('[SceneSetup] env load failed:', preset.url, err)
+    markEnvReady()
   }
 }
 

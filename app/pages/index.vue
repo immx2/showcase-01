@@ -28,6 +28,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
       </ClientOnly>
     </div>
     <OnboardingOverlay />
+    <SplashScreen />
   </div>
 </template>
 

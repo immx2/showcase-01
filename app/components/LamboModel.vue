@@ -4,7 +4,7 @@ import { useGLTF } from '@tresjs/cientos'
 import * as THREE from 'three'
 import { useViewer } from '~/composables/useViewer'
 
-const { color, metalness, roughness, wireframe, vertexCount, isLoading, envEnabled } = useViewer()
+const { color, metalness, roughness, wireframe, vertexCount, isLoading, envEnabled, splashModelReady } = useViewer()
 
 const { state: lamboGltf } = useGLTF('/models/lamborghini.glb')
 
@@ -48,6 +48,7 @@ watch(lamboGltf, (gltf) => {
   gltf.scene.rotation.y = 0
   applyMaterial()
   isLoading.value = false
+  if (!splashModelReady.value) splashModelReady.value = true
   let count = 0
   gltf.scene.traverse((child: THREE.Object3D) => {
     const mesh = child as THREE.Mesh

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { watch } from 'vue'
 
 const STORAGE_KEY = 'showcase-01:onboarding-seen'
-const { showOnboarding } = useViewer()
+const { showOnboarding, splashDone } = useViewer()
 
 const tips = [
   {
@@ -27,11 +27,10 @@ const tips = [
   }
 ]
 
-onMounted(() => {
-  if (!localStorage.getItem(STORAGE_KEY)) {
-    showOnboarding.value = true
-  }
-})
+watch(splashDone, (done) => {
+  if (!done) return
+  if (!localStorage.getItem(STORAGE_KEY)) showOnboarding.value = true
+}, { immediate: true })
 
 function dismiss() {
   localStorage.setItem(STORAGE_KEY, '1')

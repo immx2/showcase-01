@@ -184,6 +184,9 @@ const autoRotate  = ref(true)
 const lightPreset = ref<LightPreset>('studio')
 const vertexCount = ref(0)
 const isLoading   = ref(false)
+const splashModelReady = ref<boolean>(geometry.value !== 'lamborghini')
+const splashEnvReady   = ref(false)
+const splashDone       = computed(() => splashModelReady.value && splashEnvReady.value)
 const envPreset             = ref<EnvPresetId>('sunset')
 const showOnboarding        = ref(false)
 const hotspotsVisible       = ref(true)
@@ -209,6 +212,9 @@ export const useViewer = () => ({
   lightConfig,
   vertexCount,
   isLoading,
+  splashModelReady,
+  splashEnvReady,
+  splashDone,
   envPreset,
   envEnabled,
   screenshotFn,
