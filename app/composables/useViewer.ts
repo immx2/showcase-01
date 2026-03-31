@@ -16,7 +16,7 @@ export type HotspotScreenPos = {
   behind: boolean
 }
 export type LightPreset = 'studio' | 'dramatic' | 'soft' | 'cold'
-export type EnvPresetId = 'none' | 'sunset' | 'studio' | 'forest' | 'night'
+export type EnvPresetId = 'none' | 'sunset' | 'tower' | 'forest' | 'night'
 
 // --- Light presets ---
 type LightConfig = {
@@ -137,8 +137,12 @@ export type EnvPreset = {
   label: string
   // Gradient hint shown in the chip swatch (CSS linear-gradient or solid color)
   swatch: string
-  // Poly Haven 2k HDR. Empty string = no environment.
+  // Baked .exr served at runtime. Empty string = no environment.
   url: string
+  // Poly Haven asset page
+  sourcePage?: string
+  // Poly Haven CDN direct download URL for the source .hdr (used by EnvBaker)
+  sourceHdr?: string
 }
 
 export const envPresets: EnvPreset[] = [
@@ -153,12 +157,16 @@ export const envPresets: EnvPreset[] = [
     label: 'Sunset',
     swatch: 'linear-gradient(135deg, #f5a623, #e8441a)',
     url: '/env/sunset.exr',
+    sourcePage: 'https://polyhaven.com/a/venice_sunset',
+    sourceHdr: '',
   },
   {
-    id: 'studio',
-    label: 'Studio',
-    swatch: 'linear-gradient(135deg, #d0d0d0, #888888)',
-    url: '/env/studio.exr',
+    id: 'tower',
+    label: 'Tower',
+    swatch: 'linear-gradient(135deg, #e8dfd0, #b89a7a)',
+    url: '/env/tower.exr',
+    sourcePage: 'https://polyhaven.com/a/bell_tower',
+    sourceHdr: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/bell_tower_2k.hdr',
   },
   {
     id: 'forest',
@@ -171,6 +179,8 @@ export const envPresets: EnvPreset[] = [
     label: 'Night',
     swatch: 'linear-gradient(135deg, #1a2a4a, #0a0e1a)',
     url: '/env/night.exr',
+    sourcePage: 'https://polyhaven.com/a/rogland_clear_night',
+    sourceHdr: 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/rogland_clear_night_2k.hdr',
   },
 ]
 

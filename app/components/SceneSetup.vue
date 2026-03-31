@@ -39,6 +39,8 @@ function decodeEXR(url: string): Promise<THREE.DataTexture> {
       const tex = new THREE.DataTexture(data, width as number, height as number, format as THREE.PixelFormat, type as THREE.TextureDataType)
       tex.colorSpace = colorSpace as string
       tex.mapping = THREE.CubeUVReflectionMapping
+      tex.minFilter = THREE.LinearFilter
+      tex.magFilter = THREE.LinearFilter
       tex.needsUpdate = true
       resolve(tex)
     }

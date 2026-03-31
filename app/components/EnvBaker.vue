@@ -19,12 +19,12 @@ onMounted(async () => {
   pmrem.compileEquirectangularShader()
   const exporter = new EXRExporter()
 
-  const presetsWithUrl = envPresets.filter(p => p.url)
+  const presetsWithUrl = envPresets.filter(p => p.sourceHdr)
   console.log(`[EnvBaker] Baking ${presetsWithUrl.length} presets…`)
 
   for (const preset of presetsWithUrl) {
-    console.log(`[EnvBaker] Loading ${preset.id} (${preset.url})…`)
-    const hdr = await new HDRLoader().loadAsync(preset.url)
+    console.log(`[EnvBaker] Loading ${preset.id} (${preset.sourceHdr})…`)
+    const hdr = await new HDRLoader().loadAsync(preset.sourceHdr!)
     const rt = pmrem.fromEquirectangular(hdr)
     hdr.dispose()
 
