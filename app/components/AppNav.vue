@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { geometryGroups, geometryOptions, type GeometryType } from '~/composables/useViewer'
+import type { Section } from '~/components/MenuPanel.vue'
 
 const { showOnboarding, geometry, vertexCount, isLoading } = useViewer()
 const isLambo = computed(() => geometry.value === 'lamborghini')
 const colorMode = useColorMode()
 
 const modelName = computed(() => geometryOptions.find(o => o.id === geometry.value)?.label ?? '')
+
+const geoMenuGroups: Section[] = geometryGroups.map(g => ({
+  label: g.label,
+  items: g.options.map(o => ({ id: o.id, label: o.label })),
+}))
 
 const geoOpen = ref(false)
 const startRef = ref<HTMLElement | null>(null)
@@ -63,20 +69,15 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 
       <!-- Geometry dropdown -->
       <Transition name="geo-drop">
-        <div v-if="geoOpen" class="geo-dropdown menu-panel" role="listbox" aria-label="Select geometry">
-          <template v-for="group in geometryGroups" :key="group.label">
-            <span class="menu-group">{{ group.label }}</span>
-            <button
-              v-for="opt in group.options"
-              :key="opt.id"
-              class="menu-chip"
-              :class="{ active: geometry === opt.id }"
-              role="option"
-              :aria-selected="geometry === opt.id"
-              @click="selectGeo(opt.id)"
-            >{{ opt.label }}</button>
-          </template>
-        </div>
+        <MenuPanel
+          v-if="geoOpen"
+          class="geo-dropdown"
+          :sections="geoMenuGroups"
+          :active-id="geometry"
+          :listbox="true"
+          :aria-label="'Select geometry'"
+          @select="selectGeo($event as GeometryType)"
+        />
       </Transition>
 
     </div>
@@ -141,7 +142,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   justify-content: space-between;
   padding: 0 10px 0 20px;
   border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: var(--color-bg);
 }
 
 /* Left cluster: picker button + stats */

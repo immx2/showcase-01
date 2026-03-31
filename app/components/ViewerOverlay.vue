@@ -81,7 +81,7 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
 .loader-bg {
   position: absolute;
   inset: 0;
-  background: var(--color-surface);
+  background: var(--color-bg);
 }
 
 .spinner {

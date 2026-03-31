@@ -85,7 +85,7 @@ function dismiss() {
 }
 
 .card {
-  background: var(--color-surface);
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-8) var(--space-8);

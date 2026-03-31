@@ -35,7 +35,7 @@ const { splashDone } = useViewer()
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-surface);
+  background: var(--color-bg);
 }
 
 .icon {

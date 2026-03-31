@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useViewer, materialPresets, envPresets, type LightPreset, type MaterialPreset, type EnvPresetId } from '~/composables/useViewer'
+import type { Section } from '~/components/MenuPanel.vue'
 
 const { geometry, color, metalness, roughness, wireframe, autoRotate, lightPreset, envPreset, screenshotFn, hotspotsVisible, labelsExpanded } = useViewer()
 
@@ -10,6 +11,21 @@ const lightPresets: { id: LightPreset; label: string }[] = [
   { id: 'soft',     label: 'Soft' },
   { id: 'cold',     label: 'Cold' },
 ]
+
+const materialGroup: Section[] = [{
+  label: 'Material',
+  items: materialPresets.map(p => ({ id: p.id, label: p.label, dot: p.color })),
+}]
+
+const lightingGroup: Section[] = [{
+  label: 'Lighting',
+  items: lightPresets.map(p => ({ id: p.id, label: p.label })),
+}]
+
+const environmentGroup: Section[] = [{
+  label: 'Environment',
+  items: envPresets.map(p => ({ id: p.id, label: p.label, swatch: p.swatch })),
+}]
 
 function applyMaterialPreset(preset: MaterialPreset) {
   color.value = preset.color
@@ -273,61 +289,43 @@ onUnmounted(() => {
 
     <!-- Material presets popout -->
     <Transition name="popout">
-      <div
-v-if="activePopout === 'materials'" class="popout menu-panel" :style="popoutFlipUp
-        ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
-        : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
-        <span class="menu-group">Material</span>
-        <button
-          v-for="preset in materialPresets"
-          :key="preset.id"
-          class="menu-chip chip-material"
-          :aria-label="preset.label"
-          @click="applyMaterialPreset(preset)"
-        >
-          <span class="preset-dot" :style="{ background: preset.color }" />
-          {{ preset.label }}
-        </button>
-      </div>
+      <MenuPanel
+        v-if="activePopout === 'materials'"
+        class="popout"
+        :style="popoutFlipUp
+          ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
+          : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }"
+        :sections="materialGroup"
+        @select="applyMaterialPreset(materialPresets.find(p => p.id === $event)!)"
+      />
     </Transition>
 
     <!-- Lighting popout -->
     <Transition name="popout">
-      <div
-v-if="activePopout === 'lighting'" class="popout menu-panel" :style="popoutFlipUp
-        ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
-        : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
-        <span class="menu-group">Lighting</span>
-        <button
-          v-for="preset in lightPresets"
-          :key="preset.id"
-          class="menu-chip"
-          :class="{ active: lightPreset === preset.id }"
-          :aria-pressed="lightPreset === preset.id"
-          @click="lightPreset = preset.id"
-        >{{ preset.label }}</button>
-      </div>
+      <MenuPanel
+        v-if="activePopout === 'lighting'"
+        class="popout"
+        :style="popoutFlipUp
+          ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
+          : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }"
+        :sections="lightingGroup"
+        :active-id="lightPreset"
+        @select="lightPreset = $event as LightPreset"
+      />
     </Transition>
 
     <!-- Environment popout -->
     <Transition name="popout">
-      <div
-v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFlipUp
-        ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
-        : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }">
-        <span class="menu-group">Environment</span>
-        <button
-          v-for="preset in envPresets"
-          :key="preset.id"
-          class="menu-chip chip-env"
-          :class="{ active: envPreset === preset.id }"
-          :aria-pressed="envPreset === preset.id"
-          @click="envPreset = preset.id as EnvPresetId; activePopout = null"
-        >
-          <span class="env-swatch" :style="{ background: preset.swatch }" />
-          {{ preset.label }}
-        </button>
-      </div>
+      <MenuPanel
+        v-if="activePopout === 'environment'"
+        class="popout"
+        :style="popoutFlipUp
+          ? { bottom: popoutBottom + 'px', maxHeight: popoutMaxH + 'px' }
+          : { top: popoutY + 'px',         maxHeight: popoutMaxH + 'px' }"
+        :sections="environmentGroup"
+        :active-id="envPreset"
+        @select="envPreset = $event as EnvPresetId; activePopout = null"
+      />
     </Transition>
 
     <!-- Slider float — at toolbar-wrap level to escape .toolbar's overflow-x: hidden -->
@@ -368,7 +366,7 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   flex-direction: column;
   align-items: center;
   width: 52px;
-  background: var(--color-surface);
+  background: var(--color-bg);
   border-right: 1px solid var(--color-border);
   z-index: 30;
   transition: width var(--duration-slow) var(--ease-out);
@@ -609,30 +607,6 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   padding: 0;
 }
 
-.chip-material,
-.chip-env {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.preset-dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 1px solid var(--color-border);
-  flex-shrink: 0;
-}
-
-.env-swatch {
-  display: inline-block;
-  width: 24px;
-  height: 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border);
-  flex-shrink: 0;
-}
 
 .expanded .icon-btn {
   width: 148px;
