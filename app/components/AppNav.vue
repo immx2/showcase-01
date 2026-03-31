@@ -141,7 +141,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   justify-content: space-between;
   padding: 0 10px 0 20px;
   border-bottom: 1px solid var(--color-border);
-  background: var(--color-bg);
+  background: var(--color-surface);
 }
 
 /* Left cluster: picker button + stats */

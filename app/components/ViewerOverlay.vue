@@ -34,7 +34,7 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
   gap: var(--space-1);
   pointer-events: none;
   padding: var(--space-2) var(--space-3);
-  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  background: color-mix(in srgb, var(--color-surface-2) 80%, transparent);
   backdrop-filter: blur(8px);
   border: 1px solid var(--color-border-subtle);
   border-radius: var(--radius-md);
@@ -81,7 +81,7 @@ const modelName = computed(() => geometryOptions.find(o => o.id === geometry.val
 .loader-bg {
   position: absolute;
   inset: 0;
-  background: var(--color-bg);
+  background: var(--color-surface);
 }
 
 .spinner {

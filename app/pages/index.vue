@@ -37,7 +37,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--color-bg);
+  background: var(--color-surface);
 }
 
 .body {

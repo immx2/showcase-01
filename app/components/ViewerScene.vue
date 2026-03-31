@@ -133,7 +133,7 @@ watch(geometry, (geo) => {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: var(--color-bg);
+  background: var(--color-surface);
 }
 
 .canvas {

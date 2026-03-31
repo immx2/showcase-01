@@ -65,7 +65,7 @@ function cardSide(x: number): 'right' | 'left' {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--color-surface) 92%, transparent);
+  background: color-mix(in srgb, var(--color-surface-2) 92%, transparent);
   border: 1.5px solid var(--color-border);
   box-shadow: 0 1px 6px rgb(0 0 0 / 18%);
   cursor: pointer;
@@ -75,7 +75,7 @@ function cardSide(x: number): 'right' | 'left' {
 
 .hotspot:hover .pin {
   transform: scale(1.3);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
 }
 
 /* Pulsing ring */
@@ -100,7 +100,7 @@ function cardSide(x: number): 'right' | 'left' {
   padding: var(--space-2) var(--space-3);
   min-width: 158px;
   max-width: 210px;
-  background: color-mix(in srgb, var(--color-surface) 96%, transparent);
+  background: color-mix(in srgb, var(--color-surface-2) 96%, transparent);
   backdrop-filter: blur(10px);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);

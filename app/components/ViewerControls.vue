@@ -368,7 +368,7 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   flex-direction: column;
   align-items: center;
   width: 52px;
-  background: var(--color-bg);
+  background: var(--color-surface);
   border-right: 1px solid var(--color-border);
   z-index: 30;
   transition: width var(--duration-slow) var(--ease-out);
@@ -430,14 +430,16 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   color: var(--color-text-secondary);
   cursor: pointer;
   overflow: hidden;
-  transition: background var(--duration-base),
+  transition:
+              /* background var(--duration-base), */
               width var(--duration-base) var(--ease-out);
 }
 
 .icon-btn:hover {
   background: var(--color-bg-hover);
   color: var(--color-text);
-  transition: background 0ms,
+  transition:
+              /* background 0ms, */
               width var(--duration-slow) var(--ease-out);
 }
 
@@ -531,7 +533,7 @@ v-if="activePopout === 'environment'" class="popout menu-panel" :style="popoutFl
   align-items: center;
   gap: var(--space-2);
   padding: var(--space-3) var(--space-2);
-  background: var(--color-surface);
+  background: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: 0 4px 16px rgb(0 0 0 / 12%);

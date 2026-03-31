@@ -85,7 +85,7 @@ function dismiss() {
 }
 
 .card {
-  background: var(--color-bg);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: var(--space-8) var(--space-8);
@@ -173,7 +173,7 @@ function dismiss() {
   width: 100%;
   padding: var(--space-3) var(--space-4);
   background: var(--color-text);
-  color: var(--color-surface);
+  color: var(--color-surface-2);
   border: none;
   border-radius: var(--radius-md);
   font-size: 0.875rem;
