@@ -256,7 +256,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   align-items: center;
   height: 26px;
   border: 1px solid var(--color-border);
-  border-radius: 99px;
+  border-radius: var(--radius-full);
   overflow: hidden;
 }
 
@@ -279,6 +279,13 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   border-left: 1px solid var(--color-border);
 }
 
+/* Pre-hydration active state — driven by data-color-pref set before Vue mounts */
+:global(html[data-color-pref="system"]) #color-mode-pill button[aria-label="Auto (device)"],
+:global(html[data-color-pref="light"])  #color-mode-pill button[aria-label="Light"],
+:global(html[data-color-pref="dark"])   #color-mode-pill button[aria-label="Dark"] {
+  background: var(--color-bg-active);
+}
+
 .mode-pill button.active {
   background: var(--color-bg-active);
   color: var(--color-active-text);
@@ -294,7 +301,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
 .icon-btn {
   width: 26px;
   height: 26px;
-  border-radius: 50%;
+  border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
   background: transparent;
   color: var(--color-text-muted);

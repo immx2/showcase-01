@@ -59,7 +59,7 @@ const emit = defineEmits<{ select: [id: string] }>()
   display: flex;
   flex-direction: column;
   padding: var(--space-2);
-  background: var(--color-surface-2);
+  background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: 0 0 20px rgb(0 0 0 / 20%);
@@ -102,12 +102,11 @@ const emit = defineEmits<{ select: [id: string] }>()
 }
 
 .item.active {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-active);
   color: var(--color-text);
 }
 
 .item.active:hover {
-  background: var(--color-bg-menu-hover);
   color: var(--color-text);
   transition: none;
 }

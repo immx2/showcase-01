@@ -46,15 +46,16 @@ Built with Nuxt 4, TresJS (Three.js for Vue), and TypeScript. Intentional design
 ```
 app/
   components/
-    AppNav.vue           # Top navigation
+    App/
+      Nav.vue            # Top navigation
+      Toolbar.vue        # All UI controls (sidebar/panel)
+      Onboarding.vue     # First-visit gesture overlay
+      Splash.vue         # Initial loading screen
     ViewerScene.vue      # TresCanvas + scene composition
-    ViewerControls.vue   # All UI controls (sidebar/panel)
     LamboModel.vue       # GLB model loader + material setup
     SceneSetup.vue       # Renderless: env map, screenshot access via useTresContext()
     ModelHotspots.vue    # Hotspot overlay management
     HotspotProjector.vue # World → screen projection for a single hotspot
-    ViewerOverlay.vue    # Loading + status overlays
-    OnboardingOverlay.vue
   composables/
     useViewer.ts         # Single source of truth for all viewer state
   pages/

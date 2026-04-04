@@ -16,6 +16,7 @@
   --radius-sm: 3px;
   --radius-md: 6px;
   --radius-lg: 12px;
+  --radius-full: 9999px;
 
   /* Duration */
   --duration-fast: 120ms;
@@ -24,4 +25,7 @@
 
   /* Easing */
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Nav height */
+  --nav-height: 48px;
 }

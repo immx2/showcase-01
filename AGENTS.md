@@ -19,9 +19,9 @@ Dev server runs on port 3001 (`npm run dev`).
 ## Conventions
 
 ### State
-`useViewer.ts` is the single source of truth. All components read from it via `useViewer()` — no local state for anything shared. When adding a new control, add its state here first, then wire up in `ViewerScene`/`LamboModel` and `ViewerControls`.
+`useViewer.ts` is the single source of truth. All components read from it via `useViewer()` — no local state for anything shared. When adding a new control, add its state here first, then wire up in `ViewerScene`/`LamboModel` and `AppToolbar`.
 
-`screenshotFn` is a special ref: `ViewerScene` writes a closure into it on canvas ready, `ViewerControls` calls it. Pattern for any action that needs renderer access from a sibling component.
+`screenshotFn` is a special ref: `ViewerScene` writes a closure into it on canvas ready, `AppToolbar` calls it. Pattern for any action that needs renderer access from a sibling component.
 
 ### CSS
 - Token-first: always reach for `--space-*`, `--radius-*`, `--duration-*` before hardcoding values

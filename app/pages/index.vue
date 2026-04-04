@@ -22,13 +22,13 @@ useEventListener('keydown', (e: KeyboardEvent) => {
   <div class="root">
     <AppNav />
     <div class="body">
-      <ViewerControls />
+      <AppToolbar />
       <ClientOnly>
         <ViewerScene />
       </ClientOnly>
     </div>
-    <OnboardingOverlay />
-    <SplashScreen />
+    <AppOnboarding />
+    <AppSplash />
   </div>
 </template>
 
