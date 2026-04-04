@@ -268,7 +268,7 @@ function setMode(pref: 'system' | 'light' | 'dark') {
   justify-content: center;
   border: none;
   background: transparent;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;

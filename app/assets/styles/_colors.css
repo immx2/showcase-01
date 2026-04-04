@@ -20,7 +20,7 @@
 
 /* Dark */
 [data-color-mode="dark"] {
-  --color-bg:        hsl(60deg 0% 18%);
+  --color-bg:             hsl(60deg 0% 18%);
   --color-surface-2:      var(--color-bg-active);
   --color-bg-hover:       hsl(60deg 0% 14%);
   --color-bg-active:      hsl(60deg 0% 10%);
