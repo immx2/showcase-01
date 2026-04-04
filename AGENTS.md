@@ -88,3 +88,10 @@ If you want to load HDRs directly from Poly Haven at runtime instead of serving 
 ## Boundaries
 - This app is standalone — no shared code or styles from other repos
 - No Tailwind
+
+## Claude Code Settings
+Permissions and plugin config live in `.claude/settings.json` (tracked in git) so they apply on every machine. Claude Code defaults new session-granted permissions to `.claude/settings.local.json` — move non-sensitive ones into `settings.json` manually.
+
+When suggesting a permission to add:
+- **Non-sensitive** (e.g. `npm run:*`, `WebFetch(domain:...)`, MCP read tools): suggest adding to `settings.json`
+- **Sensitive** (e.g. broad `Bash(**)`, destructive commands, `git push`, `rm`): suggest adding to `settings.local.json` only, and note that it won't be shared across machines
