@@ -82,16 +82,8 @@ If you want to load HDRs directly from Poly Haven at runtime instead of serving 
 
 ## Known trade-offs
 
-- **Loading states** — `isLoading` is set in `useViewer.ts` when a `.glb` or environment map is resolving, but no visible indicator is wired up yet. A spinner or canvas overlay in `ViewerScene.vue` / `ViewerControls.vue` would close this gap.
 - **Anti-aliasing** — the renderer currently has no AA pass. Options to explore: `antialias` on the renderer (MSAA), or FXAA/SMAA via `@tresjs/post-processing`. Worth exposing as a user toggle given the performance trade-off.
 
 ## Boundaries
 - This app is standalone — no shared code or styles from other repos
 - No Tailwind
-
-## Claude Code Settings
-Permissions and plugin config live in `.claude/settings.json` (tracked in git) so they apply on every machine. Claude Code defaults new session-granted permissions to `.claude/settings.local.json` — move non-sensitive ones into `settings.json` manually.
-
-When suggesting a permission to add:
-- **Non-sensitive** (e.g. `npm run:*`, `WebFetch(domain:...)`, MCP read tools): suggest adding to `settings.json`
-- **Sensitive** (e.g. broad `Bash(**)`, destructive commands, `git push`, `rm`): suggest adding to `settings.local.json` only, and note that it won't be shared across machines
