@@ -54,12 +54,18 @@ app/
     ViewerScene.vue      # TresCanvas + scene composition
     LamboModel.vue       # GLB model loader + material setup
     SceneSetup.vue       # Renderless: env map, screenshot access via useTresContext()
+    MenuPanel.vue        # Floating panel shell used by Toolbar
     ModelHotspots.vue    # Hotspot overlay management
     HotspotProjector.vue # World → screen projection for a single hotspot
+    EnvBaker.vue         # Dev-only: in-browser PMREM baking UI
   composables/
     useViewer.ts         # Single source of truth for all viewer state
+  workers/
+    exr-loader.worker.ts # Decodes EXR env maps off the main thread
   pages/
     index.vue
+    dev/
+      bake-envmaps.vue   # Dev route for env map baking
 public/
   models/               # .glb assets
 ```
