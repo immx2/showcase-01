@@ -24,7 +24,11 @@ export default defineNuxtConfig({
   tres: {
     devtools: true,
   },
-  css: ['~/assets/styles/main.css'],
+  css: [
+    '~/assets/styles/tokens.css',
+    '~/assets/styles/colors.css',
+    '~/assets/styles/global.css',
+  ],
   fonts: {
     families: [{ name: 'Inter', provider: 'google' }],
   },

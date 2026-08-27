@@ -80,7 +80,7 @@ The Lamborghini Aventador model is ["Lamborghini Aventador"](https://sketchfab.c
 
 ## Dev tools
 
-`/dev/bake-envmaps` — browser-based env map baking tool. Runs `PMREMGenerator` + `EXRExporter` in-browser for each preset, then downloads the baked `.exr` files. Move outputs to `public/env/` after baking. See `AGENTS.md` for full details on the env map pipeline.
+`/dev/bake-envmaps` — browser-based env map baking tool. Runs `PMREMGenerator` + `EXRExporter` in-browser for each preset, then downloads the baked `.exr` files. Move outputs to `public/env/` after baking. See `CLAUDE.md` for full details on the env map pipeline.
 
 ---
 
