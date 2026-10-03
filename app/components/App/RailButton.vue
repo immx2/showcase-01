@@ -27,7 +27,7 @@ const { labelsExpanded } = useViewer()
       :color="active ? 'primary' : 'neutral'"
       :variant="active ? 'soft' : 'ghost'"
       block
-      class="justify-start overflow-hidden"
+      class="justify-start overflow-hidden font-normal"
       :ui="{ label: ['transition-opacity ease-snappy', labelsExpanded ? 'opacity-100 delay-120 duration-220' : 'opacity-0 duration-120'] }"
     />
   </UTooltip>

@@ -26,7 +26,7 @@ watch(showOnboarding, (open) => {
     v-model:open="showOnboarding"
     title="Explore every angle"
     description="Rotate, zoom, and customise any model in real time."
-    :ui="{ content: 'max-w-md' }"
+    :ui="{ content: 'max-w-md', footer: 'px-6 pt-4 pb-6' }"
   >
     <template #body>
       <ul class="flex flex-col gap-4">
@@ -42,11 +42,14 @@ watch(showOnboarding, (open) => {
     </template>
 
     <template #footer>
-      <div class="flex w-full flex-wrap items-center justify-between gap-3">
-        <p class="min-w-56 flex-1 text-[0.8rem] text-muted">Reopen this guide anytime with the <strong class="font-semibold text-highlighted">?</strong> button in the top nav.</p>
+      <div class="flex w-full flex-col gap-4">
+        <p class="text-center text-[0.8rem] text-muted">Reopen this guide anytime with the <strong class="font-semibold text-highlighted">?</strong> button in the top nav.</p>
         <UButton
           label="Start exploring"
+          color="neutral"
+          class="self-center"
           trailing-icon="i-lucide-arrow-right"
+          :ui="{ label: 'relative -top-[0.07em]' }"
           @click="showOnboarding = false"
         />
       </div>
