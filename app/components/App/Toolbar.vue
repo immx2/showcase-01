@@ -56,50 +56,44 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="rail" :class="{ expanded: labelsExpanded }">
-    <div class="rail-main">
+  <div
+    class="relative z-30 flex shrink-0 flex-col border-r border-default bg-default p-2 transition-[width] duration-400 ease-snappy"
+    :class="labelsExpanded ? 'w-44' : 'w-14'"
+  >
+    <div class="flex min-h-0 flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto [scrollbar-width:none]">
 
       <UPopover v-model:open="materialOpen" :content="popoverContent">
         <AppRailButton icon="i-lucide-palette" label="Material" :active="materialOpen" />
 
         <template #content>
-          <div class="material-panel">
-            <div class="panel-row">
-              <span class="panel-label">Preset</span>
-              <span class="panel-value">{{ activeMaterial?.label ?? 'Custom' }}</span>
-            </div>
-            <div class="swatches">
-              <button
-                v-for="preset in materialPresets"
-                :key="preset.id"
-                type="button"
-                class="swatch-btn"
-                :class="{ active: activeMaterial?.id === preset.id }"
-                :style="{ background: preset.color }"
-                :title="preset.label"
-                :aria-label="preset.label"
-                :aria-pressed="activeMaterial?.id === preset.id"
-                @click="applyMaterialPreset(preset)"
-              />
+          <!-- Fits the `sm` UColorPicker exactly: 160px square + 16px gap + 8px hue bar = 184px, plus padding -->
+          <div class="flex w-[calc(184px+1.5rem)] flex-col gap-3 p-3">
+            <AppPanelRow label="Preset" :value="activeMaterial?.label ?? 'Custom'" />
+            <div class="flex justify-between">
+              <UTooltip v-for="preset in materialPresets" :key="preset.id" :text="preset.label">
+                <button
+                  type="button"
+                  class="size-7 rounded-full border border-accented transition-shadow duration-120 ease-snappy hover:ring-2 hover:ring-accented focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  :class="activeMaterial?.id === preset.id && 'ring-2 ring-primary ring-offset-2 ring-offset-(--ui-bg) hover:ring-primary'"
+                  :style="{ background: preset.color }"
+                  :aria-label="preset.label"
+                  :aria-pressed="activeMaterial?.id === preset.id"
+                  @click="applyMaterialPreset(preset)"
+                />
+              </UTooltip>
             </div>
 
             <USeparator />
 
-            <span class="panel-label">Color</span>
+            <AppPanelLabel>Color</AppPanelLabel>
             <UColorPicker v-model="color" format="hex" size="sm" />
 
             <USeparator />
 
-            <div class="panel-row">
-              <span class="panel-label">Metalness</span>
-              <span class="panel-value">{{ metalness.toFixed(2) }}</span>
-            </div>
+            <AppPanelRow label="Metalness" :value="metalness.toFixed(2)" />
             <USlider v-model="metalness" :min="0" :max="1" :step="0.05" aria-label="Metalness" />
 
-            <div class="panel-row">
-              <span class="panel-label">Roughness</span>
-              <span class="panel-value">{{ roughness.toFixed(2) }}</span>
-            </div>
+            <AppPanelRow label="Roughness" :value="roughness.toFixed(2)" />
             <USlider v-model="roughness" :min="0" :max="1" :step="0.05" aria-label="Roughness" />
           </div>
         </template>
@@ -113,14 +107,14 @@ onMounted(() => {
         @click="wireframe = !wireframe"
       />
 
-      <USeparator class="rail-sep" />
+      <USeparator class="my-1" />
 
       <UPopover v-model:open="envOpen" :content="popoverContent">
         <AppRailButton icon="i-lucide-globe" label="Environment" :active="envOpen" />
 
         <template #content>
-          <div class="list-panel">
-            <p class="panel-label">Environment</p>
+          <div class="flex min-w-42 flex-col gap-2 p-3">
+            <AppPanelLabel>Environment</AppPanelLabel>
             <AppPresetList :items="envItems" :active-id="envPreset" @select="selectEnv" />
           </div>
         </template>
@@ -130,14 +124,14 @@ onMounted(() => {
         <AppRailButton icon="i-lucide-sun" label="Lighting" :active="lightOpen" />
 
         <template #content>
-          <div class="list-panel">
-            <p class="panel-label">Lighting</p>
+          <div class="flex min-w-42 flex-col gap-2 p-3">
+            <AppPanelLabel>Lighting</AppPanelLabel>
             <AppPresetList :items="lightItems" :active-id="lightPreset" @select="selectLight" />
           </div>
         </template>
       </UPopover>
 
-      <USeparator class="rail-sep" />
+      <USeparator class="my-1" />
 
       <AppRailButton
         icon="i-lucide-rotate-3d"
@@ -157,8 +151,8 @@ onMounted(() => {
       />
     </div>
 
-    <div class="rail-foot">
-      <USeparator class="rail-sep" />
+    <div class="flex shrink-0 flex-col gap-1">
+      <USeparator class="my-1" />
       <AppRailButton
         :icon="labelsExpanded ? 'i-lucide-panel-left-close' : 'i-lucide-panel-left-open'"
         :label="labelsExpanded ? 'Collapse' : 'Expand'"
@@ -168,108 +162,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-<style scoped>
-.rail {
-  position: relative;
-  z-index: 30;
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  width: 56px;
-  padding: var(--space-2);
-  background: var(--ui-bg);
-  border-right: 1px solid var(--ui-border);
-  transition: width var(--duration-slow) var(--ease-out);
-}
-
-.rail.expanded {
-  width: 176px;
-}
-
-.rail-main {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  overflow: hidden auto;
-  scrollbar-width: none;
-}
-
-.rail-foot {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-}
-
-.rail-sep {
-  margin: var(--space-1) 0;
-}
-
-.material-panel,
-.list-panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-3);
-}
-
-/* Fits the `sm` UColorPicker exactly: 160px square + 16px gap + 8px hue bar = 184px, plus padding */
-.material-panel {
-  width: calc(184px + var(--space-3) * 2);
-  gap: var(--space-3);
-}
-
-.list-panel {
-  min-width: 168px;
-}
-
-.panel-label {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ui-text-muted);
-}
-
-.panel-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.panel-value {
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: var(--ui-text-muted);
-}
-
-.swatches {
-  display: flex;
-  justify-content: space-between;
-}
-
-.swatch-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1px solid var(--ui-border-accented);
-  cursor: pointer;
-  transition: box-shadow var(--duration-fast) var(--ease-out);
-}
-
-.swatch-btn:hover {
-  box-shadow: 0 0 0 2px var(--ui-border-accented);
-}
-
-.swatch-btn.active {
-  box-shadow: 0 0 0 2px var(--ui-bg), 0 0 0 4px var(--ui-primary);
-}
-
-.swatch-btn:focus-visible {
-  outline: 2px solid var(--ui-primary);
-  outline-offset: 2px;
-}
-</style>

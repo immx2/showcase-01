@@ -4,26 +4,12 @@ import { PortfolioNav } from '@immx2/portfolio-nav'
 
 <template>
   <UApp>
-    <div class="app-shell">
+    <div class="flex h-dvh flex-col overflow-hidden">
       <NuxtRouteAnnouncer />
       <PortfolioNav current="showcase-01" />
-      <div class="page-slot">
+      <div class="min-h-0 flex-1">
         <NuxtPage />
       </div>
     </div>
   </UApp>
 </template>
-
-<style>
-.app-shell {
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.page-slot {
-  flex: 1;
-  min-height: 0;
-}
-</style>

@@ -29,21 +29,21 @@ watch(showOnboarding, (open) => {
     :ui="{ content: 'max-w-md' }"
   >
     <template #body>
-      <ul class="tips">
-        <li v-for="tip in tips" :key="tip.bold" class="tip">
-          <span class="tip-icon">
-            <UIcon :name="tip.icon" class="tip-glyph" />
+      <ul class="flex flex-col gap-4">
+        <li v-for="tip in tips" :key="tip.bold" class="flex items-center gap-3 text-sm/snug text-toned">
+          <span class="flex size-9 shrink-0 items-center justify-center rounded-md border border-default bg-elevated text-primary">
+            <UIcon :name="tip.icon" class="size-5" />
           </span>
           <span>
-            <strong>{{ tip.bold }}</strong> {{ tip.text }}<template v-if="tip.bold2"><strong>{{ tip.bold2 }}</strong> {{ tip.text2 }}</template>
+            <strong class="font-semibold text-highlighted">{{ tip.bold }}</strong> {{ tip.text }}<template v-if="tip.bold2"><strong class="font-semibold text-highlighted">{{ tip.bold2 }}</strong> {{ tip.text2 }}</template>
           </span>
         </li>
       </ul>
     </template>
 
     <template #footer>
-      <div class="footer">
-        <p class="reopen-hint">Reopen this guide anytime with the <strong>?</strong> button in the top nav.</p>
+      <div class="flex w-full flex-wrap items-center justify-between gap-3">
+        <p class="min-w-56 flex-1 text-[0.8rem] text-muted">Reopen this guide anytime with the <strong class="font-semibold text-highlighted">?</strong> button in the top nav.</p>
         <UButton
           label="Start exploring"
           trailing-icon="i-lucide-arrow-right"
@@ -53,64 +53,3 @@ watch(showOnboarding, (open) => {
     </template>
   </UModal>
 </template>
-
-<style scoped>
-.tips {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.tip {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-size: 0.875rem;
-  line-height: 1.45;
-  color: var(--ui-text-toned);
-}
-
-.tip strong {
-  font-weight: 600;
-  color: var(--ui-text-highlighted);
-}
-
-.tip-icon {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--ui-bg-elevated);
-  border: 1px solid var(--ui-border);
-  border-radius: var(--ui-radius);
-  color: var(--ui-primary);
-}
-
-.tip-glyph {
-  width: 20px;
-  height: 20px;
-}
-
-.footer {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.reopen-hint {
-  flex: 1 1 14rem;
-  font-size: 0.8rem;
-  color: var(--ui-text-muted);
-}
-
-.reopen-hint strong {
-  font-weight: 600;
-  color: var(--ui-text-highlighted);
-}
-</style>

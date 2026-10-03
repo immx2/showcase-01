@@ -3,4 +3,19 @@
 
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --ease-snappy: cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-hotspot-pulse: hotspot-pulse 2.4s ease-out infinite;
+
+  @keyframes hotspot-pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(2.8); opacity: 0; }
+  }
+}
+
+/* Tailwind v4 Preflight uses the default cursor on buttons. Restore the pointer. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
 }

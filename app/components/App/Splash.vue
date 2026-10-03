@@ -3,9 +3,9 @@ const { splashDone } = useViewer()
 </script>
 
 <template>
-  <Transition name="splash">
-    <div v-if="!splashDone" class="splash" role="status" aria-label="Loading 3D scene">
-      <div class="icon" aria-hidden="true">
+  <Transition leave-active-class="transition-opacity duration-400 ease-snappy" leave-to-class="opacity-0">
+    <div v-if="!splashDone" class="fixed inset-0 z-200 flex items-center justify-center bg-default" role="status" aria-label="Loading 3D scene">
+      <div class="animate-[spin_8s_linear_infinite] text-dimmed" aria-hidden="true">
         <svg
           viewBox="0 0 48 48"
           width="56"
@@ -26,33 +26,3 @@ const { splashDone } = useViewer()
     </div>
   </Transition>
 </template>
-
-<style scoped>
-.splash {
-  position: fixed;
-  inset: 0;
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--ui-bg);
-}
-
-.icon {
-  color: var(--ui-text-dimmed);
-  animation: spin 8s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Leave only — splash is present on first paint, no need to fade in */
-.splash-leave-active {
-  transition: opacity var(--duration-slow) var(--ease-out);
-}
-
-.splash-leave-to {
-  opacity: 0;
-}
-</style>

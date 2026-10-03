@@ -25,12 +25,16 @@ Dev server runs on port 3001 (`npm run dev`).
 
 ### CSS
 - UI is built on **Nuxt UI v4** (`@nuxt/ui`). Prefer its components (`UButton`, `UPopover`, `UDropdownMenu`, `UModal`, `USlider`, ...) over hand-rolled markup. Icons are Lucide via `i-lucide-*` (`@iconify-json/lucide` is installed, so icons bundle locally).
-- Token-first: always reach for `--space-*`, `--radius-*`, `--duration-*` (in `tokens.css`) before hardcoding values
-- **Color theme lives in `app/app.config.ts`** (`ui.colors.primary` = accent, `ui.colors.neutral` = chrome tint). There is no custom color file. In scoped CSS use Nuxt UI's semantic vars: `--ui-bg`, `--ui-bg-muted`, `--ui-bg-elevated`, `--ui-border`, `--ui-border-accented`, `--ui-text`, `--ui-text-highlighted`, `--ui-text-muted`, `--ui-text-dimmed`, `--ui-primary`. Never hardcode UI colors.
+- **Tailwind-first:** style our own markup with Tailwind CSS 4 utility classes. Prefer Nuxt UI's semantic utilities (`bg-default`, `bg-muted`, `bg-elevated`, `border-default`, `border-accented`, `text-muted`, `text-dimmed`, `text-highlighted`, `text-primary`, `ring-accented`) over raw palette classes (`bg-neutral-900`).
+- **Nuxt UI idioms:** restyle a Nuxt UI component through its `ui` prop (slot classes) or `app.config.ts`, not with `:deep()` selectors. Use the `color` and `variant` props for state. Put values that repeat across components into `@theme` in `main.css`. Extract a component when the same utility string appears three or more times (`AppPanelLabel`, `AppPanelRow`).
+- **Theme tokens:** `main.css` holds `@theme` (font, `ease-snappy`, `animate-hotspot-pulse`). Use Tailwind's spacing, radius, and duration scales. There is no `tokens.css`.
+- **Tooltips:** use `UTooltip`, never the native `title` attribute. Keep `aria-label` on icon-only controls. `AppRailButton` wraps its `UButton` in a `UTooltip` that is disabled while the rail is expanded. It sets `inheritAttrs: false` and forwards `$attrs` to the `UButton`, so reka-ui triggers such as `UPopover` still work.
+- Vue `<Transition>`: set the state classes through props (`enter-active-class` and so on) instead of a `<style>` block.
+- **Color theme lives in `app/app.config.ts`** (`ui.colors.primary` = accent, `ui.colors.neutral` = chrome tint). There is no custom color file. In CSS and arbitrary values use Nuxt UI's semantic vars (utilities such as `bg-default` map to them): `--ui-bg`, `--ui-bg-muted`, `--ui-bg-elevated`, `--ui-border`, `--ui-border-accented`, `--ui-text`, `--ui-text-highlighted`, `--ui-text-muted`, `--ui-text-dimmed`, `--ui-primary`. Never hardcode UI colors.
 - **`@immx2/portfolio-nav` bridge:** the shared top strip (from the `my-portfolio` sibling repo) reads `--color-bg`, `--color-text`, `--color-text-muted`, `--color-border` and falls back to light values if they are missing. `global.css` maps those four names onto `--ui-*` variables. Do not delete that block, and do not add other `--color-*` tokens of our own.
 - The WebGL clear color in `ViewerScene.vue` is a hex that must be kept in sync with `--ui-bg-muted` if the `neutral` color changes.
 - Color mode is handled by `@nuxtjs/color-mode`, which Nuxt UI registers (configured in `nuxt.config.ts`, storage key `showcase-color-mode`). It sets a `dark` class on `<html>`. Use `useColorMode()` (auto-imported) — `colorMode.preference` is 'system'|'light'|'dark', `colorMode.value` is the resolved 'light'|'dark'. The preference is client-only, so gate UI that depends on it with `useMounted()` to avoid hydration mismatches.
-- All component styles in `<style scoped>`, no Tailwind utility classes in our own markup, no CSS-in-JS. Tailwind CSS 4 is installed only because Nuxt UI requires it as its engine (`app/assets/styles/main.css`).
+- No `<style scoped>` blocks and no CSS-in-JS. Use a `<style>` block only for what utilities cannot express. Global CSS lives in `app/assets/styles/` (`main.css`: Tailwind + Nuxt UI + `@theme`; `global.css`: portfolio-nav bridge + base rules).
 
 ### VueUse
 - `@vueuse/nuxt` is in `nuxt.config.ts` modules; it depends on `@vueuse/core` — keep only `@vueuse/nuxt` in `package.json` unless you need to pin `@vueuse/core` explicitly.
@@ -89,7 +93,7 @@ If you want to load HDRs directly from Poly Haven at runtime instead of serving 
 
 ## Boundaries
 - This app is standalone — no shared code or styles from other repos
-- No Tailwind utility classes in our own components (Tailwind is present only as Nuxt UI's engine)
+- No hardcoded UI colors: use Nuxt UI semantic utilities or `--ui-*` variables
 
 ## Claude Code Settings
 Permissions and plugin config live in `.claude/settings.json` (tracked in git) so they apply on every machine. Claude Code defaults new session-granted permissions to `.claude/settings.local.json` — move non-sensitive ones into `settings.json` manually.

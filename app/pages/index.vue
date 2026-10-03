@@ -19,9 +19,9 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 </script>
 
 <template>
-  <div class="root">
+  <div class="flex h-full flex-col bg-default">
     <AppNav />
-    <div class="body">
+    <div class="flex min-h-0 flex-1">
       <AppToolbar />
       <ClientOnly>
         <ViewerScene />
@@ -31,19 +31,3 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     <AppSplash />
   </div>
 </template>
-
-<style scoped>
-.root {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background: var(--ui-bg);
-}
-
-.body {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  min-height: 0;
-}
-</style>

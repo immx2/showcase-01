@@ -35,12 +35,12 @@ watch(geometry, (geo) => {
 </script>
 
 <template>
-  <div class="scene-wrapper">
+  <div class="relative isolate min-w-0 flex-1 overflow-hidden bg-muted">
     <TresCanvas
       :clear-color="canvasBg"
       alpha
       preserve-drawing-buffer
-      class="canvas"
+      class="block size-full!"
     >
       <TresPerspectiveCamera
         :position="[0, 0, 6]"
@@ -126,24 +126,3 @@ watch(geometry, (geo) => {
     <ModelHotspots />
   </div>
 </template>
-
-<style scoped>
-.scene-wrapper {
-  flex: 1;
-  min-width: 0;
-  position: relative;
-  overflow: hidden;
-  isolation: isolate;
-  background: var(--ui-bg-muted);
-}
-
-.canvas {
-  display: block;
-
-  /* !important overrides the inline width/height TresJS sets via setSize(),
-     so the flex layout controls the canvas display size instead. */
-  width: 100% !important;
-  height: 100% !important;
-}
-
-</style>

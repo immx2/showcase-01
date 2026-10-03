@@ -14,129 +14,35 @@ function cardSide(x: number): 'right' | 'left' {
 </script>
 
 <template>
-  <Transition name="hs-fade">
+  <Transition
+    enter-active-class="transition-opacity duration-220 ease-snappy"
+    leave-active-class="transition-opacity duration-120 ease-snappy"
+    enter-from-class="opacity-0"
+    leave-to-class="opacity-0"
+  >
     <div
       v-if="geometry === 'lamborghini' && !isLoading && hotspotsVisible"
-      class="hotspots-layer"
+      class="pointer-events-none absolute inset-0"
       aria-hidden="true"
     >
       <div
         v-for="pos in hotspotScreenPositions"
         :key="pos.id"
-        class="hotspot"
-        :class="{ behind: pos.behind }"
+        class="group absolute -translate-x-1/2 -translate-y-1/2 transition-opacity duration-220 ease-snappy"
+        :class="pos.behind ? 'pointer-events-none opacity-0' : 'pointer-events-auto'"
         :style="{ left: `${pos.x}%`, top: `${pos.y}%` }"
       >
-        <div class="pin">
-          <span class="pulse" />
+        <div class="relative size-2.5 cursor-pointer rounded-full border-[1.5px] border-accented bg-elevated/90 shadow-[0_1px_6px_rgb(0_0_0/18%)] transition duration-120 ease-snappy group-hover:scale-130 group-hover:bg-elevated">
+          <span class="absolute -inset-1 animate-hotspot-pulse rounded-full border-[1.5px] border-primary" />
         </div>
-        <div class="card" :class="cardSide(pos.x)">
-          <span class="card-label">{{ hotspotMeta(pos.id)?.label }}</span>
-          <span class="card-desc">{{ hotspotMeta(pos.id)?.description }}</span>
+        <div
+          class="pointer-events-none absolute top-1/2 flex max-w-52 min-w-40 -translate-y-1/2 flex-col gap-[3px] rounded-md border border-accented bg-elevated/95 px-3 py-2 opacity-0 shadow-lg backdrop-blur-[10px] transition-opacity duration-120 ease-snappy group-hover:opacity-100"
+          :class="cardSide(pos.x) === 'right' ? 'left-[calc(100%+10px)]' : 'right-[calc(100%+10px)]'"
+        >
+          <span class="text-xs font-semibold whitespace-nowrap text-highlighted">{{ hotspotMeta(pos.id)?.label }}</span>
+          <span class="text-[11px]/snug text-muted">{{ hotspotMeta(pos.id)?.description }}</span>
         </div>
       </div>
     </div>
   </Transition>
 </template>
-
-<style scoped>
-.hotspots-layer {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-/* Individual hotspot — centred on its projected point */
-.hotspot {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  pointer-events: auto;
-  transition: opacity var(--duration-base) var(--ease-out);
-}
-
-.hotspot.behind {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Dot */
-.pin {
-  position: relative;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--ui-bg-elevated) 92%, transparent);
-  border: 1.5px solid var(--ui-border-accented);
-  box-shadow: 0 1px 6px rgb(0 0 0 / 18%);
-  cursor: pointer;
-  transition: transform var(--duration-fast) var(--ease-out),
-              background var(--duration-fast);
-}
-
-.hotspot:hover .pin {
-  transform: scale(1.3);
-  background: var(--ui-bg-elevated);
-}
-
-/* Pulsing ring */
-.pulse {
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  border: 1.5px solid var(--ui-primary);
-  animation: hs-pulse 2.4s ease-out infinite;
-}
-
-@keyframes hs-pulse {
-  0%   { transform: scale(1);   opacity: 0.8; }
-  100% { transform: scale(2.8); opacity: 0; }
-}
-
-/* Hover card */
-.card {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: var(--space-2) var(--space-3);
-  min-width: 158px;
-  max-width: 210px;
-  background: color-mix(in srgb, var(--ui-bg-elevated) 96%, transparent);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--ui-border-accented);
-  border-radius: var(--radius-md);
-  box-shadow: 0 4px 20px rgb(0 0 0 / 10%);
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--duration-fast) var(--ease-out);
-}
-
-.card.right { left:  calc(100% + 10px); }
-.card.left  { right: calc(100% + 10px); }
-
-.hotspot:hover .card {
-  opacity: 1;
-}
-
-.card-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ui-text-highlighted);
-  white-space: nowrap;
-}
-
-.card-desc {
-  font-size: 11px;
-  line-height: 1.45;
-  color: var(--ui-text-muted);
-}
-
-/* Layer fade-in/out when toggled or geometry switches */
-.hs-fade-enter-active { transition: opacity var(--duration-base) var(--ease-out); }
-.hs-fade-leave-active { transition: opacity var(--duration-fast) var(--ease-out); }
-
-.hs-fade-enter-from,
-.hs-fade-leave-to     { opacity: 0; }
-</style>

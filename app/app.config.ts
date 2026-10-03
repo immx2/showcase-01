@@ -7,5 +7,12 @@ export default defineAppConfig({
       primary: 'neutral',
       neutral: 'stone',
     },
+    button: {
+      slots: {
+        // Inter centers capitals in the line box, so lowercase text sits ~0.09em low next to icons.
+        // A relative offset (no layout change) pulls the label up to meet the icon's center.
+        label: 'relative -top-[0.07em]',
+      },
+    },
   },
 })

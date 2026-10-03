@@ -20,7 +20,6 @@ export default defineNuxtConfig({
   },
   css: [
     '~/assets/styles/main.css',
-    '~/assets/styles/tokens.css',
     '~/assets/styles/global.css',
   ],
   fonts: {

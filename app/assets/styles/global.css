@@ -8,11 +8,6 @@
   --color-border: var(--ui-border);
 }
 
-html,
-body {
-  height: 100%;
-}
-
 body {
   font-size: 14px;
   line-height: 1.5;
