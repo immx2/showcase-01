@@ -35,11 +35,11 @@ const { splashDone } = useViewer()
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-bg);
+  background: var(--ui-bg);
 }
 
 .icon {
-  color: var(--color-text-muted);
+  color: var(--ui-text-dimmed);
   animation: spin 8s linear infinite;
 }
 

@@ -1,30 +1,13 @@
 <script setup lang="ts">
-import { watch } from 'vue'
-
 const STORAGE_KEY = 'showcase-01:onboarding-seen'
 const { showOnboarding, splashDone } = useViewer()
 
 const tips = [
-  {
-    label: `<strong>Drag</strong> to orbit · <strong>Scroll</strong> to zoom`,
-    icon: `<path d="M10 3a7 7 0 1 1-4.95 2.05"/><polyline points="7 1 10 3 8 6"/>`,
-  },
-  {
-    label: `<strong>Model Name</strong> in top nav — choose geometries`,
-    icon: `<polygon points="10,2 17,6 17,14 10,18 3,14 3,6"/><line x1="10" y1="2" x2="10" y2="18"/><line x1="3" y1="6" x2="17" y2="6"/><line x1="3" y1="14" x2="17" y2="14"/>`,
-  },
-  {
-    label: `<strong>Toolbar</strong> on the left — swap materials, lighting & environment`,
-    icon: `<line x1="4" y1="6" x2="10" y2="6"/><line x1="4" y1="10" x2="16" y2="10"/><line x1="4" y1="14" x2="13" y2="14"/><circle cx="13" cy="6" r="2"/><circle cx="16" cy="14" r="2"/>`,
-  },
-  {
-    label: `<strong>Spacebar</strong> toggles auto-orbit on and off`,
-    icon: `<rect x="3" y="7" width="14" height="7" rx="2"/><line x1="6" y1="10.5" x2="14" y2="10.5"/>`,
-  },
-  {
-    label: `<strong>Camera</strong> button saves a screenshot`,
-    icon: `<rect x="2" y="6" width="16" height="11" rx="2"/><circle cx="10" cy="11.5" r="3"/><path d="M7 6l1.5-2.5h3L13 6"/>`,
-  }
+  { icon: 'i-lucide-move-3d', bold: 'Drag', text: 'to orbit · ', bold2: 'Scroll', text2: 'to zoom' },
+  { icon: 'i-lucide-box', bold: 'Model name', text: 'in the top nav — choose geometries' },
+  { icon: 'i-lucide-sliders-horizontal', bold: 'Toolbar', text: 'on the left — swap materials, lighting & environment' },
+  { icon: 'i-lucide-keyboard', bold: 'Spacebar', text: 'toggles auto-orbit on and off' },
+  { icon: 'i-lucide-camera', bold: 'Camera', text: 'button saves a screenshot' },
 ]
 
 watch(splashDone, (done) => {
@@ -32,96 +15,48 @@ watch(splashDone, (done) => {
   if (!localStorage.getItem(STORAGE_KEY)) showOnboarding.value = true
 }, { immediate: true })
 
-function dismiss() {
-  localStorage.setItem(STORAGE_KEY, '1')
-  showOnboarding.value = false
-}
+// Any way of closing the guide (button, X, Esc, overlay) marks it as seen
+watch(showOnboarding, (open) => {
+  if (!open) localStorage.setItem(STORAGE_KEY, '1')
+})
 </script>
 
 <template>
-  <Transition name="fade">
-    <div v-if="showOnboarding" class="backdrop" role="dialog" aria-modal="true" aria-label="Welcome tutorial" @click.self="dismiss">
-      <div class="card">
-        <p class="eyebrow">Interactive 3D Viewer</p>
-        <h1 class="title">Explore every angle</h1>
-        <p class="subtitle">Rotate, zoom, and customise any model in real time.</p>
+  <UModal
+    v-model:open="showOnboarding"
+    title="Explore every angle"
+    description="Rotate, zoom, and customise any model in real time."
+    :ui="{ content: 'max-w-md' }"
+  >
+    <template #body>
+      <ul class="tips">
+        <li v-for="tip in tips" :key="tip.bold" class="tip">
+          <span class="tip-icon">
+            <UIcon :name="tip.icon" class="tip-glyph" />
+          </span>
+          <span>
+            <strong>{{ tip.bold }}</strong> {{ tip.text }}<template v-if="tip.bold2"><strong>{{ tip.bold2 }}</strong> {{ tip.text2 }}</template>
+          </span>
+        </li>
+      </ul>
+    </template>
 
-        <ul class="tips">
-          <li v-for="tip in tips" :key="tip.label" class="tip">
-            <span class="tip-icon">
-              <!-- eslint-disable-next-line vue/no-v-html -->
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" v-html="tip.icon" />
-            </span>
-            <!-- eslint-disable-next-line vue/no-v-html -->
-            <span v-html="tip.label" />
-          </li>
-        </ul>
-
-        <p class="reopen-hint">Reopen this guide anytime via the <strong>?</strong> button in the top nav.</p>
-
-        <button class="cta" @click="dismiss">
-          Start Exploring
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="2" y1="7" x2="12" y2="7"/>
-            <polyline points="8 3 12 7 8 11"/>
-          </svg>
-        </button>
+    <template #footer>
+      <div class="footer">
+        <p class="reopen-hint">Reopen this guide anytime with the <strong>?</strong> button in the top nav.</p>
+        <UButton
+          label="Start exploring"
+          trailing-icon="i-lucide-arrow-right"
+          @click="showOnboarding = false"
+        />
       </div>
-    </div>
-  </Transition>
+    </template>
+  </UModal>
 </template>
 
 <style scoped>
-.backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgb(17 17 16 / 45%);
-  backdrop-filter: blur(4px);
-  padding: var(--space-4);
-}
-
-.card {
-  background: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-8) var(--space-8);
-  max-width: 420px;
-  width: 100%;
-  box-shadow: 0 8px 40px rgb(17 17 16 / 12%);
-}
-
-.eyebrow {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  margin: 0 0 var(--space-2);
-}
-
-.title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text);
-  margin: 0 0 var(--space-2);
-  line-height: 1.2;
-}
-
-.subtitle {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
-  margin: 0 0 var(--space-6);
-  line-height: 1.5;
-}
-
 .tips {
   list-style: none;
-  margin: 0 0 var(--space-6);
-  padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -132,81 +67,50 @@ function dismiss() {
   align-items: center;
   gap: var(--space-3);
   font-size: 0.875rem;
-  color: var(--color-te);
   line-height: 1.45;
+  color: var(--ui-text-toned);
 }
 
 .tip strong {
   font-weight: 600;
+  color: var(--ui-text-highlighted);
 }
 
 .tip-icon {
   flex-shrink: 0;
   width: 36px;
   height: 36px;
-  background-color: var(--color-bg-active);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-secondary);
+  background: var(--ui-bg-elevated);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  color: var(--ui-primary);
+}
+
+.tip-glyph {
+  width: 20px;
+  height: 20px;
+}
+
+.footer {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
 }
 
 .reopen-hint {
+  flex: 1 1 14rem;
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
-  margin: 0 0 var(--space-4);
-  text-align: center;
+  color: var(--ui-text-muted);
 }
 
 .reopen-hint strong {
   font-weight: 600;
-  color: var(--color-text);
-}
-
-.cta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-text);
-  color: var(--color-surface-2);
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity var(--duration-fast) var(--ease-out);
-}
-
-.cta:hover {
-  opacity: 0.85;
-}
-
-/* Fade transition */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity var(--duration-slow) var(--ease-out);
-}
-
-.fade-enter-active .card,
-.fade-leave-active .card {
-  transition: transform var(--duration-slow) var(--ease-out);
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-from .card {
-  transform: translateY(12px);
-}
-
-.fade-leave-to .card {
-  transform: translateY(-8px);
+  color: var(--ui-text-highlighted);
 }
 </style>

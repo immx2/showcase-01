@@ -3,30 +3,24 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   future: { compatibilityVersion: 4 },
   devtools: { enabled: true },
-  modules: ['@tresjs/nuxt', '@nuxt/fonts', '@nuxtjs/color-mode', '@vueuse/nuxt', '@nuxt/eslint', '@vercel/analytics', '@vercel/speed-insights'],
+  modules: ['@nuxt/ui', '@tresjs/nuxt', '@vueuse/nuxt', '@nuxt/eslint', '@vercel/analytics', '@vercel/speed-insights'],
   devServer: {
     port: 3001,
   },
   colorMode: {
-    dataValue: 'color-mode',
     storageKey: 'showcase-color-mode',
-    classSuffix: '',
   },
   app: {
     head: {
       meta: [{ name: 'darkreader-lock', content: 'true' }],
-      script: [{
-        key: 'color-pref-init',
-        innerHTML: `(function(){try{var p=localStorage.getItem('showcase-color-mode')||'system';document.documentElement.setAttribute('data-color-pref',p)}catch(e){}})()`,
-      }],
     },
   },
   tres: {
     devtools: true,
   },
   css: [
+    '~/assets/styles/main.css',
     '~/assets/styles/tokens.css',
-    '~/assets/styles/colors.css',
     '~/assets/styles/global.css',
   ],
   fonts: {

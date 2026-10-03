@@ -19,15 +19,18 @@ Dev server runs on port 3001 (`npm run dev`).
 ## Conventions
 
 ### State
-`useViewer.ts` is the single source of truth. All components read from it via `useViewer()` — no local state for anything shared. When adding a new control, add its state here first, then wire up in `ViewerScene`/`LamboModel` and `AppToolbar`.
+`useViewer.ts` is the single source of truth. All components read from it via `useViewer()` — no local state for anything shared. When adding a new control, add its state here first, then wire up in `ViewerScene`/`LamboModel` and `AppToolbar`. Toolbar buttons use `AppRailButton`; preset lists inside popovers use `AppPresetList`.
 
 `screenshotFn` is a special ref: `ViewerScene` writes a closure into it on canvas ready, `AppToolbar` calls it. Pattern for any action that needs renderer access from a sibling component.
 
 ### CSS
-- Token-first: always reach for `--space-*`, `--radius-*`, `--duration-*` before hardcoding values
-- Colors live in `colors.css` — 3-tier color mode (auto/light/dark) via `data-color-mode` on `<html>`
-- Color mode is handled by `@nuxtjs/color-mode` (configured in `nuxt.config.ts` with `dataValue: 'color-mode'`). Use `useColorMode()` (auto-imported) — `colorMode.preference` is 'system'|'light'|'dark', `colorMode.value` is the resolved 'light'|'dark'. The module prevents FOUC natively.
-- All component styles in `<style scoped>`, no Tailwind, no CSS-in-JS
+- UI is built on **Nuxt UI v4** (`@nuxt/ui`). Prefer its components (`UButton`, `UPopover`, `UDropdownMenu`, `UModal`, `USlider`, ...) over hand-rolled markup. Icons are Lucide via `i-lucide-*` (`@iconify-json/lucide` is installed, so icons bundle locally).
+- Token-first: always reach for `--space-*`, `--radius-*`, `--duration-*` (in `tokens.css`) before hardcoding values
+- **Color theme lives in `app/app.config.ts`** (`ui.colors.primary` = accent, `ui.colors.neutral` = chrome tint). There is no custom color file. In scoped CSS use Nuxt UI's semantic vars: `--ui-bg`, `--ui-bg-muted`, `--ui-bg-elevated`, `--ui-border`, `--ui-border-accented`, `--ui-text`, `--ui-text-highlighted`, `--ui-text-muted`, `--ui-text-dimmed`, `--ui-primary`. Never hardcode UI colors.
+- **`@immx2/portfolio-nav` bridge:** the shared top strip (from the `my-portfolio` sibling repo) reads `--color-bg`, `--color-text`, `--color-text-muted`, `--color-border` and falls back to light values if they are missing. `global.css` maps those four names onto `--ui-*` variables. Do not delete that block, and do not add other `--color-*` tokens of our own.
+- The WebGL clear color in `ViewerScene.vue` is a hex that must be kept in sync with `--ui-bg-muted` if the `neutral` color changes.
+- Color mode is handled by `@nuxtjs/color-mode`, which Nuxt UI registers (configured in `nuxt.config.ts`, storage key `showcase-color-mode`). It sets a `dark` class on `<html>`. Use `useColorMode()` (auto-imported) — `colorMode.preference` is 'system'|'light'|'dark', `colorMode.value` is the resolved 'light'|'dark'. The preference is client-only, so gate UI that depends on it with `useMounted()` to avoid hydration mismatches.
+- All component styles in `<style scoped>`, no Tailwind utility classes in our own markup, no CSS-in-JS. Tailwind CSS 4 is installed only because Nuxt UI requires it as its engine (`app/assets/styles/main.css`).
 
 ### VueUse
 - `@vueuse/nuxt` is in `nuxt.config.ts` modules; it depends on `@vueuse/core` — keep only `@vueuse/nuxt` in `package.json` unless you need to pin `@vueuse/core` explicitly.
@@ -86,7 +89,7 @@ If you want to load HDRs directly from Poly Haven at runtime instead of serving 
 
 ## Boundaries
 - This app is standalone — no shared code or styles from other repos
-- No Tailwind
+- No Tailwind utility classes in our own components (Tailwind is present only as Nuxt UI's engine)
 
 ## Claude Code Settings
 Permissions and plugin config live in `.claude/settings.json` (tracked in git) so they apply on every machine. Claude Code defaults new session-granted permissions to `.claude/settings.local.json` — move non-sensitive ones into `settings.json` manually.

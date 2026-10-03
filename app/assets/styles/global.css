@@ -1,12 +1,11 @@
-/* ─────────────────────────────────────────
-   Reset
-   ───────────────────────────────────────── */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+/* Bridge for @immx2/portfolio-nav (shared with the other showcases).
+   The package reads these four names and falls back to light values if they are missing.
+   Map them to the Nuxt UI theme so the strip follows app.config.ts and light/dark mode. */
+:root {
+  --color-bg: var(--ui-bg);
+  --color-text: var(--ui-text-highlighted);
+  --color-text-muted: var(--ui-text-muted);
+  --color-border: var(--ui-border);
 }
 
 html,
@@ -15,28 +14,6 @@ body {
 }
 
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  font-family: Inter, system-ui, -apple-system, sans-serif;
   font-size: 14px;
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-button {
-  cursor: pointer;
-  font-family: inherit;
-  font-size: inherit;
-}
-
-input,
-select {
-  font-family: inherit;
-  font-size: inherit;
 }
