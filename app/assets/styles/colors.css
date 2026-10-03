@@ -9,7 +9,6 @@
   --color-bg-hover:       oklch(94% 0.010 var(--hue));
   --color-bg-active:      oklch(90% 0.018 var(--hue));
   --color-bg-menu-hover:  var(--color-bg-hover);
-
   --color-text:           oklch(18% 0.020 var(--hue));
   --color-text-secondary: oklch(30% 0.017 var(--hue));
   --color-text-muted:     oklch(54% 0.014 var(--hue));
@@ -23,7 +22,6 @@
   --color-bg-hover:       oklch(24% 0.010 var(--hue));
   --color-bg-active:      oklch(30% 0.010 var(--hue));
   --color-bg-menu-hover:  var(--color-bg-hover);
-
   --color-text:           oklch(98% 0.015 var(--hue));
   --color-text-secondary: oklch(74% 0.015 var(--hue));
   --color-text-muted:     oklch(65% 0.010 var(--hue));

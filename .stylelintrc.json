@@ -1,7 +1,7 @@
 {
   "extends": ["stylelint-config-standard"],
   "rules": {
-    "selector-pseudo-class-no-unknown": [true, { "ignorePseudoClasses": ["deep"] }],
+    "selector-pseudo-class-no-unknown": [true, { "ignorePseudoClasses": ["deep", "global"] }],
     "selector-id-pattern": null,
     "declaration-block-single-line-max-declarations": null,
     "no-duplicate-selectors": null
