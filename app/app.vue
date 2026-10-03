@@ -3,13 +3,15 @@ import { PortfolioNav } from '@immx2/portfolio-nav'
 </script>
 
 <template>
-  <div class="app-shell">
-    <NuxtRouteAnnouncer />
-    <PortfolioNav current="showcase-01" />
-    <div class="page-slot">
-      <NuxtPage />
+  <UApp>
+    <div class="app-shell">
+      <NuxtRouteAnnouncer />
+      <PortfolioNav current="showcase-01" />
+      <div class="page-slot">
+        <NuxtPage />
+      </div>
     </div>
-  </div>
+  </UApp>
 </template>
 
 <style>

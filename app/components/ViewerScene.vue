@@ -11,7 +11,8 @@ const {
 } = useViewer()
 
 const colorMode = useColorMode()
-const canvasBg = computed(() => colorMode.value === 'dark' ? '#111110' : '#f5f4f0')
+// Matches --ui-bg-muted for the `stone` neutral (stone-100 / stone-950)
+const canvasBg = computed(() => colorMode.value === 'dark' ? '#0c0a09' : '#f5f5f4')
 
 function countBuiltinVertices(geo: typeof geometry.value): number {
   let g: THREE.BufferGeometry
@@ -112,7 +113,7 @@ watch(geometry, (geo) => {
         <TresOctahedronGeometry v-else-if="geometry === 'octahedron'"  :args="[1.5, 4]" />
 
         <TresMeshBasicMaterial
-          color="#888070"
+          color="#78716c"
           :wireframe="true"
           :transparent="true"
           :opacity="0.35"
@@ -133,7 +134,7 @@ watch(geometry, (geo) => {
   position: relative;
   overflow: hidden;
   isolation: isolate;
-  background: var(--color-bg);
+  background: var(--ui-bg-muted);
 }
 
 .canvas {

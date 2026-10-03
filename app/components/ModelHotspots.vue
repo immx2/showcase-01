@@ -65,8 +65,8 @@ function cardSide(x: number): 'right' | 'left' {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--color-surface-2) 92%, transparent);
-  border: 1.5px solid var(--color-border);
+  background: color-mix(in srgb, var(--ui-bg-elevated) 92%, transparent);
+  border: 1.5px solid var(--ui-border-accented);
   box-shadow: 0 1px 6px rgb(0 0 0 / 18%);
   cursor: pointer;
   transition: transform var(--duration-fast) var(--ease-out),
@@ -75,7 +75,7 @@ function cardSide(x: number): 'right' | 'left' {
 
 .hotspot:hover .pin {
   transform: scale(1.3);
-  background: var(--color-surface-2);
+  background: var(--ui-bg-elevated);
 }
 
 /* Pulsing ring */
@@ -83,7 +83,7 @@ function cardSide(x: number): 'right' | 'left' {
   position: absolute;
   inset: -4px;
   border-radius: 50%;
-  border: 1.5px solid rgb(255 255 255 / 55%);
+  border: 1.5px solid var(--ui-primary);
   animation: hs-pulse 2.4s ease-out infinite;
 }
 
@@ -100,9 +100,9 @@ function cardSide(x: number): 'right' | 'left' {
   padding: var(--space-2) var(--space-3);
   min-width: 158px;
   max-width: 210px;
-  background: color-mix(in srgb, var(--color-surface-2) 96%, transparent);
+  background: color-mix(in srgb, var(--ui-bg-elevated) 96%, transparent);
   backdrop-filter: blur(10px);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--ui-border-accented);
   border-radius: var(--radius-md);
   box-shadow: 0 4px 20px rgb(0 0 0 / 10%);
   display: flex;
@@ -123,14 +123,14 @@ function cardSide(x: number): 'right' | 'left' {
 .card-label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--ui-text-highlighted);
   white-space: nowrap;
 }
 
 .card-desc {
   font-size: 11px;
   line-height: 1.45;
-  color: var(--color-text-muted);
+  color: var(--ui-text-muted);
 }
 
 /* Layer fade-in/out when toggled or geometry switches */
