@@ -105,7 +105,7 @@ Before a commit, run the checks that match the change:
 
 ### Environment maps
 
-Each environment is a pre-baked `.exr` file in `public/env/`. The baked file holds the full PMREM mip chain. A Web Worker decodes the file off the main thread. The main thread then uploads the texture to the GPU. No `PMREMGenerator` runs at runtime, so a switch costs about 2 ms of main-thread time. The app fades the reflections and the background together over 220 ms.
+Each environment is a 2K equirectangular `.hdr` file in `public/env/`. A Web Worker decodes the file off the main thread. The main thread then runs `PMREMGenerator` once per environment and caches the result. A first switch costs about 50 to 90 ms of main-thread time. Later switches cost nothing. The app fades the reflections and the background together over 220 ms.
 
 ### Project structure
 
@@ -126,26 +126,20 @@ app/
     SceneSetup.vue         Renderless: env map and screenshot access
     ModelHotspots.vue      Hotspot overlay
     HotspotProjector.vue   World-to-screen projection for one hotspot
-    EnvBaker.vue           Dev only: in-browser env map baking
   composables/
     useViewer.ts           Single source of truth for viewer state
   workers/
-    exr-loader.worker.ts   Decodes EXR files off the main thread
+    hdr-loader.worker.ts   Decodes HDR files off the main thread
   pages/
     index.vue
-    dev/bake-envmaps.vue   Dev route for env map baking
 public/
   models/                  .glb assets
-  env/                     Baked .exr environment maps
+  env/                     Equirectangular .hdr environment maps
 ```
 
 ## Known trade-offs
 
 The renderer has no anti-aliasing pass. Options are MSAA on the renderer, or FXAA/SMAA through `@tresjs/post-processing`. A user toggle could expose the performance trade-off.
-
-## Dev tools
-
-The `/dev/bake-envmaps` route bakes environment maps in the browser. Run `npm run dev`, open the route, and wait for the downloads. Move the `.exr` files to `public/env/`. `CLAUDE.md` holds the project conventions and the full env map pipeline.
 
 ## Credits
 

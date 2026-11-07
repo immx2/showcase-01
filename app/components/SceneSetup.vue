@@ -12,35 +12,70 @@ import { useViewer, envPresets } from '~/composables/useViewer'
 const { envPreset, screenshotFn, splashEnvReady } = useViewer()
 const { scene, renderer, camera } = useTresContext()
 
-const cache = new Map<string, THREE.Texture>()
+// Two textures per environment, with different lifetimes:
+// - env: the prefiltered PMREM (reflections). Small (512px faces for a 2k HDR)
+//   and costly to rebuild, so it is cached for every visited preset.
+// - background: the decoded equirect. three.js converts it to a 1024px cube, which
+//   is sharp but large (~50 MB of GPU memory), so only the active preset keeps one.
+//   The PMREM is not used as the background because its faces are only width/4.
+// Render targets (not bare textures) so dispose() also frees their framebuffers.
+const cache = new Map<string, THREE.WebGLRenderTarget>()
+let activeBackground: THREE.Texture | null = null
 
-// Decode EXR files in a Worker so the main thread never blocks
-let exrWorker: Worker | null = null
+function setBackground(bg: THREE.Texture | null) {
+  const previous = activeBackground
+  activeBackground = bg
+  scene.value.background = bg
+  previous?.dispose() // frees the equirect and the cube three.js built from it
+}
 
-function getExrWorker(): Worker {
-  if (!exrWorker) {
-    exrWorker = new Worker(
-      new URL('../workers/exr-loader.worker.ts', import.meta.url),
+// Prefilters a decoded equirect HDR into a PMREM (cube render target).
+// The generator is created lazily and reused for every preset.
+let pmrem: THREE.PMREMGenerator | null = null
+
+function getPmrem(): THREE.PMREMGenerator {
+  if (!pmrem) {
+    pmrem = new THREE.PMREMGenerator(renderer.instance as THREE.WebGLRenderer)
+    // Compile the equirect shader now, while the Worker decodes the HDR, so the
+    // first bake does not also pay for the compile.
+    pmrem.compileEquirectangularShader()
+  }
+  return pmrem
+}
+
+function bakePmrem(equirect: THREE.DataTexture): THREE.WebGLRenderTarget {
+  return getPmrem().fromEquirectangular(equirect)
+}
+
+// Decode HDR files in a Worker so the main thread never blocks
+let hdrWorker: Worker | null = null
+
+function getHdrWorker(): Worker {
+  if (!hdrWorker) {
+    hdrWorker = new Worker(
+      new URL('../workers/hdr-loader.worker.ts', import.meta.url),
       { type: 'module' },
     )
   }
-  return exrWorker
+  return hdrWorker
 }
 
-function decodeEXR(url: string): Promise<THREE.DataTexture> {
+function decodeHDR(url: string): Promise<THREE.DataTexture> {
   return new Promise((resolve, reject) => {
-    const worker = getExrWorker()
+    const worker = getHdrWorker()
     const handler = (e: MessageEvent) => {
       if (e.data.id !== url) return
       worker.removeEventListener('message', handler)
       if (e.data.error) { reject(new Error(e.data.error as string)); return }
-      const { buffer, width, height, type, format, colorSpace } = e.data
+      const { buffer, width, height, type, format, colorSpace, flipY } = e.data
       const data = type === THREE.HalfFloatType ? new Uint16Array(buffer as ArrayBuffer) : new Float32Array(buffer as ArrayBuffer)
       const tex = new THREE.DataTexture(data, width as number, height as number, format as THREE.PixelFormat, type as THREE.TextureDataType)
       tex.colorSpace = colorSpace as string
-      tex.mapping = THREE.CubeUVReflectionMapping
+      tex.flipY = flipY as boolean
+      tex.mapping = THREE.EquirectangularReflectionMapping
       tex.minFilter = THREE.LinearFilter
       tex.magFilter = THREE.LinearFilter
+      tex.generateMipmaps = false
       tex.needsUpdate = true
       resolve(tex)
     }
@@ -78,7 +113,7 @@ async function applyPreset(id: string) {
       await new Promise<void>(resolve => setTimeout(resolve, FADE_MS))
     }
     scene.value.environment = null
-    scene.value.background  = null
+    setBackground(null)
     scene.value.backgroundIntensity  = 1 // reset for the next env
     scene.value.environmentIntensity = 1
     markEnvReady()
@@ -90,24 +125,34 @@ async function applyPreset(id: string) {
     await new Promise<void>(resolve => setTimeout(resolve, FADE_MS))
   }
 
-  if (cache.has(id)) {
-    if (afterSplash) scene.value.backgroundIntensity = 0
-    scene.value.environment = cache.get(id)!
-    scene.value.background  = cache.get(id)!
-    if (afterSplash) startBgFade(1)
-    markEnvReady()
-    return
-  }
-
-  // Cache miss — background is already faded out (or skipped for initial load)
+  // Background is already faded out (or skipped for the initial load).
+  // The equirect is decoded on every switch because only the PMREM is cached.
   try {
-    const tex = await decodeEXR(preset.url)
-    cache.set(id, tex)
-    if (envPreset.value === id) {
-      if (afterSplash) scene.value.backgroundIntensity = 0
-      scene.value.environment = tex
-      scene.value.background  = tex
-      if (afterSplash) startBgFade(1)
+    if (!cache.has(id)) getPmrem() // starts the shader compile before the decode
+    const equirect = await decodeHDR(preset.url)
+    let env = cache.get(id)
+    if (!env) {
+      env = bakePmrem(equirect)
+      cache.set(id, env)
+    }
+    if (envPreset.value !== id) {
+      equirect.dispose() // the user switched again while this one loaded
+      return
+    }
+    if (afterSplash) {
+      scene.value.backgroundIntensity  = 0
+      scene.value.environmentIntensity = 0
+    }
+    scene.value.environment = env.texture
+    setBackground(equirect)
+    if (afterSplash) {
+      // The first render with a new background uploads the equirect and builds its
+      // cube (one-time GPU work, a long frame). Do it now, while intensity is 0 and
+      // nothing is visible, so the time-based fade-in starts after the hitch and
+      // plays its full duration instead of losing most of it to that frame.
+      const r = renderer.instance as THREE.WebGLRenderer
+      r.render(scene.value, camera.activeCamera.value)
+      startBgFade(1)
     }
     markEnvReady()
   } catch (err) {
@@ -174,9 +219,12 @@ watch(
 )
 
 onUnmounted(() => {
-  cache.forEach(t => t.dispose())
-  exrWorker?.terminate()
-  exrWorker = null
+  cache.forEach(t => t.dispose()) // render targets: frees textures and framebuffers
+  setBackground(null)
+  pmrem?.dispose()
+  pmrem = null
+  hdrWorker?.terminate()
+  hdrWorker = null
 })
 </script>
 

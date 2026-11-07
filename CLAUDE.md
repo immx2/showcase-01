@@ -64,28 +64,17 @@ Solid and wireframe meshes are both `:key`ed on `geometry` to force a clean remo
 ## Environment Maps
 
 ### How env maps work
-Environment presets are defined in `useViewer.ts` (`envPresets`). Each preset has a `url` pointing to a pre-baked `.exr` file in `public/env/`. At runtime, `SceneSetup.vue` loads these via a Web Worker (`exr-loader.worker.ts`) that decodes the EXR off the main thread, then reconstructs a `THREE.DataTexture` with `CubeUVReflectionMapping` on the main thread. No `PMREMGenerator` runs at runtime — only a GPU texture upload (~2ms).
+Environment presets are defined in `useViewer.ts` (`envPresets`). Each preset has a `url` pointing to a 2k equirectangular `.hdr` file in `public/env/`. At runtime, `SceneSetup.vue` loads these via a Web Worker (`hdr-loader.worker.ts`) that decodes the HDR off the main thread, then rebuilds a `THREE.DataTexture` (`EquirectangularReflectionMapping`) on the main thread. `bakePmrem()` runs `PMREMGenerator.fromEquirectangular()` once per preset, and the PMREM (`scene.environment`, reflections) stays cached because it is small and costly to rebuild. The decoded equirect is the background (`scene.background`) and lives only for the active preset: `setBackground()` disposes the previous one, which frees the equirect and the 1024 px cube three.js builds from it (about 50 MB of GPU memory). The PMREM is not used as the background because its faces are only `width / 4` px (512 for a 2k HDR), which looks soft. A first visit blocks the main thread for roughly 50–90 ms (measured in dev, 2k HDRs). A revisit skips the PMREM build and only re-decodes the HDR in the Worker while the 220 ms fade runs.
 
-Switching envs fades `scene.backgroundIntensity` and `scene.environmentIntensity` together over 220ms (matching `--duration-base`) so the model's reflections and the background panorama transition as a unit. Decoded textures are cached in-memory for instant subsequent switches.
+Three.js r187 replaced the CubeUV atlas with cube render targets. Pre-baked PMREM `.exr` files no longer load, so do not reintroduce them.
+
+Switching envs fades `scene.backgroundIntensity` and `scene.environmentIntensity` together over 220ms (matching `--duration-base`) so the model's reflections and the background panorama transition as a unit.
 
 ### Adding a new env preset
-1. Find a 2k HDR on [Poly Haven](https://polyhaven.com/hdris) (or any source — keep the HDR file locally for baking)
-2. Add an entry to `envPresets` in `useViewer.ts` with a temporary `url` pointing to the Poly Haven CDN or a local `/public/env/source/` path
-3. Run the baking tool (see below) to produce a `.exr` — this pre-bakes the PMREM mip chain so no `PMREMGenerator` runs on the client
-4. Move the baked `.exr` to `public/env/` and update the preset's `url` to `/env/<name>.exr`
-5. Commit the `.exr` file alongside the code change
-
-### Baking tool (dev only)
-`/dev/bake-envmaps` (`app/pages/dev/bake-envmaps.vue` + `app/components/EnvBaker.vue`) — runs `PMREMGenerator` + `EXRExporter` in-browser for every preset that has a `url`. Navigate to it with `npm run dev`, wait for the downloads, move the files to `public/env/`.
-
-The baked files are larger than the source HDRs (~7–9 MB each) because they store the full PMREM mip chain. Decoding is fast because the Worker does the CPU work and only the GPU upload hits the main thread.
-
-### Reverting to Poly Haven CDN (not recommended)
-If you want to load HDRs directly from Poly Haven at runtime instead of serving baked EXRs:
-- Replace `EXRLoader` in `exr-loader.worker.ts` with `RGBELoader` (for `.hdr`) or keep `EXRLoader` (for `.exr`)
-- Change preset `url` values back to absolute CDN URLs (e.g. `https://dl.polyhaven.org/file/ph-assets/HDRIs/exr/2k/sunset_jhbcentre_2k.exr`)
-- Add `PMREMGenerator` back to `SceneSetup.vue` — run it on the `DataTexture` received from the worker, then set `scene.environment` / `scene.background` to the PMREM render target's texture
-- Note: `PMREMGenerator.fromEquirectangular()` is synchronous and **blocks the JS event loop** for ~200–800ms depending on device — this is why we pre-bake
+1. Find a 2k `.hdr` on [Poly Haven](https://polyhaven.com/hdris) (CC0)
+2. Save it as `public/env/<name>.hdr`
+3. Add an entry to `envPresets` in `useViewer.ts` with `url: '/env/<name>.hdr'` and the Poly Haven `sourcePage`
+4. Commit the `.hdr` file alongside the code change
 
 ## Known trade-offs
 

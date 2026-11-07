@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import { EXRLoader } from 'three/examples/jsm/loaders/EXRLoader.js'
+import { HDRLoader } from 'three/examples/jsm/loaders/HDRLoader.js'
 
 interface Request { id: string; url: string }
 interface Response {
@@ -11,13 +11,14 @@ interface Response {
   type: number
   format: number
   colorSpace: string
+  flipY: boolean
 }
 interface ErrorResponse { id: string; error: string }
 
 addEventListener('message', async (e: MessageEvent<Request>) => {
   const { id, url } = e.data
   try {
-    const tex = await new EXRLoader().loadAsync(url)
+    const tex = await new HDRLoader().loadAsync(url)
     const buffer = tex.image.data!.buffer as ArrayBuffer
     const msg: Response = {
       id,
@@ -27,6 +28,7 @@ addEventListener('message', async (e: MessageEvent<Request>) => {
       type: tex.type,
       format: tex.format,
       colorSpace: tex.colorSpace,
+      flipY: tex.flipY,
     }
     postMessage(msg, [buffer])
   }
